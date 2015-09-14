@@ -4,10 +4,11 @@
 # same exact way, here's a script to do the same thing
 
 export PROGRAM=$1
-export MCU=attiny13
+export ATTINY=13
+export MCU=attiny$ATTINY
 export CC=avr-gcc
 export OBJCOPY=avr-objcopy
-export CFLAGS="-Wall -g -Os -mmcu=$MCU -c -std=gnu99"
+export CFLAGS="-Wall -g -Os -mmcu=$MCU -c -std=gnu99 -DATTINY=$ATTINY"
 export OFLAGS="-Wall -g -Os -mmcu=$MCU"
 export LDFLAGS=
 export OBJCOPYFLAGS='--set-section-flags=.eeprom=alloc,load --change-section-lma .eeprom=0 --no-change-warnings -O ihex'
@@ -22,4 +23,4 @@ function run () {
 run $CC $CFLAGS -o $PROGRAM.o -c $PROGRAM.c
 run $CC $OFLAGS $LDFLAGS -o $PROGRAM.elf $PROGRAM.o
 run $OBJCOPY $OBJCOPYFLAGS $PROGRAM.elf $PROGRAM.hex
-run avr-size -C --mcu=attiny13 $PROGRAM.elf | grep Full
+run avr-size -C --mcu=$MCU $PROGRAM.elf | grep Full
