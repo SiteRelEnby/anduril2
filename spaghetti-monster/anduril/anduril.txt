@@ -1,0 +1,100 @@
+From off:
+  * 1 click: memorized level
+  * Hold: lowest level then ramp up
+  * 2 clicks: highest ramp level
+  * Click, hold: highest level then ramp down
+  * 3 clicks: battcheck mode
+    (battcheck, goodnight, beacon, tempcheck)
+  * 4 clicks: lock-out
+  * 5 clicks: strobe modes
+    (bike flasher, party strobe, tactical strobe, lightning storm mode)
+    (remembers which you last used)
+  * 6 clicks: momentary mode (disconnect power to exit)
+
+In steady mode:
+  * 1 click: off
+  * Hold: ramp up
+  * Click, hold: ramp down
+  * 2 clicks: to/from turbo (actual turbo, not just highest ramp level)
+  * 3 clicks: toggle smooth vs discrete ramping
+  * 4 clicks: configure current ramp
+
+Smooth ramp config mode:
+  - Setting 1: memory on/off  (not implemented yet)
+  * Setting 2: low end
+    (click N times to set ramp floor to level N)
+  * Setting 3: high end
+    (click N times to set ramp ceiling to level "151 - N")
+
+Discrete ramp config mode:
+  - Setting 1: memory on/off  (not implemented yet)
+  * Setting 2: low end
+    (click N times to set ramp floor to level N)
+  * Setting 3: high end
+    (click N times to set ramp ceiling to level "151 - N")
+  * Setting 4: number of levels in discrete ramp
+    (click N times to make discrete mode have N stair-steps)
+    (minimum 2, maximum 150)
+
+Bike flasher:
+  * 1 click: off
+  * 2 clicks: party strobe
+  * Hold: brighter
+  * Click, hold: dimmer
+
+Party / Tactical strobe modes:
+  * 1 click: off
+  * Hold: change speed (faster)
+  * Click, hold: change speed (slower)
+  * 2 clicks: next strobe mode
+    (bike flasher, party strobe, tactical strobe, lightning storm mode)
+    (TODO: random/police strobe?)
+
+Lightning storm mode:
+  * 1 click: off
+  * 2 clicks: bike flasher
+
+Battcheck mode:
+  * 1 click: off
+  * 2 clicks: goodnight mode
+
+Goodnight mode:
+  * 1 click: off
+  * 2 clicks: beacon mode
+
+Beacon mode:
+  * 1 click: off
+  * 2 clicks: tempcheck mode
+  * 3 clicks: configure time between pulses
+
+Beacon config mode:
+  * At buzz, click N times to set beacon frequency to N seconds.
+
+Tempcheck mode:
+  * 1 click: off
+  * 2 clicks: battcheck mode
+  * 3 clicks: thermal config mode
+  - Hold: thermal calibration mode
+
+Thermal config mode:
+  * At buzz, click N times to set thermal limit to roughly 30 C + N.
+
+Thermal calibration mode:
+  - Hold until hot: set new ceiling value
+  - ... don't hold: blink out current ceiling value and exit
+
+Momentary mode:
+  * Press button: Light on (at memorized level).
+  * Release button: Light off.
+  * To exit, disconnect power.  (loosen/tighten the tailcap)
+
+TODO:
+  * save settings in eeprom
+  - decide on "hold until hot" or "click N times" for thermal config mode
+  - test thermal regulation on an actual light
+  - improve thermal regulation
+  - a way to blink out the firmware version?
+  - indicator LED support
+  - a way to configure indicator LED behavior?
+  * add goodnight mode?
+  * add lightning mode?
