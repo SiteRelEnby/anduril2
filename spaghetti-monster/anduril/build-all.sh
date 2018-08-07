@@ -6,6 +6,7 @@ for TARGET in \
   EMISAR_D1 \
   EMISAR_D1S \
   EMISAR_D4 \
+  EMISAR_D4S \
   FW3A \
   ; do
   echo "===== $TARGET ====="
