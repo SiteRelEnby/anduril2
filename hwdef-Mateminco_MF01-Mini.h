@@ -1,16 +1,20 @@
-#ifndef HWDEF_EMISAR_D18_H
-#define HWDEF_EMISAR_D18_H
+#ifndef HWDEF_MF01_MINI_H
+#define HWDEF_MF01_MINI_H
 
-/* Emisar D18 (FET+13+1) driver layout
+/* MF01-Mini driver layout
  *           ----
  *   Reset -|1  8|- VCC
- * eswitch -|2  7|- aux LED?
- *     FET -|3  6|- 13x7135
- *     GND -|4  5|-  1x7135
+ * eswitch -|2  7|- aux LEDs
+ * FET PWM -|3  6|- PWM (7x7135)
+ *     GND -|4  5|- PWM (1x7135)
  *           ----
  */
 
 #define PWM_CHANNELS 3
+
+#ifndef AUXLED_PIN
+#define AUXLED_PIN   PB2    // pin 7
+#endif
 
 #ifndef SWITCH_PIN
 #define SWITCH_PIN   PB3    // pin 2
@@ -30,9 +34,6 @@
 #define PWM3_LVL OCR1B      // OCR1B is the output compare register for PB4
 #endif
 
-#ifndef AUXLED_PIN
-#define AUXLED_PIN PB2      // pin 7
-#endif
 #define ADC_PRSCL   0x07    // clk/128
 
 // average drop across diode on this hardware
