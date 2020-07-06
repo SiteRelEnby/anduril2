@@ -1,4 +1,4 @@
-// Fireflies PL47 config options for Anduril
+// Fireflies PL47 G2 config options for Anduril
 #include "hwdef-FF_PL47.h"
 
 // the button lights up
@@ -7,24 +7,15 @@
 #ifdef USE_INDICATOR_LED_WHILE_RAMPING
 #undef USE_INDICATOR_LED_WHILE_RAMPING
 #endif
-//#define USE_INDICATOR_LED_WHILE_RAMPING
 // enable blinking indicator LED while off?
 #define TICK_DURING_STANDBY
+#define STANDBY_TICK_SPEED 3  // every 0.128 s
+#define USE_FANCIER_BLINKING_INDICATOR
 
 // If TICK_DURING_STANDBY is enabled...
-// off mode: high (2)
+// off mode: low (1)
 // lockout: blinking (3)
-#define INDICATOR_LED_DEFAULT_MODE ((3<<2) + 2)
-
-// the "low" mode doesn't work on this light's aux LEDs
-// (but it does work on the switch LEDs)
-// Fireflies wants to skip aux LED mode 1 (low)
-#define INDICATOR_LED_SKIP_LOW
-
-// ... or if TICK_DURING_STANDBY is turned off:
-// off mode: high (2)
-// lockout: off (0)
-//#define INDICATOR_LED_DEFAULT_MODE ((0<<2) + 2)
+#define INDICATOR_LED_DEFAULT_MODE ((3<<2) + 1)
 
 
 #define RAMP_LENGTH 150
@@ -46,7 +37,7 @@
 // ceiling is level 120/150
 #define RAMP_SMOOTH_CEIL 120
 
-// 10, 28, 46, 65, 83, 101, 120  (83 is highest regulated)
+// 10, 28, 46, 65, [83], 101, 120
 #define RAMP_DISCRETE_FLOOR 10
 #define RAMP_DISCRETE_CEIL 120
 #define RAMP_DISCRETE_STEPS 7
@@ -54,9 +45,6 @@
 // ~25 lm to ~300 lm
 #define MUGGLE_FLOOR 30
 #define MUGGLE_CEILING MAX_1x7135
-// ~50 lm to ~500 lm
-//#define MUGGLE_FLOOR 40
-//#define MUGGLE_CEILING 90
 
 // regulate down faster when the FET is active, slower otherwise
 #define THERM_FASTER_LEVEL 135  // throttle back faster when high
