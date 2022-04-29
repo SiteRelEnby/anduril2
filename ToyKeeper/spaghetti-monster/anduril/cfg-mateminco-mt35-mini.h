@@ -49,3 +49,10 @@
 
 // Allow 3C in Simple UI for switching between smooth and stepped ramping
 #define USE_SIMPLE_UI_RAMPING_TOGGLE
+
+// too big, remove stuff to make room
+#undef USE_SOS_MODE
+//#undef USE_RAMP_AFTER_MOON_CONFIG
+//#undef USE_RAMP_SPEED_CONFIG
+//#undef USE_VOLTAGE_CORRECTION
+//#undef USE_2C_STYLE_CONFIG
