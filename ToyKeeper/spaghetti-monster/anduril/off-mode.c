@@ -70,9 +70,7 @@ uint8_t off_state(Event event, uint16_t arg) {
         }
         #endif
         #ifdef USE_INDICATOR_LED
-        if ((indicator_led_mode & 0b00000011) == 0b00000011) {
-            indicator_blink(arg);
-        }
+        indicator_led_update(arg);
         #elif defined(USE_AUX_RGB_LEDS)
         rgb_led_update(rgb_led_off_mode, arg);
         #endif
