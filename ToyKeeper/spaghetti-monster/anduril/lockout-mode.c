@@ -78,7 +78,7 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     #if defined(TICK_DURING_STANDBY) && (defined(USE_INDICATOR_LED) || defined(USE_AUX_RGB_LEDS))
     else if (event == EV_sleep_tick) {
         #if defined(USE_INDICATOR_LED)
-        indicator_led_update(arg);
+        indicator_led_update(indicator_led_mode >> 2, arg);
         #elif defined(USE_AUX_RGB_LEDS)
         rgb_led_update(rgb_led_lockout_mode, arg);
         #endif

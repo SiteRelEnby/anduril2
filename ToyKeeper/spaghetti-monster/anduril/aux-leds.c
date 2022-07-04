@@ -24,12 +24,12 @@
 
 
 #if defined(USE_INDICATOR_LED) && defined(TICK_DURING_STANDBY)
-void indicator_led_update(uint8_t arg) {
+void indicator_led_update(uint8_t mode, uint8_t arg) {
     // turn off aux LEDs when battery is empty
     if (voltage < VOLTAGE_LOW) { indicator_led(0); return; }
     
     // beacon-like mode for the indicator LED
-    if ((indicator_led_mode & 0b00001100) == 0b00001100) {
+    if ((mode & 0b00000011) == 0b00000011) {
         #ifdef USE_OLD_BLINKING_INDICATOR
 
         // basic blink, 1/8th duty cycle
