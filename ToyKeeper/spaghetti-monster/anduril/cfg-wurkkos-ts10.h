@@ -64,6 +64,9 @@
 // Allow 3C in Simple UI for switching between smooth and stepped ramping
 #define USE_SIMPLE_UI_RAMPING_TOGGLE
 
+// allow Aux Config and Strobe Modes in Simple UI
+#define USE_EXTENDED_SIMPLE_UI
+
 // enable factory reset on 13H without loosening tailcap
 #define USE_SOFT_FACTORY_RESET
 
