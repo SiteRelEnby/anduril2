@@ -149,7 +149,17 @@ uint8_t steady_state(Event event, uint16_t arg) {
         return MISCHIEF_MANAGED;
     }
 
-    #ifdef USE_LOCKOUT_MODE
+    #if defined(USE_OUTPUT_MUX) // output channel switching - override the 4C function
+    else if (event == EV_4clicks) {
+        output_mux++;
+        if(output_mux >= NUM_OUTPUT_MUXES) {
+            output_mux = 0;
+        }
+        set_level(actual_level); // we don't need to change the level, but needed for output muxing
+        save_config();
+        return MISCHIEF_MANAGED;
+    }
+    #elif defined(USE_LOCKOUT_MODE)
     // 4 clicks: shortcut to lockout mode
     else if (event == EV_4clicks) {
         set_level(0);

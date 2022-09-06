@@ -95,6 +95,9 @@ void load_config() {
         #ifdef USE_AUTOLOCK
         autolock_time = eeprom[autolock_time_e];
         #endif
+        #ifdef USE_OUTPUT_MUX
+        output_mux = eeprom[output_mux_e];
+        #endif
     }
     #ifdef START_AT_MEMORIZED_LEVEL
     if (load_eeprom_wl()) {
@@ -173,6 +176,9 @@ void save_config() {
     #endif
     #ifdef USE_AUTOLOCK
     eeprom[autolock_time_e] = autolock_time;
+    #endif
+    #ifdef USE_OUTPUT_MUX
+    eeprom[output_mux_e] = output_mux;
     #endif
 
     save_eeprom();

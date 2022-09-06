@@ -239,5 +239,14 @@ void globals_config_save(uint8_t step, uint8_t value);
 uint8_t globals_config_state(Event event, uint16_t arg);
 #endif
 
+#ifdef USE_OUTPUT_MUX
+#ifndef DEFAULT_OUTPUT_MUX
+#define DEFAULT_OUTPUT_MUX 0
+#endif 
+uint8_t output_mux = DEFAULT_OUTPUT_MUX;
+#ifndef NUM_OUTPUT_MUXES
+#define NUM_OUTPUT_MUXES 2
+#endif
+#endif // USE_OUTPUT_MUX
 
 #endif
