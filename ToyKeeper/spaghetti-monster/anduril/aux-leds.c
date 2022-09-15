@@ -91,7 +91,11 @@ void rgb_led_update(uint8_t mode, uint8_t arg) {
     // turn off aux LEDs when battery is empty
     // (but if voltage==0, that means we just booted and don't know yet)
     uint8_t volts = voltage;  // save a few bytes by caching volatile value
+    #ifdef DUAL_VOLTAGE_FLOOR
+    if ((volts) && (((voltage < VOLTAGE_LOW) && (voltage > DUAL_VOLTAGE_FLOOR)) || (voltage < DUAL_VOLTAGE_LOW_LOW))) {
+    #else
     if ((volts) && (volts < VOLTAGE_LOW)) {
+    #endif
         rgb_led_set(0);
         #ifdef USE_BUTTON_LED
         button_led_set(0);
