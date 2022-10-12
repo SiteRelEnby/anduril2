@@ -78,7 +78,7 @@ inline void hwdef_setup() {
     _PROTECTED_WRITE( CLKCTRL.MCLKCTRLB, CLKCTRL_PDIV_2X_gc | CLKCTRL_PEN_bm );
 
     //VPORTA.DIR = ...;
-    VPORTB.DIR = PIN0_bm | PIN1_bm | PIN5_bm;  // Outputs: Aux LED and PWMs
+    VPORTB.DIR = PIN0_bm | PIN1_bm | PIN2_bm | PIN5_bm;  // Outputs: Aux LED and PWMs
     //VPORTC.DIR = ...;
 
     // enable pullups on the unused pins to reduce power
