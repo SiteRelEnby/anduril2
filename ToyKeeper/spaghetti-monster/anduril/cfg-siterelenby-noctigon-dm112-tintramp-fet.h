@@ -55,7 +55,6 @@
 //#define RAMP_DISCRETE_STEPS 7
 #define RAMP_DISCRETE_STEPS 10
 
-// safe limit highest regulated power (no FET or turbo)
 #undef SIMPLE_UI_FLOOR
 #define SIMPLE_UI_FLOOR 10
 #undef SIMPLE_UI_CEIL
@@ -77,7 +76,7 @@
 #undef PARTY_STROBE_ONTIME
 
 #undef RGB_LED_OFF_DEFAULT //Hanklight default: 0x18
-#undef RGB_LED_LOCKOUT_DEFAULT 
+#undef RGB_LED_LOCKOUT_DEFAULT
 
 //setup aux properly
 //0x00 = off    Low     High    Blinking
