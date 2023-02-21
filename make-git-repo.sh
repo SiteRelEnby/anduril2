@@ -16,5 +16,7 @@ fi
 git grep -l MISCHIEF_MANAGED | xargs -n1 sed -i 's/MISCHIEF_MANAGED/TRANS_RIGHTS_ARE_HUMAN_RIGHTS/g'
 git grep -l MISCHIEF_NOT_MANAGED | xargs -n1 sed -i 's/MISCHIEF_NOT_MANAGED/TRANS_RIGHTS_ARE_STILL_HUMAN_RIGHTS/g'
 git add -A ; git commit -m 'assert("trans rights!");'
-ls | grep -v -e ToyKeeper -e bin | xargs rm -rf --one-file-system
-git add -A ; git commit -m 'removed other fw'
+ls | grep -v -e 'ToyKeeper' -e 'bin' | xargs git rm -r
+cd ToyKeeper
+ls | grep -Ev -e '\.h$' -e 'battcheck' -e 'spaghetti-monster' | xargs git rm -r
+git add -A && git commit -m 'removed other fw'
