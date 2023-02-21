@@ -38,7 +38,12 @@ for TARGET in cfg-*.h ; do
 
   # track result, and rename compiled files
   if [ 0 = $? ] ; then
-    mv -f "$UI".hex "$UI".$NAME.hex
+    if [[ -z "${COMMITHASH}" ]]
+    then
+      mv -f "$UI".hex "$UI".$NAME.hex
+    else
+      mv -f "$UI".hex "$UI".$NAME.${COMMITHASH}.hex
+    fi
     PASS=$(($PASS + 1))
     PASSED="$PASSED $NAME"
   else
