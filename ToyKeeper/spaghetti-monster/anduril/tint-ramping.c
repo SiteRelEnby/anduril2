@@ -1,3 +1,4 @@
+
 /*
  * tint-ramping.c: Tint ramping functions for Anduril.
  *
@@ -32,12 +33,51 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
     // in addition to changing state...  so ignore any tint-ramp events which
     // don't look like they were meant to be here
     static uint8_t active = 0;
+    static uint8_t momentary_opposite_active = 0;
+    static uint8_t prev_level = 0;
+    static uint8_t channel_switch = 0;
 
     // click, click, hold: change the tint
-    if (event == EV_click3_hold) {
+    if ( (event == EV_click3_hold) || (event == EV_click8_hold )) {
         ///// tint-toggle mode
         // toggle once on first frame; ignore other frames
-        if (tint_style) {
+        if (tint_style){ //this would normally mean it's in instant channel switching mode, but see the FIXME below
+            if (event == EV_click3_hold) {
+                //3H: use channel switching as configured
+                #ifdef USE_OPPOSITE_TINTRAMP_KLUDGE //FIXME: this is an ugly hack. see siterelenby-dm112 .h file
+                channel_switch = 0;
+                #else
+                channel_switch = 1;
+                #endif
+            }
+            else {
+                //8H: Do the opposite.
+                #ifdef USE_OPPOSITE_TINTRAMP_KLUDGE //FIXME: this is an ugly hack. see siterelenby-dm112 .h file
+                channel_switch = 1;
+                #else
+                channel_switch = 0;
+                #endif
+            }
+        }
+        else { //normally in channel ramping mode, see FIXME
+            if (event == EV_click3_hold) {
+                //3H: use channel ramping as configured
+                #ifdef USE_OPPOSITE_TINTRAMP_KLUDGE //FIXME: this is an ugly hack. see siterelenby-dm112 .h file
+                channel_switch = 1;
+                #else
+                channel_switch = 0;
+                #endif
+            }
+            else {
+                //8H: Do the opposite.
+                #ifdef USE_OPPOSITE_TINTRAMP_KLUDGE //FIXME: this is an ugly hack. see siterelenby-dm112 .h file
+                channel_switch = 0;
+                #else
+                channel_switch = 1;
+                #endif
+            }
+        }
+        if (channel_switch == 1) {
             // only respond on first frame
             if (arg) return EVENT_NOT_HANDLED;
 
@@ -83,7 +123,7 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
     }
 
     // click, click, hold, release: reverse direction for next ramp
-    else if (event == EV_click3_hold_release) {
+    else if ( (event == EV_click3_hold_release) || (event == EV_click8_hold_release) ) {
         active = 0;  // ignore next hold if it wasn't meant for us
         // reverse
         tint_ramp_direction = -tint_ramp_direction;
@@ -96,6 +136,82 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
         set_level(actual_level);
         return EVENT_HANDLED;
     }
+
+    //4H: momentary opposite channel
+    else if (event == EV_click4_hold) {
+        //if (! arg) {  // first frame only, to allow thermal regulation to work
+            if (momentary_opposite_active == 0) {
+                    //invert tint ramp
+                    momentary_opposite_active = 1;
+                    tint = tint ^ 0xFF;
+                    set_level(actual_level);
+                    return EVENT_HANDLED;
+            }
+        //}
+        else {
+            return EVENT_HANDLED;
+        }
+            //if (tint >= 129) { tint = 1; }
+            //else { tint = 254; }
+    }
+    //return to first channel on release
+    else if (event == EV_click4_hold_release) {
+        tint = tint ^ 0xFF;
+        momentary_opposite_active = 0;
+        //if (tint >= 129) { tint = 1; }
+        //else { tint = 254; }
+        //set_level_and_therm_target(memorized_level);
+        set_level(actual_level);
+        return EVENT_HANDLED;
+    }
+
+    //5C: Channel 1 turbo shortcut // TODO: make this do something sensible on single channel lights. config option to swap channels around?
+    else if (event == EV_5clicks) {
+        tint = 254;
+        set_level_and_therm_target(130);
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    //5H: Momentary throw channel (on DM1.12) turbo
+    else if (event == EV_click5_hold) {
+        if (!arg) {
+            prev_tint = tint;
+            prev_level = actual_level;
+            tint = 254;
+            set_level_and_therm_target(130);
+        }
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    else if (event == EV_click5_hold_release){
+        //go back to ramp mode
+        tint = prev_tint;
+        set_level_and_therm_target(prev_level);
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+
+    //6C: Flood channel turbo shortcut
+    else if (event == EV_6clicks) {
+        tint = 1; //max flood on my dm1.12
+        set_level_and_therm_target(130);
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    //6H: Momentary flood channel (on DM1.12) turbo
+    else if (event == EV_click6_hold) {
+        if (!arg){
+            prev_tint = tint;
+            prev_level = actual_level;
+            tint = 1;
+            set_level_and_therm_target(130);
+        }
+        return EVENT_HANDLED;
+    }
+    else if (event == EV_click6_hold_release){
+        //go back to ramp mode
+        tint = prev_tint;
+        set_level_and_therm_target(prev_level);
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        //return EVENT_HANDLED;
+    }
+
 
     return EVENT_NOT_HANDLED;
 }

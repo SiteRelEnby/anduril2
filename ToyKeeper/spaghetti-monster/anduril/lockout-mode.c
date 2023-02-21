@@ -23,14 +23,50 @@
 #include "lockout-mode.h"
 
 uint8_t lockout_state(Event event, uint16_t arg) {
+    //var for momentary channel-specific turbo
+    static uint8_t prev_tint;
+
     #ifdef USE_MOON_DURING_LOCKOUT_MODE
     // momentary(ish) moon mode during lockout
     // button is being held
     #ifdef USE_AUX_RGB_LEDS
     // don't turn on during RGB aux LED configuration
-    if (event == EV_click7_hold) { set_level(0); } else
+    if (event == EV_click8_hold) { set_level(0); } else
     #endif
-    if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
+
+    //momentary turbo modes need to go here to not get caught by the below
+    //5H: Momentary ch1 turbo
+    if (event == EV_click5_hold) {
+        if (!arg){
+           prev_tint = tint;
+           tint = 254;
+           set_level_and_therm_target(130);
+           return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+         }
+    }
+    else if (event == EV_click5_hold_release){
+        //go back to lock mode
+        tint = prev_tint;
+        set_level(0);
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    //6H: Momentary ch2 turbo
+    else if (event == EV_click6_hold) {
+        if (!arg){
+            prev_tint = tint;
+            tint = 1;
+            set_level_and_therm_target(130);
+            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        }
+    }
+    else if (event == EV_click6_hold_release){
+        //go back to lock mode
+        tint = prev_tint;
+        set_level(0);
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+
+    else if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
         // hold: lowest floor
         // click, hold: highest floor (or manual mem level)
         uint8_t lvl = ramp_floors[0];
@@ -116,10 +152,10 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 5 clicks: exit and turn on at ceiling level
-    else if (event == EV_5clicks) {
-        set_state(steady_state, MAX_LEVEL);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    }
+    //else if (event == EV_5clicks) {
+    //    set_state(steady_state, MAX_LEVEL);
+    //    return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    //}
 
     ////////// Every action below here is blocked in the simple UI //////////
     #ifdef USE_SIMPLE_UI
@@ -136,9 +172,29 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     }
     #endif
 
+    //5C: Channel 1 turbo shortcut // TODO: make this do something sensible on single channel lights. config option to swap channels around? CH1 should have the FET on most lights? which channel is which? logically 254 should be 2, is flood on W1/519A DM1.12
+    else if (event == EV_5clicks) {
+        tint = 254;
+        set_state(steady_state, 130);
+        set_level_and_therm_target(130);
+        // reset button sequence to avoid activating anything in ramp mode
+        //current_event = 0;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    //6C: Flood channel turbo shortcut // TODO: make this do something sensible on single channel lights. config option to swap channels around? CH1 should have the FET on most lights? which channel is which? logically 254 should be 2
+    else if (event == EV_6clicks) {
+        tint = 1;
+        set_state(steady_state, 130);
+        set_level_and_therm_target(130);
+        // reset button sequence to avoid activating anything in ramp mode
+        //current_event = 0;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+
     #if defined(USE_INDICATOR_LED)
     // 7 clicks: rotate through indicator LED modes (lockout mode)
-    else if (event == EV_7clicks) {
+    //moved to 8C
+    else if (event == EV_8clicks) {
         #if defined(USE_INDICATOR_LED)
             uint8_t mode = indicator_led_mode >> 2;
             #ifdef TICK_DURING_STANDBY
@@ -157,9 +213,11 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         save_config();
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
+
     #elif defined(USE_AUX_RGB_LEDS)
     // 7 clicks: change RGB aux LED pattern
-    else if (event == EV_7clicks) {
+    //moved to 8C
+    else if (event == EV_8clicks) {
         uint8_t mode = (rgb_led_lockout_mode >> 4) + 1;
         mode = mode % RGB_LED_NUM_PATTERNS;
         rgb_led_lockout_mode = (mode << 4) | (rgb_led_lockout_mode & 0x0f);
@@ -169,7 +227,8 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 7H: change RGB aux LED color
-    else if (event == EV_click7_hold) {
+    //moved to 8H
+    else if (event == EV_click8_hold) {
         setting_rgb_mode_now = 1;
         if (0 == (arg & 0x3f)) {
             uint8_t mode = (rgb_led_lockout_mode & 0x0f) + 1;
@@ -181,7 +240,8 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 7H, release: save new color
-    else if (event == EV_click7_hold_release) {
+    //moved to 8H
+    else if (event == EV_click8_hold_release) {
         setting_rgb_mode_now = 0;
         save_config();
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;

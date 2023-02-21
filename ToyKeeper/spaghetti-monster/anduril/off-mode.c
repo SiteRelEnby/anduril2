@@ -27,7 +27,7 @@
 #endif
 
 uint8_t off_state(Event event, uint16_t arg) {
-
+    static uint8_t prev_tint;
     // turn emitter off when entering state
     if (event == EV_enter_state) {
         set_level(0);
@@ -265,7 +265,8 @@ uint8_t off_state(Event event, uint16_t arg) {
     #endif
     #ifdef USE_MOMENTARY_MODE
     // 5 clicks: momentary mode
-    else if (event == EV_5clicks) {
+    //moved to 11C
+    else if (event == EV_11clicks) {
         blink_once();
         set_state(momentary_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
@@ -291,7 +292,8 @@ uint8_t off_state(Event event, uint16_t arg) {
     }
     #elif defined(USE_AUX_RGB_LEDS)
     // 7 clicks: change RGB aux LED pattern
-    else if (event == EV_7clicks) {
+    //moved to 8C
+    else if (event == EV_8clicks) {
         uint8_t mode = (rgb_led_off_mode >> 4) + 1;
         mode = mode % RGB_LED_NUM_PATTERNS;
         rgb_led_off_mode = (mode << 4) | (rgb_led_off_mode & 0x0f);
@@ -301,7 +303,8 @@ uint8_t off_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 7 clicks (hold last): change RGB aux LED color
-    else if (event == EV_click7_hold) {
+    //moved to 8H
+    else if (event == EV_click8_hold) {
         setting_rgb_mode_now = 1;
         if (0 == (arg & 0x3f)) {
             uint8_t mode = (rgb_led_off_mode & 0x0f) + 1;
@@ -312,12 +315,55 @@ uint8_t off_state(Event event, uint16_t arg) {
         rgb_led_update(rgb_led_off_mode, arg);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-    else if (event == EV_click7_hold_release) {
+    else if (event == EV_click8_hold_release) {
         setting_rgb_mode_now = 0;
         save_config();
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif  // end 7 clicks
+
+    //5C: Channel 1 turbo shortcut // TODO: make this do something sensible on single channel lights. config option to swap channels around? CH1 should have the FET on most lights? which channel is which? logically 254 should be 2
+    else if (event == EV_5clicks) {
+        tint = 254;
+        set_level_and_therm_target(130);
+        set_state(steady_state, 130);
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    //5H: Momentary throw channel (on DM1.12) turbo
+    else if (event == EV_click5_hold) {
+        prev_tint = tint;
+        tint = 254;
+        set_level_and_therm_target(130);
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    else if (event == EV_click5_hold_release){
+        //go back to off mode
+        set_level(0);
+        tint = prev_tint;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+
+    //6C: Flood channel turbo shortcut
+    else if (event == EV_6clicks) {
+        tint = 1;
+        set_level_and_therm_target(130);
+        set_state(steady_state, 130);
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    //6H: Momentary flood channel (on DM1.12) turbo
+    else if (event == EV_click6_hold) {
+        prev_tint = tint;
+        tint = 1;
+        set_level_and_therm_target(130);
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    else if (event == EV_click6_hold_release){
+        //go back to off mode
+        set_level(0);
+        tint = prev_tint;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+
 
     #ifdef USE_GLOBALS_CONFIG
     // 9 clicks, but hold last click: configure misc global settings
@@ -326,6 +372,7 @@ uint8_t off_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
+
     return EVENT_NOT_HANDLED;
 }
 
