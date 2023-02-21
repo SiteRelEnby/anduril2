@@ -44,7 +44,8 @@ uint8_t sunset_timer_state(Event event, uint16_t arg) {
         }
     }
     // 5H: add 5m to timer, per second, until released
-    else if (event == EV_click5_hold) {
+    //moved to 12H
+    else if (event == EV_click12_hold) {
         if (0 == (arg % TICKS_PER_SECOND)) {
             if (sunset_timer < (255 - SUNSET_TIMER_UNIT)) {
                 // add a few minutes to the timer
