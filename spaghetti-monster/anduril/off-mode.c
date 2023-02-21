@@ -239,7 +239,7 @@ uint8_t off_state(Event event, uint16_t arg) {
     }
 
     // Extended Simple UI adds Aux Config and Strobe Modes, so do this code later
-    #ifndef USE_EXTENDED_SIMPLE_UI  
+    #ifndef USE_EXTENDED_SIMPLE_UI
     ////////// Every action below here is blocked in the (non-Extended) Simple UI //////////
     if (simple_ui_active) {
         return EVENT_NOT_HANDLED;

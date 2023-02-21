@@ -180,14 +180,14 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
-    
+
     #if defined(USE_EXTENDED_SIMPLE_UI) && defined(USE_SIMPLE_UI)
     ////////// Every action below here is blocked in the Extended Simple UI //////////
     if (simple_ui_active) {
         return EVENT_NOT_HANDLED;
     }
     #endif // USE_EXTENDED_SIMPLE_UI
-    
+
     #ifdef USE_AUTOLOCK
     // 10H: configure the autolock option
     else if (event == EV_click10_hold) {
