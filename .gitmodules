@@ -1,0 +1,3 @@
+[submodule "anduril-buildenv-docker"]
+	path = anduril-buildenv-docker
+	url = https://github.com/SiteRelEnby/anduril-buildenv-docker
