@@ -2,9 +2,17 @@
 
 Anduril2 originally by [ToyKeeper](https://code.launchpad.net/~toykeeper/flashlight-firmware/anduril2), mods by @SiteRelEnby.
 
-Also includes a script (`make-git-repo.sh`) to create a clean version of the upstream anduril2 repo, and a few more useful build utilities. Dependencies are git, bzr, and normal shell utilities, and [anduril-buildenv-docker](https://github.com/SiteRelEnby/anduril-buildenv-docker) included as a submodule. Note that to build the builder you will need buildkit as well as base Docker - I will probably put it on Docker Hub at some point too if I remember to.
+# Other stuff
+## Git repo script
+`make-git-repo.sh`: script to create a clean version of the upstream anduril2 repo (for merging purposes or your own hacking). Dependencies are git, bzr, and normal shell utilities
 
-# Current upstream release based on
+## Build utilities
+A fork of [anduril-buildenv-docker](https://github.com/SiteRelEnby/anduril-buildenv-docker) with a bug fixed. 
+Included as a submodule, to use it, run `git submodule update --init`. Note that to build the builder you will need a working [buildkit](https://docs.docker.com/build/buildkit) as well as base Docker - I will probably put it on Docker Hub at some point too if I remember to.
+
+Example build scripts and header files for my lights including a few extra default settings vs the default model header files.
+
+# Current upstream version this mod is based on
 
 10/02/2023
 
@@ -25,9 +33,9 @@ Also includes a script (`make-git-repo.sh`) to create a clean version of the ups
   * Momentary mode moved to 12C (may move again in the future)
   * Sunset timer moved to 12H
 * Use a less bzr/bizarre VCS
-* Remove reference to bad childrens' fantasy novels by a terrible person. Please read another book.
+* Remove reference to bad childrens' fantasy novels by a terrible person. Please [read another book](https://knowyourmeme.com/memes/read-another-book).
 
-## UI reference
+# UI reference
 Right now this fork has only been tested by me on dual channel lights (D4S and DM1.12). Single channel support may be coming soon; at the moment some behaviour may be undefined and there isn't a compelling reason to run this fork on single channel lights (yet...).
 
 |Input|Dual channel modded|Dual channel stock|
@@ -92,7 +100,7 @@ Right now this fork has only been tested by me on dual channel lights (D4S and D
 ## Roadmap
 
 * Single channel compatibility
-* Option (possibly in light-specific header file) to change which channel is considered channel 1 (as it stands the same value ended up bring right for both of my lights but this obviously depends on the specific light)
+* Option (possibly in light-specific header file) to change which channel is considered channel 1 (as it stands the same value ended up beeee right for both of my lights but this obviously depends on the specific light)
 * New aux modes
 * New, possibly-optional mode shortcuts
 * Move momentary mode somewhere else and make it harder to accidentally activate
