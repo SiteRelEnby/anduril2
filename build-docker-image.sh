@@ -6,7 +6,7 @@ init_buildx(){
 	docker run --privileged --rm tonistiigi/binfmt --install all
 	docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 	docker buildx rm builder
-	docker buildx create --name builder --driver docker-container --use
+	docker buildx create --name builder --driver docker-container --use --driver-opt env.BUILDKIT_STEP_LOG_MAX_SIZE=10485760 #10485760 = 10MiB
 	docker buildx inspect --bootstrap
 }
 set -e
