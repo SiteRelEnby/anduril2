@@ -4,6 +4,10 @@ Anduril2 originally by [ToyKeeper](https://code.launchpad.net/~toykeeper/flashli
 
 Also includes a script (`make-git-repo.sh`) to create a clean version of the upstream anduril2 repo, and a few more useful build utilities. Dependencies are git, bzr, and normal shell utilities, and [anduril-buildenv-docker](https://github.com/SiteRelEnby/anduril-buildenv-docker) included as a submodule. Note that to build the builder you will need buildkit as well as base Docker - I will probably put it on Docker Hub at some point too if I remember to.
 
+# Current upstream release based on
+
+10/02/2023
+
 # Changes from upstream
 
 * 2C now always goes to level 130 (single channel on maximum); 3C goes to 200%
