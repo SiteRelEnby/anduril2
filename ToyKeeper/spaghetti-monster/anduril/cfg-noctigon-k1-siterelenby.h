@@ -27,6 +27,9 @@
 #define RGB_LED_OFF_DEFAULT 0x28 //high, rainbow
 #define RGB_LED_LOCKOUT_DEFAULT 0x18 //low, rainbow
 
+//TODO: this seems to be important for setting aux mode, still broken on custom build. not in default config. added but aux mode change still not working properly.
+#define TICK_DURING_STANDBY
+
 // ../../bin/level_calc.py cube 1 150 7135 1 4 1300
 // (with max_pwm set to 1023)
 // (level 0 flickers and isn't relevant on a thrower, so it's omitted)
