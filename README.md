@@ -3,14 +3,19 @@
 Anduril2 originally by [ToyKeeper](https://code.launchpad.net/~toykeeper/flashlight-firmware/anduril2), mods by @SiteRelEnby.
 
 # Other stuff
-## Git repo script
-`make-git-repo.sh`: script to create a clean version of the upstream anduril2 repo (for merging purposes or your own hacking). Dependencies are git, bzr, and normal shell utilities
+## Git repo scripts
 
-## Build utilities
-A fork of [anduril-buildenv-docker](https://github.com/SiteRelEnby/anduril-buildenv-docker) with a bug fixed. 
-Included as a submodule, to use it, run `git submodule update --init`. Note that to build the builder you will need a working [buildkit](https://docs.docker.com/build/buildkit) as well as base Docker - I will probably put it on Docker Hub at some point too if I remember to.
+* `make-git-repo.sh`: script to create a clean version of the upstream anduril2 repo (for merging purposes or your own hacking). Dependencies are git, bzr, and normal shell utilities
+* `update-upstream-branch.sh`: script to create a branch with a clean version of the upstream code. Mostly for my own use in building and modding but included in case they prove useful to someone else. Takes environment vars (TODO: args as well):
+  * `NO_PUSH`: set to `1` will not push the created branch.
+  * `UPSTREAM_BRANCH`: name of the branch to create for upstream code. Defaults to `upstream` if unset.
+  * `REMOTE`: name of the remote to push to; if not specified, defaults to `origin`.
 
-Example build scripts and header files for my lights including a few extra default settings vs the default model header files.
+# Build utilities
+A fork of [anduril-buildenv-docker](https://github.com/SiteRelEnby/anduril-buildenv-docker) with a bug fixed.
+Included as a submodule, to use it, run `git submodule update --init`. Note that to build the builder you will need a working [buildkit](https://docs.docker.com/build/buildkit) as well as base Docker - I will probably put it on Docker Hub at some point too if I remember to. Feel free to remind me to if you really need it built for you.
+
+Example build scripts and header files for my lights (`build-siterelenby-*` and `./ToyKeeper/spaghetti-monster/anduril/cfg-siterelenby*.h`) including a few extra default settings vs the default model header files.
 
 # Current upstream version this mod is based on
 
@@ -99,8 +104,9 @@ Right now this fork has only been tested by me on dual channel lights (D4S and D
 
 ## Roadmap
 
-* Single channel compatibility
-* Option (possibly in light-specific header file) to change which channel is considered channel 1 (as it stands the same value ended up beeee right for both of my lights but this obviously depends on the specific light)
+* Single channel compatibility/reason-for-this-mod-to-exist
+* Option (possibly in light-specific header file) to change which channel is considered channel 1 (as it stands the same value ended up being right for both of my lights but this obviously depends on the specific light)
+* Possibly move momentary opposite channel to a higher button combo and the turbo shortcuts down (after some use of this fw, have discovered I use those more than momentary opposite at current ramp level)
 * New aux modes
 * New, possibly-optional mode shortcuts
 * Move momentary mode somewhere else and make it harder to accidentally activate
