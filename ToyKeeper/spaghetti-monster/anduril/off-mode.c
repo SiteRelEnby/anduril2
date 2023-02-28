@@ -274,7 +274,8 @@ uint8_t off_state(Event event, uint16_t arg) {
     #endif
     #ifdef USE_INDICATOR_LED
     // 7 clicks: change indicator LED mode
-    else if (event == EV_7clicks) {
+    //moved to 8C
+    else if (event == EV_8clicks) {
         uint8_t mode = (indicator_led_mode & 3) + 1;
         #ifdef TICK_DURING_STANDBY
         mode = mode & 3;
