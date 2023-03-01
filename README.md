@@ -40,9 +40,10 @@ The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 1
     * 6H in candle mode to change candle style
     * Additional strobe mode: Fireworks mode (`USE_FIREWORK_MODE`), after lightning mode
     * On tint ramping lights, two additional strobe modes to switch and ramp between channels (after tactical strobe mode)
+  * Green LED on power-on instead of blinking main LEDs
   * Temperature aux LED mode (after voltage in the cycle)
 * Build-time configuration for some additional stuff (in its own section)
-  * Using aux LEDs to display the battery voltage while the light is on. This is by default only enabled for lights with an RGB button but no RGB aux (e.g. K1), but can be enabled for any light by setting `USE_AUX_RGB_LEDS_WHILE_ON`. For lights with forward facing aux, added `RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF` and `RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW` to customise when the voltage is displayed, so if this causes a problem it can be disabled at low ramp levels.
+  * Using aux LEDs to display the battery voltage while the light is on. This is by default only enabled for lights with an RGB button but no RGB aux (e.g. K1), but can be enabled for any light by setting `USE_AUX_RGB_LEDS_WHILE_ON` in the relevant header file. For lights with forward facing aux, added `RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF` and `RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW` to customise when the voltage is displayed, so if this causes a problem it can be disabled at low ramp levels. These also come in useful as a way to mark a specific level in the ramp with a visual cue (e.g. having the LED go to high at your thermally sustainable level).
 * Use a less bzr/bizarre VCS
 * Remove reference to bad childrens' fantasy novels by a terrible person. Please [read another book](https://knowyourmeme.com/memes/read-another-book).
 
