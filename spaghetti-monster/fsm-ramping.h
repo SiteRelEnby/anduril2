@@ -25,7 +25,7 @@
 
 // actual_level: last ramp level set by set_level()
 uint8_t actual_level = 0;
-#ifdef USE_AUX_RGB_LEDS
+#if defined(USE_AUX_RGB_LEDS) || defined(USE_INDICATOR_LED)
 // if true (default) reset AUX LED (off) when we set_level(),
 //  and button LED will be set according to AUX LED state
 // when false, AUX LED won't get set when set_level() is called or
@@ -95,6 +95,14 @@ PROGMEM const PWM_DATATYPE pwm4_levels[] = { PWM4_LEVELS };
 // (different ceiling / frequency at each ramp level)
 #ifdef USE_DYN_PWM
 PROGMEM const PWM_DATATYPE pwm_tops[] = { PWM_TOPS };
+#ifdef PWM1_LEVELS_STROBE
+PROGMEM const PWM_DATATYPE pwm1_levels_strobe[] = { PWM1_LEVELS_STROBE };
+#endif
+#ifdef PWM2_LEVELS_STROBE
+PROGMEM const PWM_DATATYPE pwm2_levels_strobe[] = { PWM2_LEVELS_STROBE };
+#endif
+// a temporary flag used in candle and other strobe modes to disable DYN PWM
+uint8_t use_static_pwm = 0;
 #endif
 
 #ifdef USE_JUMP_START

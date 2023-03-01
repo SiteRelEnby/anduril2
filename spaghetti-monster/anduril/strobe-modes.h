@@ -21,6 +21,7 @@
 #define STROBE_MODES_H
 
 // internal numbering for strobe modes
+// order: candle->lightning storm->firework->bike flasher->party->tactical
 #ifdef USE_STROBE_STATE
 typedef enum {
     #ifdef USE_PARTY_STROBE_MODE
@@ -29,11 +30,18 @@ typedef enum {
     #ifdef USE_TACTICAL_STROBE_MODE
     tactical_strobe_e,
     #endif
-    #ifdef USE_LIGHTNING_MODE
-    lightning_storm_e,
+    #ifdef USE_TINT_RAMPING
+    tint_alternating_strobe_e,
+    tint_smooth_ramp_e,
     #endif
     #ifdef USE_CANDLE_MODE
     candle_mode_e,
+    #endif
+    #ifdef USE_LIGHTNING_MODE
+    lightning_storm_e,
+    #endif
+    #ifdef USE_FIREWORK_MODE
+    firework_mode_e,
     #endif
     #ifdef USE_BIKE_FLASHER_MODE
     bike_flasher_e,
@@ -82,14 +90,39 @@ inline void party_tactical_strobe_mode_iter(uint8_t st);
 #endif
 
 #ifdef USE_LIGHTNING_MODE
+#ifndef LIGHTNING_BUSY_FACTOR
+#define LIGHTNING_BUSY_FACTOR 14 // max 16384ms (max ~16 sec interval)
+#endif
+uint8_t lightning_busy_factor = LIGHTNING_BUSY_FACTOR;
+#define LIGHTNING_BUSY_FACTOR_MAX 16 // max 65536ms (max ~65 sec interval)
+#define LIGHTNING_BUSY_FACTOR_MIN 12 // max 4096ms (max ~4 sec interval)
 inline void lightning_storm_iter();
 #endif
 
 // bike mode config options
 #ifdef USE_BIKE_FLASHER_MODE
 #define MAX_BIKING_LEVEL 120  // should be 127 or less
-uint8_t bike_flasher_brightness = MAX_1x7135;
+uint8_t bike_flasher_brightness = DEFAULT_LEVEL;
 inline void bike_flasher_iter();
+#endif
+
+#ifdef USE_FIREWORK_MODE
+#define MIN_FIREWORK_LEVEL DEFAULT_LEVEL // max is always MAX_LEVEL
+uint8_t firework_brightness = RAMP_SMOOTH_CEIL;
+inline void firework_iter();
+#endif
+
+#ifdef USE_TINT_RAMPING
+uint8_t tint_alt_brightness = DEFAULT_LEVEL;
+uint8_t tint_alt_interval = 2; // unit is 500ms, so 2 == one second
+#define TINT_ALT_MAX_INTERVAL 20 // 10s
+#define TINT_ALT_MIN_INTERVAL 1  // 0.5s
+inline void tint_alt_iter();
+uint8_t tint_smooth_brightness = DEFAULT_LEVEL;
+uint8_t tint_smooth_pause = 3; // unit is ms. Change tint 1 step after this pause
+#define TINT_SMOOTH_MAX_PAUSE 30
+#define TINT_SMOOTH_MIN_PAUSE 1
+inline void tint_smooth_ramp_iter();
 #endif
 
 #ifdef USE_CANDLE_MODE
