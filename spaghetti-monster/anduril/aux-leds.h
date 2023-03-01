@@ -21,12 +21,30 @@
 #define AUX_LEDS_H
 
 #if defined(USE_INDICATOR_LED) && defined(TICK_DURING_STANDBY)
-void indicator_led_update(uint8_t mode, uint8_t tick);
+void indicator_led_update(uint8_t mode, uint8_t arg);
 #endif
 #if defined(USE_AUX_RGB_LEDS) && defined(TICK_DURING_STANDBY)
 uint8_t setting_rgb_mode_now = 0;
 void rgb_led_update(uint8_t mode, uint8_t arg);
 void rgb_led_voltage_readout(uint8_t bright);
+
+#define RGB_RED 0
+#define RGB_YELLOW 1
+#define RGB_GREEN 2
+#define RGB_CYAN 3
+#define RGB_BLUE 4
+#define RGB_PURPLE 5
+#define RGB_WHITE 6
+#define RGB_DISCO 7
+#define RGB_RAINBOW 8
+#define RGB_VOLTAGE 9
+#define RGB_TEMPERATURE 10
+#define RGB_OFF (0<<4)
+#define RGB_LOW (1<<4)
+#define RGB_HIGH (2<<4)
+#define RGB_BLINK (3<<4)
+#define RGB_BREATH (4<<4)
+
 /*
  * 0: R
  * 1: RG
@@ -35,8 +53,10 @@ void rgb_led_voltage_readout(uint8_t bright);
  * 4:   B
  * 5: R B
  * 6: RGB
- * 7: rainbow
- * 8: voltage
+ * 7: disco
+ * 8: rainbow
+ * 9: voltage
+ * 10: temperature
  */
 const PROGMEM uint8_t rgb_led_colors[] = {
     0b00000001,  // 0: red
@@ -47,8 +67,6 @@ const PROGMEM uint8_t rgb_led_colors[] = {
     0b00010001,  // 5: purple
     0b00010101,  // 6: white
 };
-// intentionally 1 higher than total modes, to make "voltage" easier to reach
-// (at Hank's request)
 #define RGB_LED_NUM_COLORS 11
 #define RGB_LED_NUM_PATTERNS 4
 #ifndef RGB_LED_OFF_DEFAULT
@@ -65,20 +83,20 @@ uint8_t rgb_led_off_mode = RGB_LED_OFF_DEFAULT;
 uint8_t rgb_led_lockout_mode = RGB_LED_LOCKOUT_DEFAULT;
 #endif
 
-//#define USE_OLD_BLINKING_INDICATOR
-//#define USE_FANCIER_BLINKING_INDICATOR
 #ifdef USE_INDICATOR_LED
-    // bits 2-3 control lockout mode
-    // bits 0-1 control "off" mode
-    // modes are: 0=off, 1=low, 2=high, 3=blinking (if TICK_DURING_STANDBY enabled)
+    // bits 4-7 control lockout mode
+    // bits 0-3 control "off" mode
+    // modes are: 0=off, 1=low, 2=high
+    //            (below modes are only enabled if TICK_DURING_STANDBY is defined)
+    //            3=blinking, 4=blinking low, 5=blinking high, 6=breathing
     #ifdef INDICATOR_LED_DEFAULT_MODE
     uint8_t indicator_led_mode = INDICATOR_LED_DEFAULT_MODE;
     #else
         #ifdef USE_INDICATOR_LED_WHILE_RAMPING
-        //uint8_t indicator_led_mode = (1<<2) + 2;
-        uint8_t indicator_led_mode = (2<<2) + 1;
+        //uint8_t indicator_led_mode = (1<<4) + 2;
+        uint8_t indicator_led_mode = (2<<4) + 1;
         #else
-        uint8_t indicator_led_mode = (3<<2) + 1;
+        uint8_t indicator_led_mode = (4<<4) + 1;
         #endif
     #endif
 #endif

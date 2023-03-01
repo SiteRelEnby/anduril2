@@ -22,56 +22,45 @@
 
 #include "aux-leds.h"
 
-//0x00 = off 	Low 	High 	Blinking
-//R 		0x10 	0x20 	0x30
-//R+G 		0x11 	0x21 	0x31
-//G 		0x12 	0x22 	0x32
-//G+B 		0x13 	0x23 	0x33
-//B 		0x14 	0x24 	0x34
-//R+B 		0x15 	0x25 	0x35
-//R+G+B 	0x16 	0x26 	0x36
-//Disco 	0x17 	0x27 	0x37
-//Rainbow 	0x18 	0x28 	0x38
-//Voltage 	0x19 	0x29 	0x39
 
-#if defined(USE_INDICATOR_LED)
-void indicator_led_update(uint8_t mode, uint8_t tick) {
-    //uint8_t volts = voltage;  // save a few bytes by caching volatile value
-    // turn off when battery is too low
+#if defined(USE_INDICATOR_LED) && defined(TICK_DURING_STANDBY)
+void indicator_led_update(uint8_t mode, uint8_t arg) {
+    // turn off aux LEDs when battery is empty
+    #ifdef DUAL_VOLTAGE_FLOOR
+    if (((voltage < VOLTAGE_LOW) && (voltage > DUAL_VOLTAGE_FLOOR)) || (voltage < DUAL_VOLTAGE_LOW_LOW)) {
+    #else
     if (voltage < VOLTAGE_LOW) {
-        indicator_led(0);
+    #endif
+        indicator_led(0); 
+        return; 
     }
-    //#ifdef USE_INDICATOR_LOW_BAT_WARNING
-    // fast blink a warning when battery is low but not critical
-    else if (voltage < VOLTAGE_RED) {
-        indicator_led(mode & (((tick & 0b0010)>>1) - 3));
-    }
-    //#endif
-    // normal steady output, 0/1/2 = off / low / high
-    else if ((mode & 0b00001111) < 3) {
-        indicator_led(mode);
-    }
-    // beacon-like blinky mode
-    else {
-        #ifdef USE_OLD_BLINKING_INDICATOR
 
-        // basic blink, 1/8th duty cycle
-        if (! (tick & 7)) {
-            indicator_led(2);
-        }
-        else {
-            indicator_led(0);
-        }
+    mode &= 0xf;
+    
+    // when mode isn't blinky, let's set indicator again
+    if (mode <= 2) { indicator_led(mode); return; }
 
-        #else
+    static const uint8_t seq[] = {0, 1, 2, 1,  0, 0, 0, 0,
+                                  0, 0, 1, 0,  0, 0, 0, 0};
+    static const uint8_t seq_breath[] = {0, 1, 1, 1,  2, 2, 2, 2,
+                                         1, 1, 1, 0,  0, 0, 0, 0,  0, 0, 0, 0};
 
+    uint8_t level = mode;
+    switch (mode) {
+    case 3:
         // fancy blink, set off/low/high levels here:
-        static const uint8_t seq[] = {0, 1, 2, 1,  0, 0, 0, 0,
-                                      0, 0, 1, 0,  0, 0, 0, 0};
-        indicator_led(seq[tick & 15]);
-
-        #endif  // ifdef USE_OLD_BLINKING_INDICATOR
+        level = seq[arg & 15];
+        break;
+    case 4:
+    case 5:
+        // blinking low or high
+        level = (arg & 15) ? 0 : mode - 3;
+        break;
+    case 6:
+        level = seq_breath[arg % sizeof(seq_breath)];
+        break;
     }
+    indicator_led(level);
 }
 #endif
 
@@ -97,6 +86,28 @@ uint8_t voltage_to_rgb() {
     return pgm_read_byte(rgb_led_colors + color_num);
 }
 
+#ifdef USE_THERMAL_REGULATION
+uint8_t temperature_to_rgb() {
+    static const uint8_t temp_levels[] = {
+    // temperature in Celsius, color
+          0, 5, // 5, R + B =>pink/purple  <=12 C
+         12, 4, // 4,     B                (12,16] C
+         16, 3, // 3,   G+B =>cyan         (16,20] C
+         20, 2, // 2,   G                  (20,25] C
+         25, 1, // 1, R+G   =>yellow       (25,28] C
+         28, 0, // 0, R                    >28 C
+        255, 0, // 0, R
+    };
+    int16_t temps = temperature;
+    if (temps < 0) return 0;
+
+    uint8_t i;
+    for (i = 0; temps >= temp_levels[i]; i += 2) {}
+    uint8_t color_num = temp_levels[(i - 2) + 1];
+    return pgm_read_byte(rgb_led_colors + color_num);
+}
+#endif
+
 // do fancy stuff with the RGB aux LEDs
 // mode: 0bPPPPCCCC where PPPP is the pattern and CCCC is the color
 // arg: time slice number
@@ -107,7 +118,11 @@ void rgb_led_update(uint8_t mode, uint8_t arg) {
     // turn off aux LEDs when battery is empty
     // (but if voltage==0, that means we just booted and don't know yet)
     uint8_t volts = voltage;  // save a few bytes by caching volatile value
+    #ifdef DUAL_VOLTAGE_FLOOR
+    if ((volts) && (((voltage < VOLTAGE_LOW) && (voltage > DUAL_VOLTAGE_FLOOR)) || (voltage < DUAL_VOLTAGE_LOW_LOW))) {
+    #else
     if ((volts) && (volts < VOLTAGE_LOW)) {
+    #endif
         rgb_led_set(0);
         #ifdef USE_BUTTON_LED
         button_led_set(0);
@@ -115,7 +130,10 @@ void rgb_led_update(uint8_t mode, uint8_t arg) {
         return;
     }
 
-    uint8_t pattern = (mode>>4);  // off, low, high, blinking, ... more?
+    uint8_t pattern = (mode>>4);  // off, low, high, blinking, breathing
+    #ifdef USE_BUTTON_LED
+    uint8_t button_pattern = pattern; //for button LED
+    #endif
     uint8_t color = mode & 0x0f;
 
     // preview in blinking mode is awkward... use high instead
@@ -148,7 +166,7 @@ void rgb_led_update(uint8_t mode, uint8_t arg) {
         }
         actual_color = pgm_read_byte(colors + rainbow);
     }
-    else {  // voltage
+    else if (color == 9) {  // voltage
         // show actual voltage while asleep...
         if (go_to_standby) {
             actual_color = voltage_to_rgb();
@@ -162,42 +180,77 @@ void rgb_led_update(uint8_t mode, uint8_t arg) {
             actual_color = pgm_read_byte(colors + (((arg>>1) % 3) << 1));
         }
     }
+    #ifdef USE_THERMAL_REGULATION
+    else {   // temperature
+        actual_color = temperature_to_rgb();
+        if (!go_to_standby) {
+            // during preview, flash current temperature's colors quickly
+            if (pattern == 1)
+                pattern = (arg >> 4) % 2; // special case for pattern 'low': only alternating between off and low
+            else
+                pattern = (arg >> 2) % 3; // alternating among off, low, high
+        }
+    }
+    #endif
 
+    // uses an odd length to avoid lining up with rainbow loop
+    static const uint8_t animation[] = {2, 1, 0, 0,  0, 0, 0, 0,  0,
+                                        1, 0, 0, 0,  0, 0, 0, 0,  0, 1};
+    static const uint8_t animation_breath[] = {0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 1, 1,  2, 2,
+                                               2, 1, 1, 1,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0};
     // pick a brightness from the animation sequence
+    #ifdef USE_BUTTON_LED
+    uint8_t blink_animation_done = 0;
+    #endif
     if (pattern == 3) {
-        // uses an odd length to avoid lining up with rainbow loop
-        static const uint8_t animation[] = {2, 1, 0, 0,  0, 0, 0, 0,  0,
-                                            1, 0, 0, 0,  0, 0, 0, 0,  0, 1};
         frame = (frame + 1) % sizeof(animation);
         pattern = animation[frame];
+        #ifdef USE_BUTTON_LED
+        blink_animation_done = 1;
+        #endif
+    } else if (pattern == 4) {
+        frame = (frame + 1) % sizeof(animation_breath);
+        pattern = animation_breath[frame];
+        #ifdef USE_BUTTON_LED
+        blink_animation_done = 1;
+        #endif
     }
-    uint8_t result;
     #ifdef USE_BUTTON_LED
-    uint8_t button_led_result;
+    if (button_pattern == 3) {
+        if (blink_animation_done) {
+            button_pattern = pattern;
+        } else {
+            frame = (frame + 1) % sizeof(animation);
+            button_pattern = animation[frame];
+        }
+    } else if (button_pattern == 4) {
+        if (blink_animation_done) {
+            button_pattern = pattern;
+        } else {
+            frame = (frame + 1) % sizeof(animation_breath);
+            button_pattern = animation_breath[frame];
+        }
+    }
     #endif
+
+    uint8_t result;
     switch (pattern) {
         case 0:  // off
             result = 0;
-            #ifdef USE_BUTTON_LED
-            button_led_result = 0;
-            #endif
             break;
         case 1:  // low
             result = actual_color;
-            #ifdef USE_BUTTON_LED
-            button_led_result = 1;
-            #endif
             break;
         default:  // high
             result = (actual_color << 1);
-            #ifdef USE_BUTTON_LED
-            button_led_result = 2;
-            #endif
             break;
     }
     rgb_led_set(result);
+
+    // separate button LED logic here because the button LED may blink while AUX LED doesn't
     #ifdef USE_BUTTON_LED
-    button_led_set(button_led_result);
+    if (aux_led_reset)
+        button_led_set((button_pattern > 1) ? 2 : button_pattern);
     #endif
 }
 
