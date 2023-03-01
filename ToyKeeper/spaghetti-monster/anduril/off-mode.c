@@ -43,7 +43,7 @@ uint8_t off_state(Event event, uint16_t arg) {
         // sleep while off  (lower power use)
         // (unless delay requested; give the ADC some time to catch up)
         if (! arg) { go_to_standby = 1; }
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // go back to sleep eventually if we got bumped but didn't leave "off" state
     else if (event == EV_tick) {
@@ -56,7 +56,7 @@ uint8_t off_state(Event event, uint16_t arg) {
             rgb_led_update(rgb_led_off_mode, arg);
             #endif
         }
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #if defined(TICK_DURING_STANDBY)
     // blink the indicator LED, maybe
@@ -84,14 +84,14 @@ uint8_t off_state(Event event, uint16_t arg) {
                 set_state(lockout_state, 0);
             }
         #endif  // ifdef USE_AUTOLOCK
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
     #if (B_TIMING_ON == B_PRESS_T)
     // hold (initially): go to lowest level (floor), but allow abort for regular click
     else if (event == EV_click1_press) {
         set_level(nearest_level(1));
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif  // B_TIMING_ON == B_PRESS_T
     // hold: go to lowest level
@@ -108,7 +108,7 @@ uint8_t off_state(Event event, uint16_t arg) {
         #endif
         #ifdef USE_RAMP_AFTER_MOON_CONFIG
         if (dont_ramp_after_moon) {
-            return MISCHIEF_MANAGED;
+            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
         }
         #endif
         // don't start ramping immediately;
@@ -117,12 +117,12 @@ uint8_t off_state(Event event, uint16_t arg) {
         if (arg >= (!ramp_style) * HOLD_TIMEOUT) {  // more consistent
             set_state(steady_state, 1);
         }
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // hold, release quickly: go to lowest level (floor)
     else if (event == EV_click1_hold_release) {
         set_state(steady_state, 1);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #if (B_TIMING_ON != B_TIMEOUT_T)
     // 1 click (before timeout): go to memorized level, but allow abort for double click
@@ -138,7 +138,7 @@ uint8_t off_state(Event event, uint16_t arg) {
             }
         #endif
         set_level(nearest_level(memorized_level));
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif  // if (B_TIMING_ON != B_TIMEOUT_T)
     // 1 click: regular mode
@@ -151,7 +151,7 @@ uint8_t off_state(Event event, uint16_t arg) {
         //        (need to duplicate manual mem logic here, probably)
         set_state(steady_state, memorized_level);
         #endif
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // click, hold: momentary at ceiling or turbo
     else if (event == EV_click2_hold) {
@@ -178,27 +178,27 @@ uint8_t off_state(Event event, uint16_t arg) {
         #endif
 
         set_level(turbo_level);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     else if (event == EV_click2_hold_release) {
         set_level(0);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 2 clicks: highest mode (ceiling)
     else if (event == EV_2clicks) {
         set_state(steady_state, MAX_LEVEL);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 3 clicks (initial press): off, to prep for later events
     else if (event == EV_click3_press) {
         set_level(0);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #ifdef USE_BATTCHECK
     // 3 clicks: battcheck mode / blinky mode group 1
     else if (event == EV_3clicks) {
         set_state(battcheck_state, 0);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
     #ifdef USE_LOCKOUT_MODE
@@ -206,21 +206,21 @@ uint8_t off_state(Event event, uint16_t arg) {
     else if (event == EV_4clicks) {
         blink_once();
         set_state(lockout_state, 0);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
     #if defined(USE_FACTORY_RESET) && defined(USE_SOFT_FACTORY_RESET)
     // 13 clicks and hold the last click: invoke factory reset (reboot)
     else if (event == EV_click13_hold) {
         reboot();
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
     #ifdef USE_VERSION_CHECK
     // 15+ clicks: show the version number
     else if (event == EV_15clicks) {
         set_state(version_check_state, 0);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
 
@@ -235,7 +235,7 @@ uint8_t off_state(Event event, uint16_t arg) {
         else {  // configure simple UI ramp
             push_state(simple_ui_config_state, 0);
         }
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
 
     ////////// Every action below here is blocked in the simple UI //////////
@@ -247,7 +247,7 @@ uint8_t off_state(Event event, uint16_t arg) {
         blink_once();
         simple_ui_active = 1;
         save_config();
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
 
@@ -255,12 +255,12 @@ uint8_t off_state(Event event, uint16_t arg) {
     #ifdef USE_STROBE_STATE
     else if (event == EV_click3_hold) {
         set_state(strobe_state, 0);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #elif defined(USE_BORING_STROBE_STATE)
     else if (event == EV_click3_hold) {
         set_state(boring_strobe_state, 0);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
     #ifdef USE_MOMENTARY_MODE
@@ -268,7 +268,7 @@ uint8_t off_state(Event event, uint16_t arg) {
     else if (event == EV_5clicks) {
         blink_once();
         set_state(momentary_state, 0);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
     #ifdef USE_INDICATOR_LED
@@ -287,7 +287,7 @@ uint8_t off_state(Event event, uint16_t arg) {
         // redundant, sleep tick does the same thing
         //indicator_led_update(indicator_led_mode & 0x03, arg);
         save_config();
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #elif defined(USE_AUX_RGB_LEDS)
     // 7 clicks: change RGB aux LED pattern
@@ -298,7 +298,7 @@ uint8_t off_state(Event event, uint16_t arg) {
         rgb_led_update(rgb_led_off_mode, 0);
         save_config();
         blink_once();
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 7 clicks (hold last): change RGB aux LED color
     else if (event == EV_click7_hold) {
@@ -310,12 +310,12 @@ uint8_t off_state(Event event, uint16_t arg) {
             //save_config();
         }
         rgb_led_update(rgb_led_off_mode, arg);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     else if (event == EV_click7_hold_release) {
         setting_rgb_mode_now = 0;
         save_config();
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif  // end 7 clicks
 
@@ -323,7 +323,7 @@ uint8_t off_state(Event event, uint16_t arg) {
     // 9 clicks, but hold last click: configure misc global settings
     else if ((event == EV_click9_hold) && (!arg)) {
         push_state(globals_config_state, 0);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
     return EVENT_NOT_HANDLED;
