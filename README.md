@@ -47,69 +47,70 @@ Example build scripts and header files for my lights (`build-siterelenby-*` and 
 # UI reference
 Right now this fork has only been tested by me on dual channel lights (D4S and DM1.12). Single channel support may be coming soon; at the moment some behaviour may be undefined and there isn't a compelling reason to run this fork on single channel lights (yet...).
 
-|Input|Dual channel modded|Dual channel stock|Single channel modded
-|-----|-----------------|------------------|------------|
-|     | OFF MODE        |OFF MODE |OFF MODE |
-|1C|  On (memory) |On (memory) | On (memory) |
-|1H|  Moon | Moon | Moon |
-|2C|  On (ceiling) | On (ceiling) | On (ceiling) |
-|2H|  Momentary 200% turbo | Momentary configured turbo | Momentary turbo
-|3C|  Blinky modes | Blinky modes | Blinky modes |
-|4C|  Lock | Lock | Lock |
-|4H|  (nothing) | (nothing) | (nothing) | 
-|5C|  ch1 turbo | momentary mode | momentary mode | 
-|5H|  Momentary ch1 turbo | (nothing) | (nothing) |
-|6C|  ch2 turbo | (nothing) | (nothing) |
+|Input|Dual channel modded|Dual channel stock|Single channel modded|Single channel stock|
+|-----|-----------------|------------------|------------|-------------------------------|
+|     | OFF MODE        |OFF MODE |OFF MODE |OFF MODE |
+|1C|  On (memory) |On (memory) | On (memory) | On (memory)
+|1H|  Moon | Moon | Moon | Moon |
+|2C|  On (ceiling) | On (ceiling) | On (ceiling) | On (ceiling)
+|2H|  Momentary 200% turbo | Momentary configured turbo | Momentary turbo | Momentary turbo |
+|3C|  Blinky modes | Blinky modes | Blinky modes | Blinky modes |
+|4C|  Lock | Lock | Lock | Lock |
+|4H|  (nothing) | (nothing) | (nothing) | (nothing) |
+|5C|  ch1 turbo | momentary mode | (nothing) | momentary mode |
+|5H|  Momentary ch1 turbo | (nothing) | (nothing) | (nothing) |
+|6C|  ch2 turbo | (nothing) | (nothing) | (nothing) |
 |6H|  momentary ch2 turbo| (nothing) | (nothing) |
-|7C|  (nothing) | aux brightness | aux brightness |
-|7H|  (nothing) | aux mode | aux brightness |
-|8C|  aux brightness | (nothing) |
-|8H|  aux modes | (nothing) | (nothing) |
-|9H|  globals config | globals config | globals config |
-|10H| Simple UI config | simple UI config | simple UI config |
-|12C| Momentary mode (TODO: move to 12H??) | (nothing) | (nothing) |
-|13H| factory reset | factory reset | factory reset
-|15C| version check | version check| version check |
-|  |  LOCK MODE| LOCK MODE | LOCK MODE |
-|1H|  momentary moon | momentary moon|momentary moon|
-|2H|  momentary floor/memory | momentary floor/memory | momentary floor/memory |
-|3H|  channel switch (default) | channel switch | moon (ignored) |
-|4C|  Unlock to memory | unlock to memory | unlock to mem |
-|4H|  unlock to floor | unlock to floor | unlock to floor |
-|5C|  unlock to ch1 turbo |unlock to turbo | unlock to turbo
-|5H|  momentary ch1 turbo | moon (ignored) | moon (ignored) |
-|6C|  unlock to ch2 turbo | moon (ignored) | moon (ignored) |
-|6H|  momentary ch2 turbo | moon (ignored) | moon (ignored) |
-|7C|  (nothing) | aux brightness | aux brightness |
-|7H|  (nothing) | aux mode | aux mode |
-|8C|  aux brightness | (nothing) | (nothing) |
-|8H|  aux mode | (nothing) | (nothing) |
-|10H| autolock config | autolock config| (nothing) |
-|  |  RAMP MODE| RAMP MODE | RAMP MODE |
-|1C|  off | off | off |
-|1H|  ramp up | ramp up | ramp up |
-|2C|  single channel turbo | turbo | turbo |
-|2H|  ramp down | ramp down | ramp down |
-|3C|  200% turbo | ramp style toggle | ramp style |
-|3H|  channel switch (default) | channel switch | momentary turbo |
-|4C|  off and lock | off and lock | off and lock |
-|4H|  momentary channel switch | (nothing) | (nothing) |
-|5C|  ch1 turbo | momentary mode | momentary mode |
-|5H|  momentary ch1 turbo| sunset mode | sunset mode |
-|6C|  ch2 turbo | (nothing) | (nothing) |
-|6H|  momentary ch2 turbo | (nothing) | (nothing) |
-|7H|  ramp config menu | ramp config menu | ramp config |
-|8H|  channel switch (opposite) |(nothing) |( nothing) |
-|9C|  ramp style toggle | (nothing) | (nothing) |
-|10C| save memory | save memory | save mem |
-|10H| ramp extras config | ramp extras config | ramp extras |
-|12C| momentary mode | (nothing) | (nothing) |
-|12H| sunset mode | (nothing) | (nothing) |
+|7C|  (nothing) | aux brightness | (nothing) |aux brightness |
+|7H|  (nothing) | aux mode | (nothing) aux brightness |
+|8C|  aux brightness | (nothing) | aux brightness | (nothing) |
+|8H|  aux modes | (nothing) | aux modes | (nothing) |
+|9H|  globals config | globals config | globals config | globals config |
+|10H| Simple UI config | simple UI config | simple UI config | simple UI config |
+|12C| Momentary mode | (nothing) |  Momentary mode | (nothing) |
+|13H| factory reset | factory reset | factory reset | factory reset |
+|15C| version check | version check| version check | version check |
+|  |  LOCK MODE| LOCK MODE | LOCK MODE | LOCK MODE |
+|1H|  momentary moon | momentary moon|momentary moon||momentary moon|
+|2H|  momentary floor/mem| momentary floor/mem| momentary floor/mem | momentary floor/mem
+|3H|  channel switch (default) | channel switch | moon (ignored) | moon (ignored) |
+|4C|  Unlock to memory | unlock to memory | unlock to mem | unlock to mem |
+|4H|  unlock to floor | unlock to floor | unlock to floor | unlock to floor |
+|5C|  unlock to ch1 turbo |unlock to turbo | unlock to turbo | unlock to turbo | 
+|5H|  momentary ch1 turbo | moon (ignored) | moon (ignored) |  moon (ignored) |
+|6C|  unlock to ch2 turbo | moon (ignored) | moon (ignored) | moon (ignored) |
+|6H|  momentary ch2 turbo | moon (ignored) | moon (ignored) | moon (ignored) |
+|7C|  (nothing) | aux brightness | (nothing) | aux brightness |
+|7H|  (nothing) | aux mode | (nothing) | aux mode |
+|8C|  aux brightness | (nothing) | aux brightness | (nothing) |
+|8H|  aux mode | (nothing) | aux mode | (nothing) |
+|10H| autolock config | autolock config| autolock config | autolock config |
+|  |  RAMP MODE| RAMP MODE | RAMP MODE |RAMP MODE
+|1C|  off | off | off |off |
+|1H|  ramp up | ramp up | ramp up | ramp up |
+|2C|  single channel turbo | turbo | turbo | turbo |
+|2H|  ramp down | ramp down | ramp down | ramp down |
+|3C|  200% turbo | ramp style toggle | (nothing (TODO)) | ramp style |
+|3H|  channel switch (default) | channel switch | momentary turbo | momentary turbo |
+|4C|  off and lock | off and lock | off and lock | off and lock |
+|4H|  momentary channel switch | (nothing) | (nothing) | (nothing)
+|5C|  ch1 turbo | momentary mode | (nothing) | momentary mode | 
+|5H|  momentary ch1 turbo| sunset mode | (nothing) | sunset mode | 
+|6C|  ch2 turbo | (nothing) | (nothing) | (nothing) |
+|6H|  momentary ch2 turbo | (nothing) | (nothing) | (nothing) |
+|7H|  ramp config menu | ramp config menu | ramp config | ramp config
+|8H|  channel switch (opposite) |(nothing) |( nothing) | (nothing) |
+|9C|  ramp style toggle | (nothing) | ramp toggle | (nothing) |
+|10C| save memory | save memory | save mem | save mem
+|10H| ramp extras config | ramp extras config | ramp extras | ramp extras |
+|12C| momentary mode | (nothing) | momentary mode | (nothing) | 
+|12H| sunset mode | (nothing) | sunset mode | (nothing) |
 
 ## Roadmap
 
 * Single channel compatibility/reason-for-this-mod-to-exist
 * TODO: momentary opposite channel from 4H in off mode?
+  * Momentary mode to 12H?
 * Option (possibly in light-specific header file) to change which channel is considered channel 1 (as it stands the same value ended up being right for both of my lights but this obviously depends on the specific light)
 * Possibly move momentary opposite channel to a higher button combo and the turbo shortcuts down (after some use of this fw, have discovered I use those more than momentary opposite at current ramp level)
 * New aux modes
