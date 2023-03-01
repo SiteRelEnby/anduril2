@@ -137,81 +137,84 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
         return EVENT_HANDLED;
     }
 
-    //4H: momentary opposite channel
-    else if (event == EV_click4_hold) {
-        //if (! arg) {  // first frame only, to allow thermal regulation to work
-            if (momentary_opposite_active == 0) {
-                    //invert tint ramp
-                    momentary_opposite_active = 1;
-                    tint = tint ^ 0xFF;
-                    set_level(actual_level);
-                    return EVENT_HANDLED;
+    if (current_state != strobe_state){ //disable special tint ramping stuff when in strobe mode to avoid Weird Things happening
+
+        //4H: momentary opposite channel
+        else if (event == EV_click4_hold) {
+            //if (! arg) {  // first frame only, to allow thermal regulation to work
+                if (momentary_opposite_active == 0) {
+                        //invert tint ramp
+                        momentary_opposite_active = 1;
+                        tint = tint ^ 0xFF;
+                        set_level(actual_level);
+                        return EVENT_HANDLED;
+                }
+            //}
+            else {
+                return EVENT_HANDLED;
             }
-        //}
-        else {
-            return EVENT_HANDLED;
-        }
+            //TODO: have a way to make it all or nothing switch (below) or ramp inversion (above)
             //if (tint >= 129) { tint = 1; }
             //else { tint = 254; }
-    }
-    //return to first channel on release
-    else if (event == EV_click4_hold_release) {
-        tint = tint ^ 0xFF;
-        momentary_opposite_active = 0;
-        //if (tint >= 129) { tint = 1; }
-        //else { tint = 254; }
-        //set_level_and_therm_target(memorized_level);
-        set_level(actual_level);
-        return EVENT_HANDLED;
-    }
+        }
+        //return to first channel on release
+        else if (event == EV_click4_hold_release) {
+            tint = tint ^ 0xFF;
+            momentary_opposite_active = 0;
+            //if (tint >= 129) { tint = 1; }
+            //else { tint = 254; }
+            //set_level_and_therm_target(memorized_level);
+            set_level(actual_level);
+            return EVENT_HANDLED;
+        }
 
-    //5C: Channel 1 turbo shortcut // TODO: make this do something sensible on single channel lights. config option to swap channels around?
-    else if (event == EV_5clicks) {
-        tint = 254;
-        set_level_and_therm_target(130);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    }
-    //5H: Momentary throw channel (on DM1.12) turbo
-    else if (event == EV_click5_hold) {
-        if (!arg) {
-            prev_tint = tint;
-            prev_level = actual_level;
+        //5C: Channel 1 turbo shortcut // TODO: config option to swap channels around?
+        else if (event == EV_5clicks) {
             tint = 254;
             set_level_and_therm_target(130);
+            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
         }
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    }
-    else if (event == EV_click5_hold_release){
-        //go back to ramp mode
-        tint = prev_tint;
-        set_level_and_therm_target(prev_level);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    }
+        //5H: Momentary channel 1 turbo
+        else if (event == EV_click5_hold) {
+            if (!arg) {
+                prev_tint = tint;
+                prev_level = actual_level;
+                tint = 254;
+                set_level_and_therm_target(130);
+            }
+            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        }
+        else if (event == EV_click5_hold_release){
+            //go back to ramp mode
+            tint = prev_tint;
+            set_level_and_therm_target(prev_level);
+            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        }
 
-    //6C: Flood channel turbo shortcut
-    else if (event == EV_6clicks) {
-        tint = 1; //max flood on my dm1.12
-        set_level_and_therm_target(130);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    }
-    //6H: Momentary flood channel (on DM1.12) turbo
-    else if (event == EV_click6_hold) {
-        if (!arg){
-            prev_tint = tint;
-            prev_level = actual_level;
-            tint = 1;
+        //6C: channel 2 turbo shortcut
+        else if (event == EV_6clicks) {
+            tint = 1; //max flood on my dm1.12
             set_level_and_therm_target(130);
+            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
         }
-        return EVENT_HANDLED;
-    }
-    else if (event == EV_click6_hold_release){
-        //go back to ramp mode
-        tint = prev_tint;
-        set_level_and_therm_target(prev_level);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-        //return EVENT_HANDLED;
-    }
-
+        //6H: Momentary channel 2 turbo
+        else if (event == EV_click6_hold) {
+            if (!arg){
+                prev_tint = tint;
+                prev_level = actual_level;
+                tint = 1;
+                set_level_and_therm_target(130);
+            }
+            return EVENT_HANDLED;
+        }
+        else if (event == EV_click6_hold_release){
+            //go back to ramp mode
+            tint = prev_tint;
+            set_level_and_therm_target(prev_level);
+            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+            //return EVENT_HANDLED;
+        }
+    } //disable special tint ramping stuff when in strobe mode to avoid Weird Things happening
 
     return EVENT_NOT_HANDLED;
 }
