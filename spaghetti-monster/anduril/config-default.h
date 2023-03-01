@@ -195,3 +195,5 @@
 //#define USE_LOWPASS_WHILE_ASLEEP
 
 #endif
+
+#define USE_FIREWORK_MODE
