@@ -97,10 +97,9 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     //  be persistent about going back to sleep every few seconds
     //  even if the user keeps pressing the button)
     #ifdef USE_INDICATOR_LED
-    // redundant, sleep tick does the same thing
-    //if (event == EV_enter_state) {
-    //    indicator_led_update(indicator_led_mode >> 2, 0);
-    //} else
+    if (event == EV_enter_state) {
+        indicator_led_update(indicator_led_mode >> 4, 0);
+    } else
     #elif defined(USE_AUX_RGB_LEDS)
     if (event == EV_enter_state) {
         rgb_led_update(rgb_led_lockout_mode, 0);
@@ -110,21 +109,34 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         if (arg > HOLD_TIMEOUT) {
             go_to_standby = 1;
             #ifdef USE_INDICATOR_LED
-            // redundant, sleep tick does the same thing
-            //indicator_led_update(indicator_led_mode >> 2, arg);
+            indicator_led_update(indicator_led_mode >> 4, 0);
             #elif defined(USE_AUX_RGB_LEDS)
             rgb_led_update(rgb_led_lockout_mode, arg);
             #endif
         }
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-    #if defined(TICK_DURING_STANDBY) && (defined(USE_INDICATOR_LED) || defined(USE_AUX_RGB_LEDS))
+    #if defined(TICK_DURING_STANDBY)
     else if (event == EV_sleep_tick) {
-        #if defined(USE_INDICATOR_LED)
-        indicator_led_update(indicator_led_mode >> 2, arg);
-        #elif defined(USE_AUX_RGB_LEDS)
-        rgb_led_update(rgb_led_lockout_mode, arg);
+        #ifdef DUAL_VOLTAGE_FLOOR
+        if (((voltage < VOLTAGE_LOW_SAFE) && (voltage > DUAL_VOLTAGE_FLOOR)) || (voltage < DUAL_VOLTAGE_LOW_LOW_SAFE)) {
+        #else
+        if (voltage < VOLTAGE_LOW_SAFE) {
         #endif
+            #ifdef USE_INDICATOR_LED
+            indicator_led_update(6, arg);
+            #elif defined(USE_AUX_RGB_LEDS)
+            rgb_led_update(RGB_RED|RGB_BREATH, arg);
+            #else
+            if (0 == (arg & 0x1f)) blink_once();
+            #endif
+        } else {
+            #ifdef USE_INDICATOR_LED
+            indicator_led_update(indicator_led_mode >> 4, arg);
+            #elif defined(USE_AUX_RGB_LEDS)
+            rgb_led_update(rgb_led_lockout_mode, arg);
+            #endif
+        }
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
@@ -156,11 +168,13 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         set_state(steady_state, 1);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
+    #ifndef USE_TINT_RAMPING
     // 5 clicks: exit and turn on at ceiling level
-    //else if (event == EV_5clicks) {
-    //    set_state(steady_state, MAX_LEVEL);
-    //    return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    //}
+    else if (event == EV_5clicks) {
+        set_state(steady_state, MAX_LEVEL);
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    #endif
 
     ////////// Every action below here is blocked in the simple UI //////////
     #ifdef USE_SIMPLE_UI
@@ -203,18 +217,17 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     //moved to 8C
     else if (event == EV_8clicks) {
         #if defined(USE_INDICATOR_LED)
-            uint8_t mode = indicator_led_mode >> 2;
+            uint8_t mode = indicator_led_mode >> 4;
             #ifdef TICK_DURING_STANDBY
-            mode = (mode + 1) & 3;
+            mode = (mode + 1) % 6;
             #else
             mode = (mode + 1) % 3;
             #endif
             #ifdef INDICATOR_LED_SKIP_LOW
             if (mode == 1) { mode ++; }
             #endif
-            indicator_led_mode = (mode << 2) + (indicator_led_mode & 0x03);
-            // redundant, sleep tick does the same thing
-            //indicator_led_update(indicator_led_mode >> 2, arg);
+            indicator_led_mode = (mode << 4) + (indicator_led_mode & 0xf);
+            indicator_led_update(mode, 0);
         #elif defined(USE_AUX_RGB_LEDS)
         #endif
         save_config();
