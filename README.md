@@ -153,7 +153,6 @@ Single channel lights should be working but are currently relatively low on addi
 
 ## Roadmap
 
-* Single channel compatibility/reason-for-this-mod-to-exist
 * TODO: momentary opposite channel from 4H in off mode?
 * Find something useful for 3C on single channel
 * Option (possibly in light-specific header file) to change which channel is considered channel 1 (as it stands the same value ended up being right for both of my lights but this obviously depends on the specific light)
