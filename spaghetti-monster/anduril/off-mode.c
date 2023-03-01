@@ -27,7 +27,9 @@
 #endif
 
 uint8_t off_state(Event event, uint16_t arg) {
+    #ifdef USE_TINT_RAMPING
     static uint8_t prev_tint;
+    #endif
     // turn emitter off when entering state
     if (event == EV_enter_state) {
         set_level(0);
@@ -274,7 +276,8 @@ uint8_t off_state(Event event, uint16_t arg) {
     #endif
     #ifdef USE_INDICATOR_LED
     // 7 clicks: change indicator LED mode
-    else if (event == EV_7clicks) {
+    //moved to 8C
+    else if (event == EV_8clicks) {
         uint8_t mode = (indicator_led_mode & 3) + 1;
         #ifdef TICK_DURING_STANDBY
         mode = mode & 3;
@@ -322,7 +325,9 @@ uint8_t off_state(Event event, uint16_t arg) {
     }
     #endif  // end 7 clicks
 
-    //5C: Channel 1 turbo shortcut // TODO: make this do something sensible on single channel lights. config option to swap channels around? CH1 should have the FET on most lights? which channel is which? logically 254 should be 2
+
+    //5C: Channel 1 turbo shortcut // TODO: make this do something sensible on single channel lights. config option to swap channels around? CH1 should have the FET on most lights? which channel is which?
+    #ifdef USE_TINT_RAMPING
     else if (event == EV_5clicks) {
         tint = 254;
         set_level_and_therm_target(130);
@@ -363,7 +368,7 @@ uint8_t off_state(Event event, uint16_t arg) {
         tint = prev_tint;
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-
+    #endif
 
     #ifdef USE_GLOBALS_CONFIG
     // 9 clicks, but hold last click: configure misc global settings
