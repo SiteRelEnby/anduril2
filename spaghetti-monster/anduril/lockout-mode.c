@@ -24,7 +24,9 @@
 
 uint8_t lockout_state(Event event, uint16_t arg) {
     //var for momentary channel-specific turbo
+    #ifdef USE_TINT_RAMPING
     static uint8_t prev_tint;
+    #endif
 
     #ifdef USE_MOON_DURING_LOCKOUT_MODE
     // momentary(ish) moon mode during lockout
@@ -34,6 +36,7 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     if (event == EV_click8_hold) { set_level(0); } else
     #endif
 
+    #ifdef USE_TINT_RAMPING
     //momentary turbo modes need to go here to not get caught by the below
     //5H: Momentary ch1 turbo
     if (event == EV_click5_hold) {
@@ -65,6 +68,7 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         set_level(0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
+    #endif
 
     else if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
         // hold: lowest floor
@@ -172,6 +176,7 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     }
     #endif
 
+    #ifdef USE_TINT_RAMPING
     //5C: Channel 1 turbo shortcut // TODO: make this do something sensible on single channel lights. config option to swap channels around? CH1 should have the FET on most lights? which channel is which? logically 254 should be 2, is flood on W1/519A DM1.12
     else if (event == EV_5clicks) {
         tint = 254;
@@ -190,6 +195,7 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         //current_event = 0;
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
+    #endif
 
     #if defined(USE_INDICATOR_LED)
     // 7 clicks: rotate through indicator LED modes (lockout mode)
