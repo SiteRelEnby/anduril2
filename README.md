@@ -23,11 +23,14 @@ Example build scripts and header files for my lights (`build-siterelenby-*` and 
 
 # Changes from upstream
 
+The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 10H config menus stay in the same place; only things most people don't use that much like momentary and sunset modes or ramp style toggle should be moved. In general, avoiding removing functionality completely, just making stuff that gets in the way less easy to accidentally hit, and ideally adding some modularity for the user to decide which changes to include. Right now most changes are not modular.
+
 ## All lights
 
 * Several less used options have been moved
-  * Aux config moved to 8C/8H to make it harder to accidentally hit from 6C/H
-  * Ramp style selection moved to 9C (does anyone reqlly change ramps that often?...)
+  * Aux config moved to 8C/8H to make it harder to accidentally hit when trying to do 6C/H
+    * TODO: Make this configurable at build-time? Since it might make more sense to keep aux on 7C for single channel lights.
+  * Ramp style selection moved to 8C (does anyone really change ramps that often?...)
   * Momentary mode moved to 12C (may move again in the future)
   * Sunset timer moved to 12H
 * Use a less bzr/bizarre VCS
@@ -35,17 +38,16 @@ Example build scripts and header files for my lights (`build-siterelenby-*` and 
 
 ## Dual channel lights only
 * 2C now always goes to level 130 (single channel on maximum); 3C goes to 200%
-* 8H to use the *opposite* channel switching mode (e.g. if 3C is configured for instant switching, 8H will ramp between channels)
 * 4H for momentary opposite channel
   * At the moment this will invert the ramp, e.g. if you are at a 25/75% mix between the two channels it will flip to 75/25. I may make this behaviour configurable in the future with other options.
-* Option to make the light start in instant switching mode by default via header file (currently kind of a kludge as it needs a rebuild to change)
-* Shortcuts to turbo modes for each channel on dual-channel lights (5C/6C)
-  * Note that this fw has so far not been tested on single channel lights and will probably do weird things on them.
+* 8H to use the *opposite* channel switching mode (e.g. if 3C is configured for instant switching, 8H will ramp between channels)
+* Option to make the light start in instant switching mode by default via header file (currently kind of a kludge as it needs a rebuild to change - although fixing that is low priority as I just pick a channel and stick with it)
+* Shortcuts to turbo modes for each channel (5C/6C)
 * Momentary turbo modes for each channel (5H/6H)
-* An option (in the header file for now) to switch which of the two channels is considered the first (5C/H) (might move this to the 9H menu later)
+* An option (in the header file for now) to switch which of the two channels is considered the first for 5-6C/H (might move this to the 9H menu later
 
 # UI reference
-Right now this fork has only been tested by me on dual channel lights (D4S and DM1.12). Single channel support may be coming soon; at the moment some behaviour may be undefined and there isn't a compelling reason to run this fork on single channel lights (yet...).
+Single channel lights should be working but are currently relatively low on additional features.
 
 |Input|Dual channel modded|Dual channel stock|Single channel modded|Single channel stock|
 |-----|-----------------|------------------|------------|-------------------------------|
@@ -85,7 +87,7 @@ Right now this fork has only been tested by me on dual channel lights (D4S and D
 |8C|  aux brightness | (nothing) | aux brightness | (nothing) |
 |8H|  aux mode | (nothing) | aux mode | (nothing) |
 |10H| autolock config | autolock config| autolock config | autolock config |
-|  |  RAMP MODE| RAMP MODE | RAMP MODE |RAMP MODE
+|  |  RAMP MODE| RAMP MODE | RAMP MODE |RAMP MODE |
 |1C|  off | off | off |off |
 |1H|  ramp up | ramp up | ramp up | ramp up |
 |2C|  single channel turbo | turbo | turbo | turbo |
@@ -98,9 +100,9 @@ Right now this fork has only been tested by me on dual channel lights (D4S and D
 |5H|  momentary ch1 turbo| sunset mode | (nothing) | sunset mode | 
 |6C|  ch2 turbo | (nothing) | (nothing) | (nothing) |
 |6H|  momentary ch2 turbo | (nothing) | (nothing) | (nothing) |
-|7H|  ramp config menu | ramp config menu | ramp config | ramp config
+|7H|  ramp config | ramp config | ramp config | ramp config
+|8C|  ramp style toggle | (nothing) | ramp toggle | (nothing) |
 |8H|  channel switch (opposite) |(nothing) |( nothing) | (nothing) |
-|9C|  ramp style toggle | (nothing) | ramp toggle | (nothing) |
 |10C| save memory | save memory | save mem | save mem
 |10H| ramp extras config | ramp extras config | ramp extras | ramp extras |
 |12C| momentary mode | (nothing) | momentary mode | (nothing) | 
@@ -110,7 +112,7 @@ Right now this fork has only been tested by me on dual channel lights (D4S and D
 
 * Single channel compatibility/reason-for-this-mod-to-exist
 * TODO: momentary opposite channel from 4H in off mode?
-  * Momentary mode to 12H?
+* Find something useful for 3C on single channel
 * Option (possibly in light-specific header file) to change which channel is considered channel 1 (as it stands the same value ended up being right for both of my lights but this obviously depends on the specific light)
 * Possibly move momentary opposite channel to a higher button combo and the turbo shortcuts down (after some use of this fw, have discovered I use those more than momentary opposite at current ramp level)
 * New aux modes
