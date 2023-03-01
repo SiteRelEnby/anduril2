@@ -267,8 +267,26 @@ void loop() {
 
     #ifdef USE_AUX_RGB_LEDS_WHILE_ON
     // display battery charge on RGB button during use
-    if (! setting_rgb_mode_now) rgb_led_voltage_readout(1);
-    #endif
+    //TODO: make high/low brightness configurable
+    #ifdef RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF
+    if (actual_level > RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF) { //skip over the whole code path if ramp is below off threshold
+    #endif //#ifdef RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF
+      #ifdef RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW //if a separate threshold was set for low mode
+      if (! setting_rgb_mode_now) {
+        if (actual_level > RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW) {
+          rgb_led_voltage_readout(1); //set voltage LED, high mode
+        }
+        else {
+           rgb_led_voltage_readout(0); //set voltage LED, low mode
+        }
+      }
+      #else
+      if (! setting_rgb_mode_now) rgb_led_voltage_readout(1); //set voltage LED, high mode (TODO: configurable high/low?)
+      #endif //#ifdef RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW
+    #ifdef RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF
+    } //jump here if skipping this entire code path because level is low
+    #endif //#ifdef RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF
+    #endif //#ifdef USE_AUX_RGB_LEDS_WHILE_ON
 
     if (0) {}  // placeholder
 
