@@ -68,9 +68,10 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         set_level(0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-    #endif
-
     else if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
+    #else
+    if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
+    #endif
         // hold: lowest floor
         // click, hold: highest floor (or manual mem level)
         uint8_t lvl = ramp_floors[0];
