@@ -60,9 +60,9 @@ Right now this fork has only been tested by me on dual channel lights (D4S and D
 |5C|  ch1 turbo | momentary mode | (nothing) | momentary mode |
 |5H|  Momentary ch1 turbo | (nothing) | (nothing) | (nothing) |
 |6C|  ch2 turbo | (nothing) | (nothing) | (nothing) |
-|6H|  momentary ch2 turbo| (nothing) | (nothing) |
+|6H|  momentary ch2 turbo| (nothing) | (nothing) | (nothing) |
 |7C|  (nothing) | aux brightness | (nothing) |aux brightness |
-|7H|  (nothing) | aux mode | (nothing) aux brightness |
+|7H|  (nothing) | aux mode | (nothing) | aux mode |
 |8C|  aux brightness | (nothing) | aux brightness | (nothing) |
 |8H|  aux modes | (nothing) | aux modes | (nothing) |
 |9H|  globals config | globals config | globals config | globals config |
@@ -71,7 +71,7 @@ Right now this fork has only been tested by me on dual channel lights (D4S and D
 |13H| factory reset | factory reset | factory reset | factory reset |
 |15C| version check | version check| version check | version check |
 |  |  LOCK MODE| LOCK MODE | LOCK MODE | LOCK MODE |
-|1H|  momentary moon | momentary moon|momentary moon||momentary moon|
+|1H|  momentary moon | momentary moon|momentary moon|momentary moon|
 |2H|  momentary floor/mem| momentary floor/mem| momentary floor/mem | momentary floor/mem
 |3H|  channel switch (default) | channel switch | moon (ignored) | moon (ignored) |
 |4C|  Unlock to memory | unlock to memory | unlock to mem | unlock to mem |
