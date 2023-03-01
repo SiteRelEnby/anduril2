@@ -135,19 +135,21 @@ uint8_t steady_state(Event event, uint16_t arg) {
         set_state(off_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
+    #ifndef USE_TINT_RAMPING
     // 2 clicks: go to/from highest level
-    //else if (event == EV_2clicks) {
-    //    if (actual_level < turbo_level) {
-    //        set_level_and_therm_target(turbo_level);
-    //    }
-    //    else {
-    //        set_level_and_therm_target(memorized_level);
-    //    }
-    //    #ifdef USE_SUNSET_TIMER
-    //    timer_orig_level = actual_level;
-    //    #endif
-    //    return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    //}
+    else if (event == EV_2clicks) {
+        if (actual_level < turbo_level) {
+            set_level_and_therm_target(turbo_level);
+        }
+        else {
+            set_level_and_therm_target(memorized_level);
+        }
+        #ifdef USE_SUNSET_TIMER
+        timer_orig_level = actual_level;
+        #endif
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    #endif //#ifndef USE_TINT_RAMPING
 
     #if defined(USE_OUTPUT_MUX) // output channel switching - override the 4C function
     else if (event == EV_4clicks) {
@@ -387,8 +389,8 @@ uint8_t steady_state(Event event, uint16_t arg) {
     }
     #endif
 
-    // 9 clicks: toggle smooth vs discrete ramping
-    else if (event == EV_9clicks) {
+    // 8 clicks: toggle smooth vs discrete ramping
+    else if (event == EV_8clicks) {
         ramp_style = !ramp_style;
         save_config();
         #ifdef START_AT_MEMORIZED_LEVEL
@@ -438,6 +440,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
     //}
     //#endif
 
+    #ifdef USE_TINT_RAMPING
     //2C: single channel ceiling, and exit to previous if already there
     else if (event == EV_2clicks){
 
@@ -463,6 +466,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
         //memorized_level = nearest_level(actual_level);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
+    #endif //#ifdef USE_TINT_RAMPING
 
     #ifdef USE_RAMP_CONFIG
     // 7H: configure this ramp mode
