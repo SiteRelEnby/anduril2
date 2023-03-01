@@ -33,6 +33,8 @@ The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 1
   * Ramp style selection moved to 8C (does anyone really change ramps that often?...)
   * Momentary mode moved to 12C (may move again in the future)
   * Sunset timer moved to 12H
+* Build-time configuration for some additional stuff (in its own section)
+  * Using aux LEDs to display the battery voltage while the light is on. This is by default only enabled for lights with an RGB button but no RGB aux (e.g. K1), but can be enabled for any light by setting `USE_AUX_RGB_LEDS_WHILE_ON`. For lights with forward facing aux, added `RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF` and `RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW` to customise when the voltage is displayed, so if this causes a problem it can be disabled at low ramp levels.
 * Use a less bzr/bizarre VCS
 * Remove reference to bad childrens' fantasy novels by a terrible person. Please [read another book](https://knowyourmeme.com/memes/read-another-book).
 
@@ -45,6 +47,47 @@ The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 1
 * Shortcuts to turbo modes for each channel (5C/6C)
 * Momentary turbo modes for each channel (5H/6H)
 * An option (in the header file for now) to switch which of the two channels is considered the first for 5-6C/H (might move this to the 9H menu later
+
+# Build-time configuration
+
+Some of the changes in this firmware are only configurable at build-time. Additional parameters for cfg header files added:
+* `#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF 30`: Sets the threshold at which to switch the voltage RGB aux off
+* `#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW 50`: Sets the threshold at which to switch the voltage RGB aux to low mode
+* `#define USE_OPPOSITE_TINTRAMP_KLUDGE`: When defined, makes the light start in channel switching mode. A very inelegant solution but it works so not being redone for now. May be replaced with a better way in the future.
+
+## Building a custom image
+
+Get your light's default firmware and locate the header file. Make a copy of it, and modify the following variables to your preference. These settings will persist across a factory reset.
+
+```
+//disable simple UI by default
+//#undef SIMPLE_UI_ACTIVE
+
+//#define SIMPLE_UI_FLOOR       // simple UI floor
+//#define SIMPLE_UI_CEIL  100   // simple UI ceiling
+//#define SIMPLE_UI_STEPS 5     // simple UI stepped ramp length
+
+//#define RAMP_SMOOTH_FLOOR   1   // smooth ramp floor
+//#define RAMP_SMOOTH_CEIL    130 // smooth ramp ceiling
+//#define RAMP_DISCRETE_FLOOR 1   // smooth ramp floor
+//define RAMP_DISCRETE_CEIL   130 // stepped ramp ceiling
+//#define RAMP_DISCRETE_STEPS 10  // stepped ramp length
+
+//#define USE_AUX_RGB_LEDS_WHILE_ON //enable voltage readout via aux when on
+//#undef USE_AUX_RGB_LEDS_WHILE_ON  //disable voltage readout via aux when on
+
+//#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF 30 //at or below here, aux off while on
+//#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW 50 //at or below here, aux low while on
+
+//#define RAMP_STYLE 0 //0 is smooth, 1 is stepped
+
+//#define DEFAULT_MANUAL_MEMORY 50       //ramp level (1-150)
+//#define DEFAULT_MANUAL_MEMORY_TIMER 60 //minutes
+
+//#define DEFAULT_AUTOLOCK_TIME 60       //minutes
+
+
+```
 
 # UI reference
 Single channel lights should be working but are currently relatively low on additional features.
