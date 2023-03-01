@@ -13,10 +13,13 @@ then
 	git checkout -b main
 	git branch -D master
 fi
-git grep -l MISCHIEF_MANAGED | xargs -n1 sed -i 's/MISCHIEF_MANAGED/TRANS_RIGHTS_ARE_HUMAN_RIGHTS/g'
-git grep -l MISCHIEF_NOT_MANAGED | xargs -n1 sed -i 's/MISCHIEF_NOT_MANAGED/TRANS_RIGHTS_ARE_STILL_HUMAN_RIGHTS/g'
+git grep -l MISCHIEF_MANAGED | grep -v "${0}" | xargs -n1 sed -i 's/MISCHIEF_MANAGED/TRANS_RIGHTS_ARE_HUMAN_RIGHTS/g'
+git grep -l MISCHIEF_NOT_MANAGED | grep -v "${0}" | xargs -n1 sed -i 's/MISCHIEF_NOT_MANAGED/TRANS_RIGHTS_ARE_STILL_HUMAN_RIGHTS/g'
 git add -A ; git commit -m 'assert("trans rights!");'
 ls | grep -v -e 'ToyKeeper' -e 'bin' | xargs git rm -r
 cd ToyKeeper
-ls | grep -Ev -e '\.h$' -e 'battcheck' -e 'spaghetti-monster' | xargs git rm -r
+ls | grep -Ev -e '\.h$' -e 'spaghetti-monster' | xargs git rm -r
+cd ..
+git mv ToyKeeper/* ./
+git rm -r ToyKeeper || true
 git add -A && git commit -m 'removed other fw'
