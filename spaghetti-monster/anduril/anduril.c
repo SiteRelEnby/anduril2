@@ -268,6 +268,9 @@ void loop() {
     #ifdef USE_AUX_RGB_LEDS_WHILE_ON
     // display battery charge on RGB button during use
     //TODO: make high/low brightness configurable
+
+    if (current_state != strobe_state){ //don't update LED with battery status in strobe mode
+
     #ifdef RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF
     if (actual_level > RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF) { //skip over the whole code path if ramp is below off threshold
     #endif //#ifdef RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF
@@ -286,6 +289,7 @@ void loop() {
     #ifdef RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF
     } //jump here if skipping this entire code path because level is low
     #endif //#ifdef RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF
+    } //don't update LED with battery status in strobe mode
     #endif //#ifdef USE_AUX_RGB_LEDS_WHILE_ON
 
     if (0) {}  // placeholder
