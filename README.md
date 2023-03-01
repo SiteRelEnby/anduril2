@@ -33,6 +33,12 @@ The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 1
   * Ramp style selection moved to 8C (does anyone really change ramps that often?...)
   * Momentary mode moved to 12C (may move again in the future)
   * Sunset timer moved to 12H
+* Incorporated some changes from [starryalley](https://github.com/starryalley/Anduril2):
+  * Candle and strobe modes should work the same way now
+    * 2C to cycle to next strobe, 3C to cycle to previous.
+    * 4C to decrease candle/lighting mode activity, 5C to increase, 6C to reset
+    * 6H in candle mode to change candle style
+  * Temperature aux LED mode (after voltage in the cycle)
 * Build-time configuration for some additional stuff (in its own section)
   * Using aux LEDs to display the battery voltage while the light is on. This is by default only enabled for lights with an RGB button but no RGB aux (e.g. K1), but can be enabled for any light by setting `USE_AUX_RGB_LEDS_WHILE_ON`. For lights with forward facing aux, added `RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF` and `RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW` to customise when the voltage is displayed, so if this causes a problem it can be disabled at low ramp levels.
 * Use a less bzr/bizarre VCS
