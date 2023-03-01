@@ -113,3 +113,8 @@
 #define DEFAULT_AUTOLOCK_TIME 60
 
 #define BLINK_AT_RAMP_MIDDLE
+
+//if using , sets the threshold (ramp level 1-150) below which the voltage LED display will be switched to low/off
+//TODO: runtime-configurable? or just switch the whole thing on/off?
+#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF 30
+#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW 50
