@@ -137,10 +137,10 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
         return EVENT_HANDLED;
     }
 
-    if (current_state != strobe_state){ //disable special tint ramping stuff when in strobe mode to avoid Weird Things happening
+    else if (current_state != strobe_state){ //disable special tint ramping stuff when in strobe mode to avoid Weird Things happening
 
         //4H: momentary opposite channel
-        else if (event == EV_click4_hold) {
+        if (event == EV_click4_hold) {
             //if (! arg) {  // first frame only, to allow thermal regulation to work
                 if (momentary_opposite_active == 0) {
                         //invert tint ramp
