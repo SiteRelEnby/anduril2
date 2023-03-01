@@ -281,18 +281,17 @@ uint8_t off_state(Event event, uint16_t arg) {
     // 7 clicks: change indicator LED mode
     //moved to 8C
     else if (event == EV_8clicks) {
-        uint8_t mode = (indicator_led_mode & 3) + 1;
+        uint8_t mode = (indicator_led_mode & 0xf) + 1;
         #ifdef TICK_DURING_STANDBY
-        mode = mode & 3;
+        mode = mode % 6;
         #else
         mode = mode % 3;
         #endif
         #ifdef INDICATOR_LED_SKIP_LOW
         if (mode == 1) { mode ++; }
         #endif
-        indicator_led_mode = (indicator_led_mode & 0b11111100) | mode;
-        // redundant, sleep tick does the same thing
-        //indicator_led_update(indicator_led_mode & 0x03, arg);
+        indicator_led_mode = (indicator_led_mode & 0xf0) | mode;
+        indicator_led_update(mode, 0);
         save_config();
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
