@@ -96,6 +96,7 @@ Get your light's default firmware and locate the header file. Make a copy of it,
 
 //#define DEFAULT_AUTOLOCK_TIME 60       //minutes
 
+//#define DEFAULT_THERM_CEIL 50          //degrees
 
 ```
 
