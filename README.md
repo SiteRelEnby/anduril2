@@ -40,6 +40,7 @@ The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 1
     * 6H in candle mode to change candle style
     * Additional strobe mode: Fireworks mode (`USE_FIREWORK_MODE`), after lightning mode
     * On tint ramping lights, two additional strobe modes to switch and ramp between channels (after tactical strobe mode)
+    * Blink aux/button red in off/lockout modes when battery is <= 3.2V
   * Green LED on power-on instead of blinking main LEDs
   * Temperature aux LED mode (after voltage in the cycle)
 * Build-time configuration for some additional stuff (in its own section)
