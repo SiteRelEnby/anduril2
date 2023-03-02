@@ -270,8 +270,8 @@ uint8_t strobe_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #ifdef USE_MOMENTARY_MODE
-    // 8 clicks: go to momentary mode (momentary strobe)
-    else if (event == EV_8clicks) {
+    // 12 clicks: go to momentary mode (momentary strobe)
+    else if (event == EV_12clicks) {
         set_state(momentary_state, 0);
         set_level(0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
