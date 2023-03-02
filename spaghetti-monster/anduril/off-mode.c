@@ -32,13 +32,12 @@ uint8_t off_state(Event event, uint16_t arg) {
     #endif
     // turn emitter off when entering state
     if (event == EV_enter_state) {
-        #ifdef USE_AUX_RGB_LEDS
+        #if defined(USE_AUX_RGB_LEDS) || defined(USE_INDICATOR_LED)
         aux_led_reset = 1;
         #endif
         set_level(0);
         #ifdef USE_INDICATOR_LED
-        // redundant, sleep tick does the same thing
-        //indicator_led_update(indicator_led_mode & 0x03, 0);
+        indicator_led_update(indicator_led_mode & 0xf, 0);
         #elif defined(USE_AUX_RGB_LEDS)
         rgb_led_update(rgb_led_off_mode, 0);
         #endif
@@ -55,8 +54,7 @@ uint8_t off_state(Event event, uint16_t arg) {
         if (arg > HOLD_TIMEOUT) {
             go_to_standby = 1;
             #ifdef USE_INDICATOR_LED
-            // redundant, sleep tick does the same thing
-            //indicator_led_update(indicator_led_mode & 0x03, arg);
+            indicator_led_update(indicator_led_mode & 0xf, 0);
             #elif defined(USE_AUX_RGB_LEDS)
             rgb_led_update(rgb_led_off_mode, arg);
             #endif
@@ -76,12 +74,26 @@ uint8_t off_state(Event event, uint16_t arg) {
             #endif
         }
         #endif
-        #ifdef USE_INDICATOR_LED
-        indicator_led_update(indicator_led_mode & 0x03, arg);
-        #elif defined(USE_AUX_RGB_LEDS)
-        rgb_led_update(rgb_led_off_mode, arg);
-        #endif
 
+        #ifdef DUAL_VOLTAGE_FLOOR
+        if (((voltage < VOLTAGE_LOW_SAFE) && (voltage > DUAL_VOLTAGE_FLOOR)) || (voltage < DUAL_VOLTAGE_LOW_LOW_SAFE)) {
+        #else
+        if (voltage < VOLTAGE_LOW_SAFE) {
+        #endif
+            #ifdef USE_INDICATOR_LED
+            indicator_led_update(6, arg);
+            #elif defined(USE_AUX_RGB_LEDS)
+            rgb_led_update(RGB_RED|RGB_BREATH, arg);
+            #else
+            if (0 == (arg & 0x1f)) blink_once();
+            #endif
+        } else {
+            #ifdef USE_INDICATOR_LED
+            indicator_led_update(indicator_led_mode & 0xf, arg);
+            #elif defined(USE_AUX_RGB_LEDS)
+            rgb_led_update(rgb_led_off_mode, arg);
+            #endif
+        }
         #ifdef USE_AUTOLOCK
             // lock the light after being off for N minutes
             uint16_t ticks = autolock_time * SLEEP_TICKS_PER_MINUTE;
@@ -274,7 +286,7 @@ uint8_t off_state(Event event, uint16_t arg) {
     #ifdef USE_MOMENTARY_MODE
     // 5 clicks: momentary mode
     //moved to 11C
-    else if (event == EV_11clicks) {
+    else if (event == EV_12clicks) {
         blink_once();
         set_state(momentary_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
