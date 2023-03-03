@@ -57,6 +57,9 @@ done
 # summary
 echo "===== $PASS builds succeeded, $FAIL failed ====="
 #echo "PASS: $PASSED"
+exitcode=0
 if [ 0 != $FAIL ]; then
   echo "FAIL:$FAILED"
+  exitcode=1
 fi
+exit $exitcode
