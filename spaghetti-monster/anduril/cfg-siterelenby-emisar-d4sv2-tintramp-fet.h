@@ -75,6 +75,14 @@
 // speed up party strobe; the FET is really fast
 #undef PARTY_STROBE_ONTIME
 
+// button timing for turning light on/off:
+// B_PRESS_T:   activate as soon as button is pressed
+// B_RELEASE_T: activate when user lets go of button
+// B_TIMEOUT_T: activate when we're sure the user won't double-click
+// defaults are release on, timeout off
+#define B_TIMING_ON B_RELEASE_T
+#define B_TIMING_OFF B_TIMEOUT_T
+
 #undef RGB_LED_OFF_DEFAULT //Hanklight default: 0x18
 #undef RGB_LED_LOCKOUT_DEFAULT
 
@@ -119,5 +127,13 @@
 
 //thresholds (ramp level 1-150) below which the voltage LED display will be switched to low/off. Useless without USE_AUX_RGB_LEDS_WHILE_ON
 //TODO: runtime-configurable?
-#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF 30 //at or below here, aux off
+#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF 20 //at or below here, aux off
 #define RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW 50 //at or below here, aux on low
+
+// button timing for turning light on/off:
+// B_PRESS_T:   activate as soon as button is pressed
+// B_RELEASE_T: activate when user lets go of button
+// B_TIMEOUT_T: activate when we're sure the user won't double-click
+// defaults are release on, timeout off
+#define B_TIMING_ON B_TIMEOUT_T
+#define B_TIMING_OFF B_TIMEOUT_T
