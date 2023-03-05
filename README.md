@@ -165,14 +165,16 @@ Single channel lights should be working but are currently relatively low on addi
 |12H| sunset mode | (nothing) | sunset mode | (nothing) |
 
 ## Roadmap
-
+* Modularise most stuff e.g. dual channel turbo modes into a separate file and make it optional at build time
+  * Modularise starryalley mods
+    * Integrate startup modes? should be easy to make into a build time option
+* Better integrate multiple modifications to some parts of aux LED code
 * TODO: momentary opposite channel from 4H in off mode?
 * Find something useful for 3C on single channel
 * Option (possibly in light-specific header file) to change which channel is considered channel 1 (as it stands the same value ended up being right for both of my lights but this obviously depends on the specific light)
 * Possibly move momentary opposite channel to a higher button combo and the turbo shortcuts down (after some use of this fw, have discovered I use those more than momentary opposite at current ramp level)
 * New aux modes
-* New, possibly-optional mode shortcuts
-* Move momentary mode somewhere else and make it harder to accidentally activate
+* New mode shortcuts
 * Additional configuration options
 * Fix a few kludges
 * Some kind of script to automatically make a custom build with the user's preferred config the factory reset default?
