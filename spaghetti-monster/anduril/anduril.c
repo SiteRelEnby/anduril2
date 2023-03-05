@@ -216,7 +216,9 @@ void setup() {
         // blink green at power-on to let user know power is connected
         #if defined(USE_AUX_RGB_LEDS)
         rgb_led_update(RGB_GREEN|RGB_HIGH, 0);
-        delay_4ms(10);
+        //delay_4ms(10);
+        //longer delay
+        delay_4ms(20);
         rgb_led_update(RGB_OFF, 0);
         #else
         // or just blink main emitter if we have no AUX LED
