@@ -17,6 +17,8 @@ Included as a submodule, to use it, run `git submodule update --init`. Note that
 
 Example build scripts and header files for my lights (`build-siterelenby-*` and `./ToyKeeper/spaghetti-monster/anduril/cfg-siterelenby*.h`) including a few extra default settings vs the default model header files.
 
+Build scripts and image should work fine with the default codebase as well.
+
 # Current upstream version this mod is based on
 
 10/02/2023
@@ -41,8 +43,8 @@ The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 1
     * Additional strobe mode: Fireworks mode (`USE_FIREWORK_MODE`), after lightning mode
     * On tint ramping lights, two additional strobe modes to switch and ramp between channels (after tactical strobe mode)
     * Blink aux/button red in off/lockout modes when battery is <= 3.2V
-      * Increased the speed and time in an on state of the breating animation (aux will still switch off entirely below 3V)
-  * Green LED on power-on instead of blinking main LEDs
+      * Increased the speed and time in an on state of the breathing animation (aux will still switch off entirely below 3V)
+  * Green aux LEDs on power-on instead of blinking main LEDs
   * Temperature aux LED mode (after voltage in the cycle)
 * Made the default aux blinking mode blink more often and intensely
 * Build-time configuration for some additional stuff (in its own section)
@@ -69,7 +71,7 @@ Some of the changes in this firmware are only configurable at build-time. Additi
 
 ## Building a custom image
 
-Get your light's default firmware and locate the header file. Make a copy of it, and modify the following variables to your preference. These settings will persist across a factory reset.
+Get your light's default firmware and locate the correct header file, as this contains important hardware-specific config. Make a copy of it, and modify the following variables to your preference. These settings will persist across a factory reset (making it much more convenient to build an image once, then if ytour settings ever get messed up, you can factory reset to go back to *your* settings. Most of these are fairly self-explanatory. Note that the first half *SHOULD* work in stock unmodified anduril too, but this has not been tested by me personally. See above for build-time settings added by mods.
 
 ```
 //disable simple UI by default
@@ -85,11 +87,12 @@ Get your light's default firmware and locate the header file. Make a copy of it,
 //define RAMP_DISCRETE_CEIL   130 // stepped ramp ceiling
 //#define RAMP_DISCRETE_STEPS 10  // stepped ramp length
 
-//#define USE_AUX_RGB_LEDS_WHILE_ON //enable voltage readout via aux when on
-//#undef USE_AUX_RGB_LEDS_WHILE_ON  //disable voltage readout via aux when on
+//enable voltage readout via aux when on (see also RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF and RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW )
+//#define USE_AUX_RGB_LEDS_WHILE_ON 
 
-//#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF 30 //at or below here, aux off while on
-//#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW 50 //at or below here, aux low while on
+//disable voltage readout via aux when on
+//#undef USE_AUX_RGB_LEDS_WHILE_ON 
+
 
 //#define RAMP_STYLE 0 //0 is smooth, 1 is stepped
 
@@ -100,6 +103,18 @@ Get your light's default firmware and locate the header file. Make a copy of it,
 
 //#define DEFAULT_THERM_CEIL 50          //degrees
 
++// button timing for turning light on/off:
++// B_PRESS_T:   activate as soon as button is pressed
++// B_RELEASE_T: activate when user lets go of button
++// B_TIMEOUT_T: activate when we're sure the user won't double-click
++// defaults are release on, timeout off
++#define B_TIMING_ON B_RELEASE_T
++#define B_TIMING_OFF B_TIMEOUT_T
+
+//==========   settings related to my mods, will be ignored in stock anduril:
+//#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF 30 //at or below here, aux off while on
+//#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW 50 //at or below here, aux low while on
+//#define USE_OPPOSITE_TINTRAMP_KLUDGE //start in channel switching mode rather than ramping
 ```
 
 # UI reference
@@ -163,6 +178,19 @@ Single channel lights should be working but are currently relatively low on addi
 |10H| ramp extras config | ramp extras config | ramp extras | ramp extras |
 |12C| momentary mode | (nothing) | momentary mode | (nothing) | 
 |12H| sunset mode | (nothing) | sunset mode | (nothing) |
+|  |  STROBE MODES | STROBE MODES | STROBE MODES | STROBE MODES |
+|1C| off | off | off | off |
+|1H| brightness up | brightness up | brightness up | brightness up |
+|2C| next mode | next mode | next mode | next mode |
+|2H| brightness down | brightness down | brightness down | brightness down |
+|3C| prev mode | (nothing) | prev mode | (nothing) |
+|3H| tint ramp/switch (not all modes) | tint ramp/switch (not all modes) | (nothing) | (nothing) |
+|4C| reduce candle/lightning activity<br />reduce fireworks brightness | (nothing) | reduce candle/lightning activity<br />reduce fireworks brightness | (nothing) |
+|4H| cycle candle mode style | (nothing) | candle mode style | (nothing) |
+|5C| increase candle/lighting activity | (nothing) | (nothing) | (nothing) |
+|6C| reset candle/lightning activity<br />reset fireworks brightness | (nothing) | reset candle/lightning activity<br />reset fireworks brightness | (nothing) |
+|7C| toggle aux (candle mode only) | (nothing) | toggle candle aux | (nothing) |
+
 
 ## Roadmap
 * Modularise most stuff e.g. dual channel turbo modes into a separate file and make it optional at build time
