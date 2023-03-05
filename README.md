@@ -88,10 +88,10 @@ Get your light's default firmware and locate the correct header file, as this co
 //#define RAMP_DISCRETE_STEPS 10  // stepped ramp length
 
 //enable voltage readout via aux when on (see also RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF and RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW )
-//#define USE_AUX_RGB_LEDS_WHILE_ON 
+//#define USE_AUX_RGB_LEDS_WHILE_ON
 
 //disable voltage readout via aux when on
-//#undef USE_AUX_RGB_LEDS_WHILE_ON 
+//#undef USE_AUX_RGB_LEDS_WHILE_ON
 
 
 //#define RAMP_STYLE 0 //0 is smooth, 1 is stepped
@@ -140,7 +140,7 @@ Single channel lights should be working but are currently relatively low on addi
 |8H|  aux modes | (nothing) | aux modes | (nothing) |
 |9H|  globals config | globals config | globals config | globals config |
 |10H| Simple UI config | simple UI config | simple UI config | simple UI config |
-|12C| Momentary mode | (nothing) |  Momentary mode | (nothing) |
+|12C| Momentary mode | (nothing) | Momentary mode | (nothing) |
 |13H| factory reset | factory reset | factory reset | factory reset |
 |15C| version check | version check| version check | version check |
 |  |  LOCK MODE| LOCK MODE | LOCK MODE | LOCK MODE |
@@ -149,8 +149,8 @@ Single channel lights should be working but are currently relatively low on addi
 |3H|  channel switch (default) | channel switch | moon (ignored) | moon (ignored) |
 |4C|  Unlock to memory | unlock to memory | unlock to mem | unlock to mem |
 |4H|  unlock to floor | unlock to floor | unlock to floor | unlock to floor |
-|5C|  unlock to ch1 turbo |unlock to turbo | unlock to turbo | unlock to turbo | 
-|5H|  momentary ch1 turbo | moon (ignored) | moon (ignored) |  moon (ignored) |
+|5C|  unlock to ch1 turbo |unlock to turbo | unlock to turbo | unlock to turbo |
+|5H|  momentary ch1 turbo | moon (ignored) | moon (ignored) | moon (ignored) |
 |6C|  unlock to ch2 turbo | moon (ignored) | moon (ignored) | moon (ignored) |
 |6H|  momentary ch2 turbo | moon (ignored) | moon (ignored) | moon (ignored) |
 |7C|  (nothing) | aux brightness | (nothing) | aux brightness |
@@ -167,8 +167,8 @@ Single channel lights should be working but are currently relatively low on addi
 |3H|  channel switch (default) | channel switch | momentary turbo | momentary turbo |
 |4C|  off and lock | off and lock | off and lock | off and lock |
 |4H|  momentary channel switch | (nothing) | (nothing) | (nothing)
-|5C|  ch1 turbo | momentary mode | (nothing) | momentary mode | 
-|5H|  momentary ch1 turbo| sunset mode | (nothing) | sunset mode | 
+|5C|  ch1 turbo | momentary mode | (nothing) | momentary mode |
+|5H|  momentary ch1 turbo| sunset mode | (nothing) | sunset mode |
 |6C|  ch2 turbo | (nothing) | (nothing) | (nothing) |
 |6H|  momentary ch2 turbo | (nothing) | (nothing) | (nothing) |
 |7H|  ramp config | ramp config | ramp config | ramp config
@@ -176,20 +176,20 @@ Single channel lights should be working but are currently relatively low on addi
 |8H|  channel switch (opposite) |(nothing) |( nothing) | (nothing) |
 |10C| save memory | save memory | save mem | save mem
 |10H| ramp extras config | ramp extras config | ramp extras | ramp extras |
-|12C| momentary mode | (nothing) | momentary mode | (nothing) | 
+|12C| momentary mode | (nothing) | momentary mode | (nothing) |
 |12H| sunset mode | (nothing) | sunset mode | (nothing) |
 |  |  STROBE MODES | STROBE MODES | STROBE MODES | STROBE MODES |
-|1C| off | off | off | off |
-|1H| brightness up | brightness up | brightness up | brightness up |
-|2C| next mode | next mode | next mode | next mode |
-|2H| brightness down | brightness down | brightness down | brightness down |
-|3C| prev mode | (nothing) | prev mode | (nothing) |
-|3H| tint ramp/switch (not all modes) | tint ramp/switch (not all modes) | (nothing) | (nothing) |
-|4C| reduce candle/lightning activity<br />reduce fireworks brightness | (nothing) | reduce candle/lightning activity<br />reduce fireworks brightness | (nothing) |
-|4H| cycle candle mode style | (nothing) | candle mode style | (nothing) |
-|5C| increase candle/lighting activity | (nothing) | (nothing) | (nothing) |
-|6C| reset candle/lightning activity<br />reset fireworks brightness | (nothing) | reset candle/lightning activity<br />reset fireworks brightness | (nothing) |
-|7C| toggle aux (candle mode only) | (nothing) | toggle candle aux | (nothing) |
+|1C|  off | off | off | off |
+|1H|  brightness up | brightness up | brightness up | brightness up |
+|2C|  next mode | next mode | next mode | next mode |
+|2H|  brightness down | brightness down | brightness down | brightness down |
+|3C|  prev mode | (nothing) | prev mode | (nothing) |
+|3H|  tint ramp/switch (not all modes) | tint ramp/switch (not all modes) | (nothing) | (nothing) |
+|4C|  reduce candle/lightning activity<br />reduce fireworks brightness | (nothing) | reduce candle/lightning activity<br />reduce fireworks brightness | (nothing) |
+|4H|  cycle candle mode style | (nothing) | candle mode style | (nothing) |
+|5C|  increase candle/lighting activity | (nothing) | (nothing) | (nothing) |
+|6C|  reset candle/lightning activity<br />reset fireworks brightness | (nothing) | reset candle/lightning activity<br />reset fireworks brightness | (nothing) |
+|7C|  toggle aux (candle mode only) | (nothing) | toggle candle aux | (nothing) |
 
 
 ## Roadmap
