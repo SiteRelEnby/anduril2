@@ -80,7 +80,7 @@
 // B_RELEASE_T: activate when user lets go of button
 // B_TIMEOUT_T: activate when we're sure the user won't double-click
 // defaults are release on, timeout off
-#define B_TIMING_ON B_RELEASE_T
+#define B_TIMING_ON B_TIMEOUT_T
 #define B_TIMING_OFF B_TIMEOUT_T
 
 #define CANDLE_AMPLITUDE 32
@@ -131,12 +131,4 @@
 //TODO: runtime-configurable?
 #define RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF 5 //aux off for the very lowest levels
 #undef RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW    //no need for this because the DM1.12 optics really don't let the aux interfere with the beam much
-
-// button timing for turning light on/off:
-// B_PRESS_T:   activate as soon as button is pressed
-// B_RELEASE_T: activate when user lets go of button
-// B_TIMEOUT_T: activate when we're sure the user won't double-click
-// defaults are release on, timeout off
-#define B_TIMING_ON B_RELEASE_T
-#define B_TIMING_OFF B_TIMEOUT_T
 
