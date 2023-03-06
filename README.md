@@ -12,8 +12,19 @@ Anduril2 originally by [ToyKeeper](https://code.launchpad.net/~toykeeper/flashli
   * `REMOTE`: name of the remote to push to; if not specified, defaults to `origin`.
 
 # Build utilities
+
+## anduril-buildenv-docker
+
 A fork of [anduril-buildenv-docker](https://github.com/SiteRelEnby/anduril-buildenv-docker) with a bug fixed.
-Included as a submodule, to use it, run `git submodule update --init`. Note that to build the builder you will need a working [buildkit](https://docs.docker.com/build/buildkit) as well as base Docker - I will probably put it on Docker Hub at some point too if I remember to. Feel free to remind me to if you really need it built for you.
+Included as a submodule, to use it, run `git submodule update --init`. Note that to build the builder you will need a working [buildkit](https://docs.docker.com/build/buildkit) as well as base Docker.
+
+Also on docker hub: https://hub.docker.com/r/siterelenby/anduril-builder
+
+`docker pull siterelenby/anduril-builder:latest`
+
+Note that my docker hub builds are multiarch but I have only personally tested on amd64, I can't think of any specific reason it wouldn't work on ARM though.
+
+## Scripts
 
 Example build scripts and header files for my lights (`build-siterelenby-*` and `./ToyKeeper/spaghetti-monster/anduril/cfg-siterelenby*.h`) including a few extra default settings vs the default model header files.
 
