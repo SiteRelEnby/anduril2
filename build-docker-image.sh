@@ -22,7 +22,7 @@ then
 	else
 		init_buildx
 	fi
-	docker buildx build --platform linux/arm/v7,linux/arm64,linux/amd64 --push --tag ${DOCKER_REGISTRY}:anduril-builder:latest .
+	docker buildx build --platform linux/arm/v7,linux/arm64,linux/amd64 --push --tag ${DOCKER_REGISTRY}/anduril-builder:latest .
 	docker pull ${DOCKER_REGISTRY}/anduril-builder:latest
 else
 	docker build --rm -t anduril-builder:latest .
