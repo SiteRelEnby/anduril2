@@ -194,8 +194,8 @@ void rgb_led_update(uint8_t mode, uint8_t arg) {
     #endif
 
     // uses an odd length to avoid lining up with rainbow loop
-    static const uint8_t animation[] = {2, 1, 0, 0,  0, 1, 2, 1,  0,
-                                        0, 0, 1, 2,  1, 0, 0, 0,  1, 2};
+    static const uint8_t animation[] = {2, 2, 2, 1,  1, 1, 1, 1,  1,
+                                        2, 2, 2, 1,  1, 1, 1, 1,  1, 2};
     static const uint8_t animation_breath[] = {0, 1, 2, 2,  2, 1, 0, 0,  1, 2, 2, 2,  1, 0,
                                                0, 1, 2, 2,  2, 1, 0, 0,  1, 2, 2, 2,  1, 0, 0};
     // pick a brightness from the animation sequence
