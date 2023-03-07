@@ -85,12 +85,12 @@ Some of the changes in this firmware are only configurable at build-time. Additi
 Get your light's default firmware and locate the correct header file, as this contains important hardware-specific config. Make a copy of it, and modify the following variables to your preference. These settings will persist across a factory reset (making it much more convenient to build an image once, then if your settings ever get messed up, you can factory reset to go back to *your* settings. Most of these are fairly self-explanatory. Note that the first half *SHOULD* work in stock unmodified anduril too, but this has not been tested by me personally. See above for build-time settings added by mods.
 
 ```
-//disable simple UI by default
-//#undef SIMPLE_UI_ACTIVE
+//#define SIMPLE_UI_ACTIVE 0    // disable simple UI by default/from factory reset
 
 //#define SIMPLE_UI_FLOOR       // simple UI floor
 //#define SIMPLE_UI_CEIL  100   // simple UI ceiling
 //#define SIMPLE_UI_STEPS 5     // simple UI stepped ramp length
+//#define USE_SIMPLE_UI_RAMPING_TOGGLE //enable ramp style switch in Simple UI
 
 //#define RAMP_SMOOTH_FLOOR   1   // smooth ramp floor
 //#define RAMP_SMOOTH_CEIL    130 // smooth ramp ceiling
@@ -98,7 +98,7 @@ Get your light's default firmware and locate the correct header file, as this co
 //define RAMP_DISCRETE_CEIL   130 // stepped ramp ceiling
 //#define RAMP_DISCRETE_STEPS 10  // stepped ramp length
 
-//enable voltage readout via aux when on (see also RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF and RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW )
+//enable voltage readout via aux/switch when on (see also RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF and RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW for modded versions)
 //#define USE_AUX_RGB_LEDS_WHILE_ON
 //disable voltage readout via aux when on
 //#undef USE_AUX_RGB_LEDS_WHILE_ON
@@ -117,9 +117,15 @@ Get your light's default firmware and locate the correct header file, as this co
 // B_RELEASE_T: activate when user lets go of button
 // B_TIMEOUT_T: activate when we're sure the user won't double-click
 // defaults are release on, timeout off
-//#define B_TIMING_ON B_RELEASE_T
-//#define B_TIMING_OFF B_TIMEOUT_T
+//#define B_TIMING_OFF B_TIMEOUT_T //only turn the light off when sure that's what the user wanted, causes 'delayed' off (default)
+//#define B_TIMING_ON B_RELEASE_T //more immediate on, but causes a blink when selecting a higher button combo from off mode (default)
+//#define B_TIMING_ON B_TIMEOUT_T //wait before coming on - prevents a blink when doing other actions (config, lock, etc.) but adds a delay to 1C -> on
+// NOTE: on from lockout is more complicated since there is no way to directly configure it. TODO: should be simple enough to add a delay that's longer than RELEASE_TIMEOUT before momentary from lock...
 
+//#define DEFAULT_2C_STYLE 1  // 0: no turbo. 1: 2C always turbo. 2: 2C goes to top of ramp, or turbo if already at top
+//#define DEFAULT_2C_STYLE_SIMPLE 2  // same but for Simple UI.
+
+#
 //==========   settings related to my mods, will be ignored in stock anduril:
 //#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF 30 //at or below here, aux off while on
 //#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW 50 //at or below here, aux low while on
@@ -201,7 +207,7 @@ Single channel lights should be working but are currently relatively low on addi
 |7C|  toggle aux (candle mode only) | (nothing) | toggle candle aux | (nothing) |
 
 
-## Roadma
+## Roadmap
 * Modularise most stuff e.g. dual channel turbo modes into a separate file and make it optional at build time
   * Modularise starryalley mods
     * Integrate startup modes? should be easy to make into a build time option
@@ -212,6 +218,7 @@ Single channel lights should be working but are currently relatively low on addi
 * Possibly move momentary opposite channel to a higher button combo and the turbo shortcuts down (after some use of this fw, have discovered I use those more than momentary opposite at current ramp level)
 * New aux modes
 * New mode shortcuts
+* Option to delay momentary moon/memory from lock by at least RELEASE_TIMEOUT to match configurability of B_TIMING_ON
 * Additional configuration options
 * Fix a few kludges
 * Some kind of script to automatically make a custom build with the user's preferred config the factory reset default?
