@@ -26,7 +26,7 @@ Note that my docker hub builds are multiarch but I have only personally tested o
 
 ## Scripts
 
-Example build scripts and header files for my lights (`build-siterelenby-*` and `./ToyKeeper/spaghetti-monster/anduril/cfg-siterelenby*.h`) including a few extra default settings vs the default model header files.
+Example build scripts and header files for my lights (`build-siterelenby-*` and `spaghetti-monster/anduril/cfg-siterelenby*.h`) including a few extra default settings vs the default model header files.
 
 Build scripts and image should work fine with the default codebase as well.
 
@@ -50,7 +50,8 @@ The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 1
   * Candle and strobe modes should work the same way now
     * 2C to cycle to next strobe, 3C to cycle to previous.
     * 4C to decrease candle/lighting mode activity, 5C to increase, 6C to reset
-    * 6H in candle mode to change candle style
+    * 4H in candle mode to change candle style
+    * 7C in candle mode to toggle aux LEDs
     * Additional strobe mode: Fireworks mode (`USE_FIREWORK_MODE`), after lightning mode
     * On tint ramping lights, two additional strobe modes to switch and ramp between channels (after tactical strobe mode)
     * Blink aux/button red in off/lockout modes when battery is <= 3.2V
@@ -73,6 +74,16 @@ The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 1
 * Momentary turbo modes for each channel (5H/6H)
 * An option (in the header file for now) to switch which of the two channels is considered the first for 5-6C/H (might move this to the 9H menu later, see note on defaulting to instant switching)
 
+# Lights tested with
+These are lights that I own. Currently all of them are running this fork. Not every single commit or release will be tested on every single light.
+
+* D4Sv2 (dual channel, FET)
+* DM1.12 (FET on flood channel. based on D4Sv2 header file)
+* K1
+* KR1
+* DT8K (based on KR4 header file)
+* D4 (boost driver; no FET)
+
 # Build-time configuration
 
 Some of the changes in this firmware are only configurable at build-time. Additional parameters for cfg header files added:
@@ -87,7 +98,7 @@ Get your light's default firmware and locate the correct header file, as this co
 ```
 //#define SIMPLE_UI_ACTIVE 0    // disable simple UI by default/from factory reset
 
-//#define SIMPLE_UI_FLOOR       // simple UI floor
+//#define SIMPLE_UI_FLOOR 10    // simple UI floor
 //#define SIMPLE_UI_CEIL  100   // simple UI ceiling
 //#define SIMPLE_UI_STEPS 5     // simple UI stepped ramp length
 //#define USE_SIMPLE_UI_RAMPING_TOGGLE //enable ramp style switch in Simple UI
@@ -125,7 +136,6 @@ Get your light's default firmware and locate the correct header file, as this co
 //#define DEFAULT_2C_STYLE 1  // 0: no turbo. 1: 2C always turbo. 2: 2C goes to top of ramp, or turbo if already at top
 //#define DEFAULT_2C_STYLE_SIMPLE 2  // same but for Simple UI.
 
-#
 //==========   settings related to my mods, will be ignored in stock anduril:
 //#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF 30 //at or below here, aux off while on
 //#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW 50 //at or below here, aux low while on
