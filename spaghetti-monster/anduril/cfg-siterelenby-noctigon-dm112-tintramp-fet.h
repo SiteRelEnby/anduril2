@@ -75,6 +75,7 @@
 // speed up party strobe; the FET is really fast
 #undef PARTY_STROBE_ONTIME
 ///////////////////////////////////////////////////////////////////////////////////////
+#define USE_SIMPLE_UI_RAMPING_TOGGLE
 // button timing for turning light on/off:
 // B_PRESS_T:   activate as soon as button is pressed
 // B_RELEASE_T: activate when user lets go of button

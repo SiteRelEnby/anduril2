@@ -61,6 +61,7 @@
 #define SIMPLE_UI_CEIL 100
 #undef SIMPLE_UI_STEPS
 #define SIMPLE_UI_STEPS 5
+#define USE_SIMPLE_UI_RAMPING_TOGGLE
 
 //disable simple UI by default
 #undef SIMPLE_UI_ACTIVE
