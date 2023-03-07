@@ -68,10 +68,10 @@ The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 1
 * 4H for momentary opposite channel
   * At the moment this will invert the ramp, e.g. if you are at a 25/75% mix between the two channels it will flip to 75/25. I may make this behaviour configurable in the future with other options.
 * 8H to use the *opposite* channel switching mode (e.g. if 3C is configured for instant switching, 8H will ramp between channels)
-* Option to make the light start in instant switching mode by default via header file (currently kind of a kludge as it needs a rebuild to change - although fixing that is low priority as I just pick a channel and stick with it)
+* Option to make the light start in instant switching mode by default via header file (currently kind of a kludge as it needs a rebuild to change - although fixing that is low priority as it's not something that many people probably want to change much)
 * Shortcuts to turbo modes for each channel (5C/6C)
 * Momentary turbo modes for each channel (5H/6H)
-* An option (in the header file for now) to switch which of the two channels is considered the first for 5-6C/H (might move this to the 9H menu later
+* An option (in the header file for now) to switch which of the two channels is considered the first for 5-6C/H (might move this to the 9H menu later, see note on defaulting to instant switching)
 
 # Build-time configuration
 
@@ -82,7 +82,7 @@ Some of the changes in this firmware are only configurable at build-time. Additi
 
 ## Building a custom image
 
-Get your light's default firmware and locate the correct header file, as this contains important hardware-specific config. Make a copy of it, and modify the following variables to your preference. These settings will persist across a factory reset (making it much more convenient to build an image once, then if ytour settings ever get messed up, you can factory reset to go back to *your* settings. Most of these are fairly self-explanatory. Note that the first half *SHOULD* work in stock unmodified anduril too, but this has not been tested by me personally. See above for build-time settings added by mods.
+Get your light's default firmware and locate the correct header file, as this contains important hardware-specific config. Make a copy of it, and modify the following variables to your preference. These settings will persist across a factory reset (making it much more convenient to build an image once, then if your settings ever get messed up, you can factory reset to go back to *your* settings. Most of these are fairly self-explanatory. Note that the first half *SHOULD* work in stock unmodified anduril too, but this has not been tested by me personally. See above for build-time settings added by mods.
 
 ```
 //disable simple UI by default
@@ -100,10 +100,8 @@ Get your light's default firmware and locate the correct header file, as this co
 
 //enable voltage readout via aux when on (see also RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF and RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW )
 //#define USE_AUX_RGB_LEDS_WHILE_ON
-
 //disable voltage readout via aux when on
 //#undef USE_AUX_RGB_LEDS_WHILE_ON
-
 
 //#define RAMP_STYLE 0 //0 is smooth, 1 is stepped
 
@@ -114,13 +112,13 @@ Get your light's default firmware and locate the correct header file, as this co
 
 //#define DEFAULT_THERM_CEIL 50          //degrees
 
-+// button timing for turning light on/off:
-+// B_PRESS_T:   activate as soon as button is pressed
-+// B_RELEASE_T: activate when user lets go of button
-+// B_TIMEOUT_T: activate when we're sure the user won't double-click
-+// defaults are release on, timeout off
-+#define B_TIMING_ON B_RELEASE_T
-+#define B_TIMING_OFF B_TIMEOUT_T
+// button timing for turning light on/off:
+// B_PRESS_T:   activate as soon as button is pressed
+// B_RELEASE_T: activate when user lets go of button
+// B_TIMEOUT_T: activate when we're sure the user won't double-click
+// defaults are release on, timeout off
+//#define B_TIMING_ON B_RELEASE_T
+//#define B_TIMING_OFF B_TIMEOUT_T
 
 //==========   settings related to my mods, will be ignored in stock anduril:
 //#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF 30 //at or below here, aux off while on
@@ -203,7 +201,7 @@ Single channel lights should be working but are currently relatively low on addi
 |7C|  toggle aux (candle mode only) | (nothing) | toggle candle aux | (nothing) |
 
 
-## Roadmap
+## Roadma
 * Modularise most stuff e.g. dual channel turbo modes into a separate file and make it optional at build time
   * Modularise starryalley mods
     * Integrate startup modes? should be easy to make into a build time option
