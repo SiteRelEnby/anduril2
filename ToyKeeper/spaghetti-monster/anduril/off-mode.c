@@ -32,7 +32,8 @@ uint8_t off_state(Event event, uint16_t arg) {
     if (event == EV_enter_state) {
         set_level(0);
         #ifdef USE_INDICATOR_LED
-        indicator_led(indicator_led_mode & 0x03);
+        // redundant, sleep tick does the same thing
+        //indicator_led_update(indicator_led_mode & 0x03, 0);
         #elif defined(USE_AUX_RGB_LEDS)
         rgb_led_update(rgb_led_off_mode, 0);
         #endif
@@ -49,7 +50,8 @@ uint8_t off_state(Event event, uint16_t arg) {
         if (arg > HOLD_TIMEOUT) {
             go_to_standby = 1;
             #ifdef USE_INDICATOR_LED
-            indicator_led(indicator_led_mode & 0x03);
+            // redundant, sleep tick does the same thing
+            //indicator_led_update(indicator_led_mode & 0x03, arg);
             #elif defined(USE_AUX_RGB_LEDS)
             rgb_led_update(rgb_led_off_mode, arg);
             #endif
@@ -70,7 +72,7 @@ uint8_t off_state(Event event, uint16_t arg) {
         }
         #endif
         #ifdef USE_INDICATOR_LED
-        indicator_led_update(indicator_led_mode, arg);
+        indicator_led_update(indicator_led_mode & 0x03, arg);
         #elif defined(USE_AUX_RGB_LEDS)
         rgb_led_update(rgb_led_off_mode, arg);
         #endif
@@ -277,7 +279,8 @@ uint8_t off_state(Event event, uint16_t arg) {
         if (mode == 1) { mode ++; }
         #endif
         indicator_led_mode = (indicator_led_mode & 0b11111100) | mode;
-        indicator_led(mode);
+        // redundant, sleep tick does the same thing
+        //indicator_led_update(indicator_led_mode & 0x03, arg);
         save_config();
         return MISCHIEF_MANAGED;
     }
@@ -346,4 +349,3 @@ uint8_t off_state(Event event, uint16_t arg) {
 
 
 #endif
-

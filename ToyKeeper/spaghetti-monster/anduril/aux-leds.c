@@ -24,7 +24,7 @@
 
 
 #if defined(USE_INDICATOR_LED) && defined(TICK_DURING_STANDBY)
-void indicator_led_update(uint8_t mode, uint8_t arg) {
+void indicator_led_update(uint8_t mode, uint8_t tick) {
     // turn off aux LEDs when battery is empty
     #ifdef DUAL_VOLTAGE_FLOOR
     if (((voltage < VOLTAGE_LOW) && (voltage > DUAL_VOLTAGE_FLOOR)) || (voltage < DUAL_VOLTAGE_LOW_LOW)) {
@@ -32,15 +32,24 @@ void indicator_led_update(uint8_t mode, uint8_t arg) {
     if (voltage < VOLTAGE_LOW) {
     #endif
         indicator_led(0); 
-        return; 
     }
-    
-    // beacon-like mode for the indicator LED
-    if ((mode & 0b00000011) == 0b00000011) {
+    //#ifdef USE_INDICATOR_LOW_BAT_WARNING
+    #ifndef DUAL_VOLTAGE_FLOOR // this isn't set up for dual-voltage lights like the Sofirn SP10 Pro
+    // fast blink a warning when battery is low but not critical
+    else if (voltage < VOLTAGE_RED) {
+        indicator_led(mode & (((tick & 0b0010)>>1) - 3));
+    }
+    #endif
+    // normal steady output, 0/1/2 = off / low / high
+    else if ((mode & 0b00001111) < 3) {
+        indicator_led(mode);
+    }
+    // beacon-like blinky mode
+    else {
         #ifdef USE_OLD_BLINKING_INDICATOR
 
         // basic blink, 1/8th duty cycle
-        if (! (arg & 7)) {
+        if (! (tick & 7)) {
             indicator_led(2);
         }
         else {
@@ -52,7 +61,7 @@ void indicator_led_update(uint8_t mode, uint8_t arg) {
         // fancy blink, set off/low/high levels here:
         static const uint8_t seq[] = {0, 1, 2, 1,  0, 0, 0, 0,
                                       0, 0, 1, 0,  0, 0, 0, 0};
-        indicator_led(seq[arg & 15]);
+        indicator_led(seq[tick & 15]);
 
         #endif  // ifdef USE_OLD_BLINKING_INDICATOR
     }
