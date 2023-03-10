@@ -71,7 +71,7 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     else if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
     #else
     if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
-    #endif
+    #endif //#ifdef USE_TINT_RAMPING
         // hold: lowest floor
         // click, hold: highest floor (or manual mem level)
         uint8_t lvl = ramp_floors[0];
