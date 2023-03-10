@@ -21,7 +21,7 @@ while read line
 do
 	git rm -r "${line}"
 	#git doesn't automatically remove multiple levels deep dirs
-	[[ -d "${line}" && rm --one-file-system -r "${line}" ]]
+	[[ -d "${line}" ]] && rm --one-file-system -r "${line}"
 done <<< $(ls | grep -v -e 'ToyKeeper' -e 'bin' )
 cd ToyKeeper
 ls | grep -Ev -e '\.h$' -e '\.c$' -e 'meta' -e 'COPYING' -e 'spaghetti-monster' -e 'anduril' | xargs git rm -r
