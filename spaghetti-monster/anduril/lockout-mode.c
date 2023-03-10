@@ -81,7 +81,13 @@ uint8_t lockout_state(Event event, uint16_t arg) {
             if (manual_memory) lvl = manual_memory;
             #endif
         } else {  // anything except second click
+            #ifdef WAIT_FOR_1H_WHEN_LOCKED
+            if (arg > HOLD_TIMEOUT) { //only use momentary moon if it is definitely 1H (not if the user is trying to do more clicks)
+            #endif
             if (ramp_floors[1] < lvl) lvl = ramp_floors[1];
+            #ifdef WAIT_FOR_1H_WHEN_LOCKED
+            }
+            #endif
         }
         set_level(lvl);
     }
