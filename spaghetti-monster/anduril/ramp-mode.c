@@ -151,14 +151,18 @@ uint8_t steady_state(Event event, uint16_t arg) {
     }
     #endif //#ifndef USE_TINT_RAMPING
 
-    //#ifdef USE_LOCKOUT_MODE
-    //// 4 clicks: shortcut to lockout mode
-    //else if (event == EV_4clicks) {
-    //    set_level(0);
-    //    set_state(lockout_state, 0);
-    //    return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    //}
-    //#endif
+    #ifdef USE_LOCKOUT_MODE
+    #ifndef DISABLE_4C_LOCK_FROM_RAMP
+    #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
+    // 4 clicks: shortcut to lockout mode
+    else if (event == EV_4clicks) {
+        set_level(0);
+        set_state(lockout_state, 0);
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    #endif //ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
+    #endif //ifndef DISABLE_4C_LOCK_FROM_RAMP
+    #endif //ifdef USE_LOCKOUT_MODE
 
     // hold: change brightness (brighter, dimmer)
     // click, hold: change brightness (dimmer)
@@ -434,10 +438,10 @@ uint8_t steady_state(Event event, uint16_t arg) {
     //2C: single channel ceiling, and exit to previous if already there
     else if (event == EV_2clicks){
 
-	if (actual_level == ramp_ceil) { //if we're already at 200%
+        if (actual_level == ramp_ceil) { //if we're already at 200%
             set_level_and_therm_target(memorized_level); //go back to previous level if we set it (TODO: does this work right if ramped manually to ceiling?)
         }
-	else {
+    else {
             memorized_level = nearest_level(actual_level); //save previous level
             set_level_and_therm_target(ramp_ceil); //go to ceiling
         }
@@ -452,7 +456,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
             memorized_level = nearest_level(actual_level); //save previous level
             set_level_and_therm_target(MAX_LEVEL);
         }
-	//set_level_and_therm_target(turbo_level);
+        //set_level_and_therm_target(turbo_level);
         //memorized_level = nearest_level(actual_level);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }

@@ -326,8 +326,11 @@ uint8_t off_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 7 clicks (hold last): change RGB aux LED color
-    //moved to 8H
+    #if defined(USE_8C_AUX_CONFIG)
     else if (event == EV_click8_hold) {
+    #else
+    else if (event == EV_click7_hold) {
+    #endif
         setting_rgb_mode_now = 1;
         if (0 == (arg & 0x3f)) {
             uint8_t mode = (rgb_led_off_mode & 0x0f) + 1;
@@ -338,7 +341,11 @@ uint8_t off_state(Event event, uint16_t arg) {
         rgb_led_update(rgb_led_off_mode, arg);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
+    #if defined(USE_8C_AUX_CONFIG)
     else if (event == EV_click8_hold_release) {
+    #else
+    else if (event == EV_click7_hold_release) {
+    #endif
         setting_rgb_mode_now = 0;
         save_config();
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
