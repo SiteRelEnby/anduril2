@@ -72,6 +72,9 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     #else
     if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
     #endif //#ifdef USE_TINT_RAMPING
+        #ifdef WAIT_FOR_MOMENTARY_WHEN_LOCKED
+        if (arg > HOLD_TIMEOUT) { //only use momentary moon if it is definitely 1H (not if the user is trying to do more clicks)
+        #endif
         // hold: lowest floor
         // click, hold: highest floor (or manual mem level)
         uint8_t lvl = ramp_floors[0];
@@ -81,15 +84,12 @@ uint8_t lockout_state(Event event, uint16_t arg) {
             if (manual_memory) lvl = manual_memory;
             #endif
         } else {  // anything except second click
-            #ifdef WAIT_FOR_1H_WHEN_LOCKED
-            if (arg > HOLD_TIMEOUT) { //only use momentary moon if it is definitely 1H (not if the user is trying to do more clicks)
-            #endif
             if (ramp_floors[1] < lvl) lvl = ramp_floors[1];
-            #ifdef WAIT_FOR_1H_WHEN_LOCKED
-            }
-            #endif
         }
         set_level(lvl);
+        #ifdef WAIT_FOR_MOMENTARY_WHEN_LOCKED
+        }
+        #endif
     }
     // button was released
     else if ((event & (B_CLICK | B_PRESS)) == (B_CLICK)) {
