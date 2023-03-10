@@ -213,9 +213,12 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     #endif
 
     #if defined(USE_INDICATOR_LED)
-    // 7 clicks: rotate through indicator LED modes (lockout mode)
-    //moved to 8C
+    // 7/8 clicks: rotate through indicator LED modes (lockout mode)
+    #if defined(USE_8C_AUX_CONFIG)
     else if (event == EV_8clicks) {
+    #else
+    else if (event == EV_7clicks) {
+    #endif
         #if defined(USE_INDICATOR_LED)
             uint8_t mode = indicator_led_mode >> 4;
             #ifdef TICK_DURING_STANDBY
@@ -236,8 +239,11 @@ uint8_t lockout_state(Event event, uint16_t arg) {
 
     #elif defined(USE_AUX_RGB_LEDS)
     // 7 clicks: change RGB aux LED pattern
-    //moved to 8C
+    #if defined(USE_8C_AUX_CONFIG)
     else if (event == EV_8clicks) {
+    #else
+    else if (event == EV_7clicks) {
+    #endif
         uint8_t mode = (rgb_led_lockout_mode >> 4) + 1;
         mode = mode % RGB_LED_NUM_PATTERNS;
         rgb_led_lockout_mode = (mode << 4) | (rgb_led_lockout_mode & 0x0f);
