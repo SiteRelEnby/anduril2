@@ -201,7 +201,11 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
             }
             return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
         }
+        #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
+        else if (event == EV_click5_hold_release){
+        #else
         else if (event == EV_click4_hold_release){
+        #endif
             //go back to ramp mode
             tint = prev_tint;
             set_level_and_therm_target(prev_level);
