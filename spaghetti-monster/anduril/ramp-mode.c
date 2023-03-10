@@ -161,14 +161,14 @@ uint8_t steady_state(Event event, uint16_t arg) {
         save_config();
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-    #elif defined(USE_LOCKOUT_MODE)
-    // 4 clicks: shortcut to lockout mode
-    else if (event == EV_4clicks) {
-        set_level(0);
-        set_state(lockout_state, 0);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    }
-    #endif
+    //#ifdef USE_LOCKOUT_MODE
+    //// 4 clicks: shortcut to lockout mode
+    //else if (event == EV_4clicks) {
+    //    set_level(0);
+    //    set_state(lockout_state, 0);
+    //    return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    //}
+    //#endif
 
     // hold: change brightness (brighter, dimmer)
     // click, hold: change brightness (dimmer)
