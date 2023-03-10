@@ -138,3 +138,7 @@
 // defaults are release on, timeout off
 #define B_TIMING_ON B_TIMEOUT_T
 #define B_TIMING_OFF B_TIMEOUT_T
+
+#define USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
+#define USE_8C_AUX_CONFIG
+#define USE_FIREWORK_MODE
