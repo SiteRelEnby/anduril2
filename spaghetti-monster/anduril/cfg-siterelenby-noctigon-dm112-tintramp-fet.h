@@ -133,3 +133,6 @@
 #define RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF 5 //aux off for the very lowest levels
 #undef RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW    //no need for this because the DM1.12 optics really don't let the aux interfere with the beam much
 
+#define USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
+#define USE_8C_AUX_CONFIG
+#define USE_FIREWORK_MODE
