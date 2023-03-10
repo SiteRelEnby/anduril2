@@ -139,8 +139,12 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
 
     else if (current_state != strobe_state){ //disable special tint ramping stuff when in strobe mode to avoid Weird Things happening
 
-        //4H: momentary opposite channel
+        //4/6H: momentary opposite channel
+        #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
         if (event == EV_click4_hold) {
+        #else
+        if (event == EV_click6_hold) {
+        #endif
             //if (! arg) {  // first frame only, to allow thermal regulation to work
                 if (momentary_opposite_active == 0) {
                         //invert tint ramp
@@ -158,7 +162,11 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
             //else { tint = 254; }
         }
         //return to first channel on release
+        #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
+        else if (event == EV_click4_hold_release) {
+        #else
         else if (event == EV_click6_hold_release) {
+        #endif
             tint = tint ^ 0xFF;
             momentary_opposite_active = 0;
             //if (tint >= 129) { tint = 1; }
@@ -170,13 +178,21 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
         //6C: reserved for switching between stepped and smooth tint ramping (TODO)
 
         //5C: Channel 1 turbo shortcut // TODO: config option to swap channels around?
+        #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
+        else if (event == EV_5clicks) {
+        #else
         else if (event == EV_4clicks) {
+        #endif
             tint = 254;
             set_level_and_therm_target(130);
             return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
         }
         //5H: Momentary channel 1 turbo
+        #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
+        else if (event == EV_click5_hold) {
+        #else
         else if (event == EV_click4_hold) {
+        #endif
             if (!arg) {
                 prev_tint = tint;
                 prev_level = actual_level;
@@ -191,15 +207,22 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
             set_level_and_therm_target(prev_level);
             return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
         }
-
         //6C: channel 2 turbo shortcut
+        #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
+        else if (event == EV_6clicks) {
+        #else
         else if (event == EV_5clicks) {
-            tint = 1;
+        #endif
+            tint = 1; //max flood on my dm1.12
             set_level_and_therm_target(130);
             return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
         }
         //6H: Momentary channel 2 turbo
+        #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
+        else if (event == EV_click6_hold) {
+        #else
         else if (event == EV_click5_hold) {
+        #endif
             if (!arg){
                 prev_tint = tint;
                 prev_level = actual_level;
@@ -208,12 +231,15 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
             }
             return EVENT_HANDLED;
         }
+        #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
+        else if (event == EV_click6_hold_release){
+        #else
         else if (event == EV_click5_hold_release){
+        #endif
             //go back to ramp mode
             tint = prev_tint;
             set_level_and_therm_target(prev_level);
             return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-            //return EVENT_HANDLED;
         }
 
     } //disable special tint ramping stuff when in strobe mode to avoid Weird Things happening

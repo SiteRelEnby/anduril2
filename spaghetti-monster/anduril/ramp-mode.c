@@ -169,6 +169,20 @@ uint8_t steady_state(Event event, uint16_t arg) {
     //    return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     //}
     //#endif
+    #else
+    #ifdef USE_LOCKOUT_MODE
+    #ifndef DISABLE_4C_LOCK_FROM_RAMP
+    #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
+    // 4 clicks: shortcut to lockout mode
+    else if (event == EV_4clicks) {
+        set_level(0);
+        set_state(lockout_state, 0);
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    #endif //ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
+    #endif //ifndef DISABLE_4C_LOCK_FROM_RAMP
+    #endif //ifdef USE_LOCKOUT_MODE
+    #endif
 
     // hold: change brightness (brighter, dimmer)
     // click, hold: change brightness (dimmer)
