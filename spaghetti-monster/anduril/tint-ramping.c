@@ -197,7 +197,7 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
         #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
         else if (event == EV_click5_hold) {
         #else
-        else if (((event == EV_click4_hold) && (current_state == steady_state)) || (event == EV_click5_hold)) { //4H when on, otherwise 5H
+        else if (((event == EV_click4_hold) && (current_state == steady_state)) || ((event == EV_click5_hold) && current_state != steady_state)) { //4H when on, otherwise 5H
         #endif
             if (!arg) {
                 prev_tint = tint;
@@ -210,7 +210,7 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
         #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
         else if (event == EV_click5_hold_release){
         #else
-        else if (((event == EV_click4_hold_release) && (current_state == steady_state)) || (event == EV_click5_hold_release)) { //4H when on, otherwise 5H
+        else if (((event == EV_click4_hold_release) && (current_state == steady_state)) || ((event == EV_click5_hold_release) && current_state != steady_state)) { //4H when on, otherwise 5H
         #endif
             //go back to ramp mode
             tint = prev_tint;
@@ -221,7 +221,7 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
         #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
         else if (event == EV_6clicks) {
         #else
-        else if (((event == EV_5clicks) && (current_state == steady_state)) || (event == EV_6clicks)) { //5H when on, otherwise 6H
+        else if (((event == EV_5clicks) && (current_state == steady_state)) || ((event == EV_6clicks) && current_state != steady_state)) { //5H when on, otherwise 6H
         #endif
             tint = 1; //max flood on my dm1.12
             set_level_and_therm_target(130);
@@ -231,7 +231,7 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
         #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
         else if (event == EV_click6_hold) {
         #else
-        else if (((event == EV_click5_hold) && (current_state == steady_state)) || (event == EV_click6_hold)) { //5H when on, otherwise 6H
+        else if (((event == EV_click5_hold) && (current_state == steady_state)) || ((event == EV_click6_hold) && current_state != steady_state)) { //5H when on, otherwise 6H
         #endif
             if (!arg){
                 prev_tint = tint;
@@ -244,7 +244,7 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
         #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
         else if (event == EV_click6_hold_release){
         #else
-        else if (((event == EV_click5_hold_release) && (current_state == steady_state)) || (event == EV_click6_hold_release)) { //5H when on, otherwise 6H
+        else if (((event == EV_click5_hold_release) && (current_state == steady_state)) || ((event == EV_click6_hold_release) && current_state != steady_state)) { //5H when on, otherwise 6H
         #endif
             //go back to ramp mode
             tint = prev_tint;
