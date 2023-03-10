@@ -187,7 +187,7 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
         #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
         else if (event == EV_5clicks) { //5C from any mode
         #else
-        else if (((event == EV_4clicks) && (current_state == steady_state)) || (event == EV_5clicks)) { //4C when on, otherwise 5C
+        else if (((event == EV_4clicks) && (current_state == steady_state)) || ((event == EV_5clicks) && current_state != steady_state)) { //4C when on, otherwise 5C
         #endif
             tint = 254;
             set_level_and_therm_target(130);
@@ -223,7 +223,7 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
         #else
         else if (((event == EV_5clicks) && (current_state == steady_state)) || ((event == EV_6clicks) && current_state != steady_state)) { //5H when on, otherwise 6H
         #endif
-            tint = 1; //max flood on my dm1.12
+            tint = 1;
             set_level_and_therm_target(130);
             return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
         }
