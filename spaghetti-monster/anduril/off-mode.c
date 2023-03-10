@@ -294,8 +294,11 @@ uint8_t off_state(Event event, uint16_t arg) {
     #endif
     #ifdef USE_INDICATOR_LED
     // 7 clicks: change indicator LED mode
-    //moved to 8C
+    #if defined(USE_8C_AUX_CONFIG)
     else if (event == EV_8clicks) {
+    #else
+    else if (event == EV_7clicks) {
+    #endif
         uint8_t mode = (indicator_led_mode & 0xf) + 1;
         #ifdef TICK_DURING_STANDBY
         mode = mode % 6;
@@ -312,8 +315,11 @@ uint8_t off_state(Event event, uint16_t arg) {
     }
     #elif defined(USE_AUX_RGB_LEDS)
     // 7 clicks: change RGB aux LED pattern
-    //moved to 8C
+    #if defined(USE_8C_AUX_CONFIG)
     else if (event == EV_8clicks) {
+    #else
+    else if (event == EV_7clicks) {
+    #endif
         uint8_t mode = (rgb_led_off_mode >> 4) + 1;
         mode = mode % RGB_LED_NUM_PATTERNS;
         rgb_led_off_mode = (mode << 4) | (rgb_led_off_mode & 0x0f);
