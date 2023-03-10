@@ -107,6 +107,7 @@
 //#ifdef TINT_STYLE
 //#undef TINT_STYLE 
 ////#define TINT_STYLE 0 // channel ramping
+
 //#define TINT_STYLE 1 // channel switching
 //#endif
 #undef USE_OPPOSITE_TINTRAMP_KLUDGE //FIXME: this is a kind of ugly hack... tried to make the above work but don't have the time/spoons to invest right now. See tint-ramping.c for where this has an effect.
@@ -145,4 +146,4 @@
 
 #define DEFAULT_TINT 64
 
-#define WAIT_FOR_1H_WHEN_LOCKED
+#define WAIT_FOR_MOMENTARY_WHEN_LOCKED
