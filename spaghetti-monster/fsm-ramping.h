@@ -37,8 +37,12 @@ uint8_t aux_led_reset = 1;
 #ifdef TINT_RAMP_TOGGLE_ONLY
 uint8_t tint = 0;
 #else
+#ifdef DEFAULT_TINT
+uint8_t tint = DEFAULT_TINT;
+#else
 uint8_t tint = 128;
-#endif
+#endif //ifdef DEFAULT_TINT
+#endif //ifdef TINT_RAMP_TOGGLE_ONLY
 #define USE_TRIANGLE_WAVE
 #endif
 

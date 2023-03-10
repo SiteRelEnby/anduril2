@@ -74,6 +74,7 @@ The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 1
   * Option to have the turbo shortcuts from 4C/H and 5C/H instead (`USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING`).
     * Implies `DISABLE_4C_LOCK_FROM_RAMP` and moves momentary opposite channel to 6H to make room.
 * 8H to use the *opposite* channel switching mode (e.g. if 3C is configured for instant switching, 8H will ramp between channels)
+* `DEFAULT_TINT` build-time option
 * Option to make the light start in instant switching mode by default via header file (currently kind of a kludge as it needs a rebuild to change - although fixing that is low priority as it's not something that many people probably want to change much)
 * Shortcuts to turbo modes for each channel (5C/6C)
 * Momentary turbo modes for each channel (5H/6H)
@@ -142,6 +143,12 @@ Get your light's default firmware and locate the correct header file, as this co
 //#define DEFAULT_2C_STYLE_SIMPLE 2  // same but for Simple UI.
 
 //==========   settings related to my mods, will be ignored in stock anduril:
+
+// default channel mix for when the light first starts up or is reset. Can be set to any value 1-254.
+//#define DEFAULT_TINT 1
+//#define DEFAULT_TINT 128
+//#define DEFAULT_TINT 254
+
 //#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF 30 //at or below here, aux off while on
 //#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW 50 //at or below here, aux low while on
 //#define USE_OPPOSITE_TINTRAMP_KLUDGE //start in channel switching mode rather than ramping
