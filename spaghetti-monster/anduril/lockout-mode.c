@@ -169,11 +169,13 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #ifndef USE_TINT_RAMPING
+    #ifndef DISABLE_UNLOCK_TO_TURBO
     // 5 clicks: exit and turn on at ceiling level
     else if (event == EV_5clicks) {
         set_state(steady_state, MAX_LEVEL);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
+    #endif
     #endif
 
     // Extended Simple UI adds Aux Config, so do this code later
@@ -193,7 +195,8 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     #endif
 
     #ifdef USE_TINT_RAMPING
-    //5C: Channel 1 turbo shortcut // TODO: make this do something sensible on single channel lights. config option to swap channels around? CH1 should have the FET on most lights? which channel is which? logically 254 should be 2, is flood on W1/519A DM1.12
+    #ifndef DISABLE_UNLOCK_TO_TURBO
+    //5C: Channel 1 turbo shortcut // TODO: make this do something sensible on single channel lights. config option to swap channels around?
     else if (event == EV_5clicks) {
         tint = 254;
         set_state(steady_state, 130);
@@ -202,7 +205,7 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         //current_event = 0;
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-    //6C: Flood channel turbo shortcut // TODO: make this do something sensible on single channel lights. config option to swap channels around? CH1 should have the FET on most lights? which channel is which? logically 254 should be 2
+    //6C: Channel 2 turbo shortcut // TODO: make this do something sensible on single channel lights. config option to swap channels around?
     else if (event == EV_6clicks) {
         tint = 1;
         set_state(steady_state, 130);
@@ -211,7 +214,8 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         //current_event = 0;
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-    #endif
+    #endif //ifndef DISABLE_UNLOCK_TO_TURBO
+    #endif //ifdef USE_TINT_RAMPING
 
     #if defined(USE_INDICATOR_LED)
     // 7/8 clicks: rotate through indicator LED modes (lockout mode)
@@ -254,8 +258,11 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 7H: change RGB aux LED color
-    //moved to 8H
+    #if defined(USE_8C_AUX_CONFIG)
     else if (event == EV_click8_hold) {
+    #else
+    else if (event == EV_click7_hold) {
+    #endif
         setting_rgb_mode_now = 1;
         if (0 == (arg & 0x3f)) {
             uint8_t mode = (rgb_led_lockout_mode & 0x0f) + 1;
@@ -267,8 +274,11 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 7H, release: save new color
-    //moved to 8H
+    #if defined(USE_8C_AUX_CONFIG)
     else if (event == EV_click8_hold_release) {
+    #else
+    else if (event == EV_click7_hold_release) {
+    #endif
         setting_rgb_mode_now = 0;
         save_config();
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
