@@ -113,3 +113,4 @@
 // defaults are release on, timeout off
 #define B_TIMING_ON B_TIMEOUT_T
 #define B_TIMING_OFF B_TIMEOUT_T
+#define USE_FIREWORK_MODE
