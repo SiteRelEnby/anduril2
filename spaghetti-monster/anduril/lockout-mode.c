@@ -69,8 +69,23 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     else if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
+    #else //single channel lights
+    #ifndef DISABLE_MOMENTARY_TURBO_FROM_LOCK
+    // 3C: momentary turbo
+    if (event == EV_click3_hold){
+        if (!arg){
+            set_level_and_therm_target(150);
+            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        }
+    }
+    else if (event == EV_click3_hold_release){
+        set_level(0);
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    else if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
     #else
     if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
+    #endif //ifndef DISABLE_MOMENTARY_TURBO_FROM_LOCK
     #endif //#ifdef USE_TINT_RAMPING
         #ifdef MOMENTARY_WHEN_LOCKED_DELAY
         if (arg > MOMENTARY_WHEN_LOCKED_DELAY) { //only use momentary if it is a longer hold than the user specified timeout (which can be less than HOLD_TIMEOUT)
@@ -189,8 +204,8 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         set_state(steady_state, MAX_LEVEL);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-    #endif
-    #endif
+    #endif //ifndef DISABLE_UNLOCK_TO_TURBO
+    #endif //ifndef USE_TINT_RAMPING
 
     ////////// Every action below here is blocked in the simple UI //////////
     #ifdef USE_SIMPLE_UI
