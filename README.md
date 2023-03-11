@@ -168,6 +168,8 @@ Get your light's default firmware and locate the correct header file, as this co
 
 //#define WAIT_FOR_MOMENTARY_WHEN_LOCKED //delay momentary from lock until input is confirmed to be 1H - prevents main LEDs flashing when doing more clicks from lock.
 //#define MOMENTARY_WHEN_LOCKED_DELAY 12 //delay momentary from lock by this many clock ticks (default HOLD_TIMEOUT is 24), useful for a shorter delay than WAIT_FOR_MOMENTARY_WHEN_LOCKED
+
+//#define DISABLE_MOMENTARY_TURBO_FROM_LOCK
 ```
 
 # UI reference
@@ -200,7 +202,7 @@ Single channel lights should be working but are currently relatively low on addi
 |Input|Dual channel modded|Dual channel stock|Single channel modded|Single channel stock | |
 |1H|  momentary moon | momentary moon|momentary moon|momentary moon | |
 |2H|  momentary floor/mem| momentary floor/mem| momentary floor/mem | momentary floor/mem | |
-|3H|  channel switch (default) | channel switch | moon (ignored) | moon (ignored) | |
+|3H|  channel switch (default) | channel switch | momentary turbo | moon (ignored) | `DISABLE_MOMENTARY_TURBO_FROM_LOCK` |
 |4C|  Unlock to memory | unlock to memory | unlock to mem | unlock to mem | |
 |4H|  unlock to floor | unlock to floor | unlock to floor | unlock to floor | |
 |5C|  unlock to ch1 turbo |unlock to turbo | unlock to turbo | unlock to turbo | `DISABLE_UNLOCK_TO_TURBO` |
