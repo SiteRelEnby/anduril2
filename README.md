@@ -81,6 +81,9 @@ The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 1
 * Momentary turbo modes for each channel (5H/6H)
 * An option (in the header file for now) to switch which of the two channels is considered the first for 5-6C/H (might move this to the 9H menu later, see note on defaulting to instant switching)
 
+## Single channel lights only
+* 3H from lock for turbo (can be disabled with `DISABLE_MOMENTARY_TURBO_FROM_LOCK`)
+
 # Lights tested with
 These are lights that I own. Currently all of them are running this fork. Not every single commit or release will be tested on every single light.
 
