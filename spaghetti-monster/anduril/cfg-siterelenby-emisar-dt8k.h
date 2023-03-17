@@ -142,3 +142,5 @@
 #define DEFAULT_2C_STYLE 1  // 1: 2C for turbo. 2: 2C for top of ramp, or turbo if already ramped to top
 #define DEFAULT_2C_STYLE_SIMPLE 2 //same for simple UI
 #define USE_FIREWORK_MODE
+
+#define USE_BEACON_BRIGHTNESS_RAMP
