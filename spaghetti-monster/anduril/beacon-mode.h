@@ -23,6 +23,10 @@
 // beacon timing
 uint8_t beacon_seconds = 2;
 
+#ifdef USE_BEACON_ON_CONFIG
+uint8_t beacon_on_ms = 100;
+#endif
+
 // beacon mode
 uint8_t beacon_state(Event event, uint16_t arg);
 inline void beacon_mode_iter();

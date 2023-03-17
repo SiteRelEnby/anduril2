@@ -56,6 +56,7 @@ The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 1
     * On tint ramping lights, two additional strobe modes to switch and ramp between channels (after tactical strobe mode)
     * Blink aux/button red in off/lockout modes when battery is <= 3.2V
       * Increased the speed and time in an on state of the breathing animation (aux will still switch off entirely below 3V)
+  * 2H in beacon mode to set the time the light is on (1 blink = 100ms) (`USE_BEACON_ON_CONFIG`)
   * Green aux LEDs on power-on instead of blinking main LEDs
   * Temperature aux LED mode (after voltage in the cycle)
 * Added options to only use momentary mode from lock after enough time has passed to make sure it was only 1H (`WAIT_FOR_MOMENTARY_WHEN_LOCKED` / `MOMENTARY_WHEN_LOCKED_DELAY`)
@@ -176,7 +177,7 @@ Get your light's default firmware and locate the correct header file, as this co
 ```
 
 # UI reference
-Single channel lights should be working but are currently relatively low on additional features.
+Stuff that is not changed at all (e.g. thermal and voltage calibration) is not mentioned here.
 
 |Input|Dual channel modded|Dual channel stock|Single channel modded|Single channel stock|Feature flags|
 |-----|-------------------|------------------|---------------------|--------------------|-------------|
@@ -240,25 +241,28 @@ Single channel lights should be working but are currently relatively low on addi
 |12C| momentary mode | (nothing) | momentary mode | (nothing) | |
 |12H| sunset mode | (nothing) | sunset mode | (nothing) | |
 |   | STROBE MODES | STROBE MODES | STROBE MODES | STROBE MODES | |
-|Input|Dual channel modded|Dual channel stock|Single channel modded|Single channel stock|
-|1C|  off | off | off | off |
-|1H|  brightness up | brightness up | brightness up | brightness up |
-|2C|  next mode | next mode | next mode | next mode |
-|2H|  brightness down | brightness down | brightness down | brightness down |
-|3C|  prev mode | (nothing) | prev mode | (nothing) |
-|3H|  tint ramp/switch (not all modes) | tint ramp/switch (not all modes) | (nothing) | (nothing) |
-|4C|  reduce candle/lightning activity<br />reduce fireworks brightness | (nothing) | reduce candle/lightning activity<br />reduce fireworks brightness | (nothing) |
-|4H|  cycle candle mode style | (nothing) | candle mode style | (nothing) |
-|5C|  increase candle/lighting activity | (nothing) | (nothing) | (nothing) |
-|6C|  reset candle/lightning activity<br />reset fireworks brightness | (nothing) | reset candle/lightning activity<br />reset fireworks brightness | (nothing) |
-|7C|  toggle aux (candle mode only) | (nothing) | toggle candle aux | (nothing) |
-
-
+|Input|Dual channel modded|Dual channel stock|Single channel modded|Single channel stock| |
+|1C|  off | off | off | off | |
+|1H|  brightness up | brightness up | brightness up | brightness up | |
+|2C|  next mode | next mode | next mode | next mode | |
+|2H|  brightness down | brightness down | brightness down | brightness down | |
+|3C|  prev mode | (nothing) | prev mode | (nothing) | |
+|3H|  tint ramp/switch (not all modes) | tint ramp/switch (not all modes) | (nothing) | (nothing) | |
+|4C|  reduce candle/lightning activity<br />reduce fireworks brightness | (nothing) | reduce candle/lightning activity<br />reduce fireworks brightness | (nothing) | |
+|4H|  cycle candle mode style | (nothing) | candle mode style | (nothing) | |
+|5C|  increase candle/lighting activity | (nothing) | (nothing) | (nothing) | |
+|6C|  reset candle/lightning activity<br />reset fireworks brightness | (nothing) | reset candle/lightning activity<br />reset fireworks brightness | (nothing) | |
+|7C|  toggle aux (candle mode only) | (nothing) | toggle candle aux | (nothing) | |
+|  |  BLINKY MODES | BLINKY MODES | BLINKY MODES | BLINKY MODES | |
+|Input|Dual channel modded|Dual channel stock|Single channel modded|Single channel stock| |
+|2C|  next mode | next mode | next mode | next mode | |
+|2H|  BEACON MODE: set time light is on for | (nothing) | BEACON MODE: set time light is on for | (nothing) | `USE_BEACON_ON_CONFIG` | |
 ## Roadmap
 * Modularise most stuff e.g. dual channel turbo modes into a separate file and make it optional at build time
   * Modularise starryalley mods
     * Integrate startup modes? should be easy to make into a build time option
 * Better integrate multiple modifications to some parts of aux LED code
+* Make beacon brightness configurable at runtime
 * Find something useful for 3C on single channel (jump to 50%? or user-definable level? back to memory?)
 * Option (possibly in light-specific header file) to change which channel is considered channel 1 (as it stands the same value ended up being right for both of my lights but this obviously depends on the specific light)
 * New aux modes
