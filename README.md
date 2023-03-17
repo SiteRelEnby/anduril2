@@ -15,20 +15,27 @@ Anduril2 originally by [ToyKeeper](https://code.launchpad.net/~toykeeper/flashli
 
 ## anduril-buildenv-docker
 
-A fork of [anduril-buildenv-docker](https://github.com/SiteRelEnby/anduril-buildenv-docker) with a bug fixed.
+A fork of [anduril-buildenv-docker](https://github.com/SiteRelEnby/anduril-buildenv-docker)
+
 Included as a submodule, to use it, run `git submodule update --init`. Note that to build the builder you will need a working [buildkit](https://docs.docker.com/build/buildkit) as well as base Docker.
 
-Also on docker hub: https://hub.docker.com/r/siterelenby/anduril-builder
+Also on Docker Hub: https://hub.docker.com/r/siterelenby/anduril-builder
 
 `docker pull siterelenby/anduril-builder:latest`
 
-Note that my docker hub builds are multiarch but I have only personally tested on amd64, I can't think of any specific reason it wouldn't work on ARM though.
+Note that my automated docker builds of my own projects and tools are multiarch but I have only personally tested on amd64, I can't think of any specific reason it wouldn't work on ARM though.
+
+### Changes
+* Fix bug (full path creation causes issues one some of my boxen when trying to mount a filesystem with subdirs, and is in general useless)
+* Added a proper entrypoint script
+  * Checks for the source directory being mounted at different paths under `/src`
+  * Return non-zero on build failure
 
 ## Scripts
 
 Example build scripts and header files for my lights (`build-siterelenby-*` and `spaghetti-monster/anduril/cfg-siterelenby*.h`) including a few extra default settings vs the default model header files.
 
-Build scripts and image should work fine with the default codebase as well.
+Build scripts and image should work fine with the default codebase as well (in the future these may move to a submodule)
 
 # Current upstream version this mod is based on
 
@@ -260,7 +267,8 @@ Stuff that is not changed at all (e.g. thermal and voltage calibration) is not m
 |Input|Dual channel modded|Dual channel stock|Single channel modded|Single channel stock| |
 |2C|  next mode | next mode | next mode | next mode | |
 |2H|  BEACON MODE: set time light is on for | (nothing) | BEACON MODE: set time light is on for | (nothing) | `USE_BEACON_ON_CONFIG` | |
-## Roadmap
+
+# Roadmap
 * Modularise most stuff e.g. dual channel turbo modes into a separate file and make it optional at build time
   * Modularise starryalley mods
     * Integrate startup modes? should be easy to make into a build time option
@@ -273,3 +281,7 @@ Stuff that is not changed at all (e.g. thermal and voltage calibration) is not m
 * Additional configuration options
 * Fix a few kludges
 * Some kind of script to automatically make a custom build with the user's preferred config the factory reset default?
+
+# General disclaimer
+
+I am not responsible if you brick or otherwise break your light for any reason (bad flash, wrong firmware, mods did something unexpected, etc.). In general, I always test my changes myself on at least one light but I don't keep all of mine up to date with every commit or even every relevant one.
