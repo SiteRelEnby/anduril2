@@ -25,8 +25,12 @@
 inline void beacon_mode_iter() {
     // one iteration of main loop()
     if (! button_last_state) {
-        set_level(memorized_level);
+        set_level(memorized_level); //TODO: set brightness?
+        #ifdef USE_BEACON_ON_CONFIG
+	nice_delay_ms(beacon_on_ms);
+        #else
         nice_delay_ms(100);
+        #endif
         set_level(0);
         nice_delay_ms(((beacon_seconds) * 1000) - 100);
     }
@@ -62,9 +66,22 @@ uint8_t beacon_state(Event event, uint16_t arg) {
     // release hold: save new timing
     else if (event == EV_click1_hold_release) {
         beacon_seconds = 1 + (arg / TICKS_PER_SECOND);
-        save_config();
+        //save_config();
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
+    #ifdef USE_BEACON_ON_CONFIG
+    // 2C: configure time spent on
+    else if (event == EV_click2_hold_release) {
+        if (0 == (arg % TICKS_PER_SECOND)) {
+            blink_once();
+        }
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    else if (event == EV_click2_hold_release) {
+        beacon_on_ms = 100 + (arg / TICKS_PER_SECOND);
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    #endif
     return EVENT_NOT_HANDLED;
 }
 
