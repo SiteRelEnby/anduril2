@@ -57,7 +57,11 @@ uint8_t beacon_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // hold: configure beacon timing
+    #ifndef USE_BEACON_ON_CONFIG
     else if (event == EV_click1_hold) {
+    #else
+    else if ((event == EV_click1_hold) || (event == EV_click2_hold)) {
+    #endif //ifndef USE_BEACON_ON_CONFIG
         if (0 == (arg % TICKS_PER_SECOND)) {
             blink_once();
         }
