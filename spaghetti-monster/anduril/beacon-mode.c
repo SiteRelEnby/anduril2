@@ -82,6 +82,94 @@ uint8_t beacon_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
+    #ifdef USE_BEACON_BRIGHTNESS_RAMP
+    else if ((event == EV_click3_hold) || (event == EV_click4_hold)) {
+        // ramp slower in discrete mode
+        if (ramp_style  &&  (arg % HOLD_TIMEOUT != 0)) {
+            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        }
+        #ifdef USE_RAMP_SPEED_CONFIG
+        // ramp slower if user configured things that way
+        if ((! ramp_style) && (arg % ramp_speed)) {
+            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        }
+        #endif
+        // fix ramp direction on first frame if necessary
+        if (!arg) {
+            // click, hold should always go down if possible
+            if (event == EV_click2_hold) { ramp_direction = -1; }
+            // make it ramp down instead, if already at max
+            else if (actual_level >= mode_max) { ramp_direction = -1; }
+            // make it ramp up if already at min
+            // (off->hold->stepped_min->release causes this state)
+            else if (actual_level <= mode_min) { ramp_direction = 1; }
+        }
+        // if the button is stuck, err on the side of safety and ramp down
+        else if ((arg > TICKS_PER_SECOND * 5
+                    #ifdef USE_RAMP_SPEED_CONFIG
+                    // FIXME: count from time actual_level hits mode_max,
+                    //   not from beginning of button hold
+                    * ramp_speed
+                    #endif
+                    ) && (actual_level >= mode_max)) {
+            ramp_direction = -1;
+        }
+        #ifdef USE_LOCKOUT_MODE
+        // if the button is still stuck, lock the light
+        else if ((arg > TICKS_PER_SECOND * 10
+                    #ifdef USE_RAMP_SPEED_CONFIG
+                    // FIXME: count from time actual_level hits mode_min,
+                    //   not from beginning of button hold
+                    * ramp_speed
+                    #endif
+                    ) && (actual_level <= mode_min)) {
+            blink_once();
+            set_state(lockout_state, 0);
+        }
+        #endif
+        memorized_level = nearest_level((int16_t)actual_level \
+                          + (step_size * ramp_direction));
+        #if defined(BLINK_AT_RAMP_CEIL) || defined(BLINK_AT_RAMP_MIDDLE)
+        // only blink once for each threshold
+        if ((memorized_level != actual_level) && (
+                0  // for easier syntax below
+                #ifdef BLINK_AT_RAMP_MIDDLE_1
+                || (memorized_level == BLINK_AT_RAMP_MIDDLE_1)
+                #endif
+                #ifdef BLINK_AT_RAMP_MIDDLE_2
+                || (memorized_level == BLINK_AT_RAMP_MIDDLE_2)
+                #endif
+                #ifdef BLINK_AT_RAMP_CEIL
+                || (memorized_level == mode_max)
+                #endif
+                #ifdef BLINK_AT_RAMP_FLOOR
+                || (memorized_level == mode_min)
+                #endif
+                )) {
+            blip();
+        }
+        #endif
+        #if defined(BLINK_AT_STEPS)
+        uint8_t foo = ramp_style;
+        ramp_style = 1;
+        uint8_t nearest = nearest_level((int16_t)actual_level);
+        ramp_style = foo;
+        // only blink once for each threshold
+        if ((memorized_level != actual_level) &&
+                    (ramp_style == 0) &&
+                    (memorized_level == nearest)
+                    )
+        {
+            blip();
+        }
+        #endif
+        set_level_and_therm_target(memorized_level);
+        #ifdef USE_SUNSET_TIMER
+        timer_orig_level = actual_level;
+        #endif
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    #endif
     return EVENT_NOT_HANDLED;
 }
 
