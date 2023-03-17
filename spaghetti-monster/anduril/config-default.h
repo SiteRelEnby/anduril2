@@ -197,3 +197,4 @@
 #endif
 
 #define USE_FIREWORK_MODE
+#define USE_BEACON_ON_CONFIG
