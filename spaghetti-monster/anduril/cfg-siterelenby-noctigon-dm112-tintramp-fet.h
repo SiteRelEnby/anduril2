@@ -107,7 +107,7 @@
 //FIXME: this is broken.
 ////default to channel switching for DM1.12
 //#ifdef TINT_STYLE
-//#undef TINT_STYLE 
+//#undef TINT_STYLE
 ////#define TINT_STYLE 0 // channel ramping
 //#define TINT_STYLE 1 // channel switching
 //#endif
@@ -139,6 +139,7 @@
 
 #define DEFAULT_TINT 1
 
-#define MOMENTARY_WHEN_LOCKED_DELAY 6
-
 #define USE_BEACON_BRIGHTNESS_RAMP
+#define MOMENTARY_WHEN_LOCKED_DELAY 4
+
+#define USE_BEACON_ON_CONFIG

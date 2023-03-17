@@ -24,7 +24,7 @@
 uint8_t beacon_seconds = 2;
 
 #ifdef USE_BEACON_ON_CONFIG
-uint8_t beacon_on_ms = 100;
+uint16_t beacon_on_ms = 100;
 #endif
 
 // beacon mode

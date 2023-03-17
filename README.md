@@ -56,7 +56,8 @@ The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 1
     * On tint ramping lights, two additional strobe modes to switch and ramp between channels (after tactical strobe mode)
     * Blink aux/button red in off/lockout modes when battery is <= 3.2V
       * Increased the speed and time in an on state of the breathing animation (aux will still switch off entirely below 3V)
-  * 2H in beacon mode to set the time the light is on (1 blink = 100ms) (`USE_BEACON_ON_CONFIG`)
+  * 2H in beacon mode to set the time the light is on (1 blink = 100ms) (`USE_BEACON_ON_CONFIG`). Each blink while held is 100ms of time on.
+    * Note that there is no thermal regulation in this mode so don't overheat your light - test it before leaving it unattended.
   * Green aux LEDs on power-on instead of blinking main LEDs
   * Temperature aux LED mode (after voltage in the cycle)
 * Added options to only use momentary mode from lock after enough time has passed to make sure it was only 1H (`WAIT_FOR_MOMENTARY_WHEN_LOCKED` / `MOMENTARY_WHEN_LOCKED_DELAY`)
@@ -174,6 +175,8 @@ Get your light's default firmware and locate the correct header file, as this co
 //#define MOMENTARY_WHEN_LOCKED_DELAY 12 //delay momentary from lock by this many clock ticks (default HOLD_TIMEOUT is 24), useful for a shorter delay than WAIT_FOR_MOMENTARY_WHEN_LOCKED
 
 //#define DISABLE_MOMENTARY_TURBO_FROM_LOCK
+
+//#define USE_BEACON_ON_CONFIG //in beacon mode, 2H to set on time - each blink is 100ms.
 ```
 
 # UI reference
