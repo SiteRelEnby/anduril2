@@ -53,9 +53,9 @@
 #define RAMP_DISCRETE_STEPS 7
 
 // safe limit ~30% power / ~1300 lm (can sustain 900 lm)
-#define SIMPLE_UI_FLOOR RAMP_DISCRETE_FLOOR
-#define SIMPLE_UI_CEIL 120
-#define SIMPLE_UI_STEPS 5
+//#define SIMPLE_UI_FLOOR RAMP_DISCRETE_FLOOR
+//#define SIMPLE_UI_CEIL 120
+//#define SIMPLE_UI_STEPS 5
 
 // stop panicking at ~1300 lm
 #define THERM_FASTER_LEVEL 120
@@ -90,6 +90,8 @@
 #define SIMPLE_UI_CEIL 100
 #define SIMPLE_UI_STEPS 5
 #define USE_SIMPLE_UI_RAMPING_TOGGLE
+#define DEFAULT_2C_STYLE 1  // 0: no turbo. 1: 2C always turbo. 2: 2C goes to top of ramp, or turbo if already at top
+#define DEFAULT_2C_STYLE_SIMPLE 2  // same but for Simple UI.
 
 #undef RAMP_SMOOTH_FLOOR
 #define RAMP_SMOOTH_FLOOR 1
