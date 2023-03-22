@@ -276,7 +276,6 @@ void loop() {
 
     #ifdef USE_AUX_RGB_LEDS_WHILE_ON
     // display battery charge on RGB button during use
-    //TODO: make high/low brightness configurable
 
     if ((state != strobe_state) && (state != momentary_state )) { //don't update LED with battery status in strobe or momentary mode
 
