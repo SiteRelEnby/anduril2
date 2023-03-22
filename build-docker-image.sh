@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 # Requires BuildKit: https://docs.docker.com/build/buildkit/
 # By default: builds the firmware builder image locally for the local system's arch only.
-# To instead build a multiarch image, pass USE_MULTIARCH=1 and DOCKER_REGISTRY="https://docker-registry.example.com". This *should* work with Docker Hub but I haven't tested it. This may or may not work on Windows, but the default build should work fine, and if you only run Windows and still really want a multiarch image (rather you than me...), feel free to test and fix it; it's not something I see any need for personally so can't really be arsed right now.
+# To instead build a multiarch image, pass BUILD_MULTIARCH=1 and DOCKER_REGISTRY="https://docker-registry.example.com". This *should* work with Docker Hub but I haven't tested it. This may or may not work on Windows, but the default build should work fine, and if you only run Windows and still really want a multiarch image (rather you than me...), feel free to test and fix it; it's not something I see any need for personally so can't really be arsed right now.
 init_buildx(){
 	docker run --privileged --rm tonistiigi/binfmt --install all
 	docker run --rm --privileged multiarch/qemu-user-static --reset -p yes

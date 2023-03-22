@@ -79,6 +79,8 @@
 
 #define THERM_CAL_OFFSET 5
 
+/////////////////////////////////////////////////////////////
+
 //0x00 = off    Low     High    Blinking
 //R             0x10    0x20    0x30
 //R+G           0x11    0x21    0x31
@@ -93,20 +95,6 @@
 #define RGB_LED_OFF_DEFAULT 0x27 //high, disco
 #define RGB_LED_LOCKOUT_DEFAULT 0x18 //low, rainbow
 
-// make candle mode wobble more
-#define CANDLE_AMPLITUDE 32
-
-// stop panicking at ~70% power or ~600 lm
-#define THERM_FASTER_LEVEL 130
-
-#define THERM_RESPONSE_MAGNITUDE 32  // smaller adjustments, this host changes temperature slowly
-#define THERM_NEXT_WARNING_THRESHOLD 32  // more error tolerance before adjusting
-
-// slow down party strobe; this driver can't pulse for 1ms or less
-#define PARTY_STROBE_ONTIME 2
-
-#define THERM_CAL_OFFSET 5
-/////////////////////////////////////////////////////////////
 #define TICK_DURING_STANDBY
 
 // button timing for turning light on/off:
