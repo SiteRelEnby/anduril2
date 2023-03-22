@@ -181,10 +181,17 @@ Get your light's default firmware and locate the correct header file, as this co
 
 //#define DISABLE_UNLOCK_TO_TURBO //disables 5C/6C from lock shortcuts to unlock to turbo
 
-//#define WAIT_FOR_MOMENTARY_WHEN_LOCKED //delay momentary from lock until input is confirmed to be 1H - prevents main LEDs flashing when doing more clicks from lock.
-//#define MOMENTARY_WHEN_LOCKED_DELAY 12 //delay momentary from lock by this many clock ticks (default HOLD_TIMEOUT is 24), useful for a shorter delay than WAIT_FOR_MOMENTARY_WHEN_LOCKED
+//delay momentary from lock until input is confirmed to definitely be 1H - prevents main LEDs flashing when doing more clicks from lock.
+//This setting guarantees a flash will be avoided when unlocking, but might be too slow for many people (including me) - see MOMENTARY_WHEN_LOCKED_DELAY for an alternative.
+//#define WAIT_FOR_MOMENTARY_WHEN_LOCKED
+
+//delay momentary from lock by this many clock ticks (default HOLD_TIMEOUT is 24), useful for a shorter delay than WAIT_FOR_MOMENTARY_WHEN_LOCKED.
+//I find that 2H is enough for me, at least on LEDs with a somewhat high Vf (e.g. 519A, W1/W2), but if you click a bit more slowly or have lower Vf, 3-4 might be good.
+//#define MOMENTARY_WHEN_LOCKED_DELAY 2
 
 //#define DISABLE_MOMENTARY_TURBO_FROM_LOCK
+
+//TODO: #define MOMENTARY_TURBO_FROM_LOCK_TIME_LIMIT 30 //limit momentary turbo from lock to this many seconds as an alternative to disabling it completely
 
 //#define USE_BEACON_ON_CONFIG //in beacon mode, 2H to set on time - each blink is 100ms.
 ```
@@ -206,10 +213,10 @@ Stuff that is not changed at all (e.g. thermal and voltage calibration) is not m
 |5H|  Momentary ch1 turbo | (nothing) | (nothing) | (nothing) | |
 |6C|  ch2 turbo | (nothing) | (nothing) | (nothing) | |
 |6H|  momentary ch2 turbo| (nothing) | (nothing) | (nothing) | |
-|7C|  (nothing) | aux brightness | (nothing) |aux brightness | |
-|7H|  (nothing) | aux mode | (nothing) | aux mode | |
-|8C|  aux brightness | (nothing) | aux brightness | (nothing) | |
-|8H|  aux modes | (nothing) | aux modes | (nothing) | |
+|7C|  aux brightness<br />(no `USE_8C_AUX_CONFIG`) | aux brightness | aux brightness<br />(no `USE_8C_AUX_CONFIG`) | aux brightness | `USE_8C_AUX_CONFIG` |
+|7H|  aux mode<br />(no `USE_8C_AUX_CONFIG`) | aux mode | aux mode<br />(no `USE_8C_AUX_CONFIG`) | aux mode | `USE_8C_AUX_CONFIG` |
+|8C|  aux brightness<br />(with  `USE_8C_AUX_CONFIG`) | (nothing) | aux brightness<br />(with  `USE_8C_AUX_CONFIG`) | (nothing) | `USE_8C_AUX_CONFIG` |
+|8H|  aux mode<br />(with  `USE_8C_AUX_CONFIG`) | (nothing) | aux mode<br />(with  `USE_8C_AUX_CONFIG`) | (nothing) | `USE_8C_AUX_CONFIG` |
 |9H|  globals config | globals config | globals config | globals config | |
 |10H| Simple UI config | simple UI config | simple UI config | simple UI config | |
 |12C| Momentary mode | (nothing) | Momentary mode | (nothing) | |
@@ -245,10 +252,6 @@ Stuff that is not changed at all (e.g. thermal and voltage calibration) is not m
 |5H|  <ul><li>momentary ch1 turbo</li><li>momentary ch1 turbo</li></ul> | sunset mode | (nothing) | sunset mode | `USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING` |
 |6C|  <ul><li>ch2 turbo</li><li>(nothing)</li></ul> | (nothing) | (nothing) | (nothing) | `USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING` |
 |6H|  <ul><li>momentary ch2 turbok</li><li>momentary channel switch</li></ul> | (nothing) | (nothing) | (nothing) | `USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING` |
-|7C|  aux brightness<br />(no `USE_8C_AUX_CONFIG`) | aux brightness | aux brightness<br />(no `USE_8C_AUX_CONFIG`) | aux brightness | `USE_8C_AUX_CONFIG` |
-|7H|  aux mode<br />(no `USE_8C_AUX_CONFIG`) | aux mode | aux mode<br />(no `USE_8C_AUX_CONFIG`) | aux mode | `USE_8C_AUX_CONFIG` |
-|8C|  aux brightness<br />(with  `USE_8C_AUX_CONFIG`) | (nothing) | aux brightness<br />(with  `USE_8C_AUX_CONFIG`) | (nothing) | `USE_8C_AUX_CONFIG` |
-|8H|  aux mode<br />(with  `USE_8C_AUX_CONFIG`) | (nothing) | aux mode<br />(with  `USE_8C_AUX_CONFIG`) | (nothing) | `USE_8C_AUX_CONFIG` |
 |10C| save memory | save memory | save mem | save mem | |
 |10H| ramp extras config | ramp extras config | ramp extras | ramp extras | |
 |12C| momentary mode | (nothing) | momentary mode | (nothing) | |
@@ -272,6 +275,7 @@ Stuff that is not changed at all (e.g. thermal and voltage calibration) is not m
 |2H|  BEACON MODE: set time light is on for | (nothing) | BEACON MODE: set time light is on for | (nothing) | `USE_BEACON_ON_CONFIG` | |
 
 # Roadmap
+* (Configurable?) optional time limit for momentary turbo mode from lock (just in case something wedges the button held)
 * Modularise most stuff e.g. dual channel turbo modes into a separate file and make it optional at build time
   * Modularise starryalley mods
     * Integrate startup modes? should be easy to make into a build time option
