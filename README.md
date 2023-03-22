@@ -152,10 +152,13 @@ Get your light's default firmware and locate the correct header file, as this co
 //#define B_TIMING_ON B_TIMEOUT_T //wait before coming on - prevents a blink when doing other actions (config, lock, etc.) but adds a delay to 1C -> on
 // NOTE: on from lockout is more complicated since there is no way to directly configure it. TODO: should be simple enough to add a delay that's longer than RELEASE_TIMEOUT before momentary from lock...
 
+
 //#define DEFAULT_2C_STYLE 1  // 0: no turbo. 1: 2C always turbo. 2: 2C goes to top of ramp, or turbo if already at top
 //#define DEFAULT_2C_STYLE_SIMPLE 2  // same but for Simple UI.
 
 //==========   settings related to my mods, will be ignored in stock anduril:
+
+//#define MOMENTARY_WHEN_LOCKED_DELAY 2 //number of ticks to wait before activating momentary mode when locked - prevents a flash when inputting a higher number of clicks.
 
 // default channel mix for when the light first starts up or is reset. Can be set to any value 1-254.
 //#define DEFAULT_TINT 1
@@ -170,8 +173,8 @@ Get your light's default firmware and locate the correct header file, as this co
 //#define USE_FIREWORK_MODE //enable fireworks mode
 
 // Moves dual channel turbo shortcuts from 5/6 C/H to 4/5, for ramp mode only. Leaving this unset stays consistent with off/lock modes,
-// but 4C/H functions might be uses less often, so adding an option to put the turbo modes first.
-// This also moves momentary opposite channel to 6H and disables 4C to switch off and lock directly from ramp mode in order to make room.
+// but 4C/H functions might be used less often, so adding an option to put the turbo modes first.
+// This also moves momentary opposite channel to 6H and disables 4C to switch off and lock directly from ramp mode in order to make room. (TODO: make lock shortcut 6C?)
 //#define USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
 
 //#define DISABLE_4C_LOCK_FROM_RAMP //disable 4C -> lock without the above reordering.
