@@ -63,7 +63,7 @@ The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 1
     * On tint ramping lights, two additional strobe modes to switch and ramp between channels (after tactical strobe mode)
     * Blink aux/button red in off/lockout modes when battery is <= 3.2V
       * Increased the speed and time in an on state of the breathing animation (aux will still switch off entirely below 3V)
-    * If aux LEDs are present, use those for lock/unlock/poweron blinks instead of main LEDs (can be disabled by building with `USE_MAIN_LEDS_FOR_ALL_BLINKS`)
+    * If aux LEDs are present, use those for lock/unlock/poweron blinks instead of main LEDs (can be disabled by building with `USE_MAIN_LEDS_FOR_ALL_BLINKS`, e.g. on lights where feedback from the aux is hard to see)
   * 2H in beacon mode to set the time the light is on (1 blink = 100ms) (`USE_BEACON_ON_CONFIG`). Each blink while held is 100ms of time on.
     * Note that there is no thermal regulation in this mode so don't overheat your light - test it before leaving it unattended.
   * Green aux LEDs on power-on instead of blinking main LEDs
@@ -193,6 +193,7 @@ Get your light's default firmware and locate the correct header file, as this co
 //#define DISABLE_MOMENTARY_TURBO_FROM_LOCK
 
 //#define USE_MAIN_LEDS_FOR_ALL_BLINKS //disable using aux/button LED for lock/unlock/poweron blinks instead of the main LEDs.
+//#define BLINK_ONCE_AUX_TIME_4MS 10 //when using aux instead of main LEDs, aux stay on green for this long (4ms increments)
 
 //TODO: #define MOMENTARY_TURBO_FROM_LOCK_TIME_LIMIT 30 //limit momentary turbo from lock to this many seconds as an alternative to disabling it completely
 
@@ -283,6 +284,7 @@ Stuff that is not changed at all (e.g. thermal and voltage calibration) is not m
 * Modularise most stuff e.g. dual channel turbo modes into a separate file and make it optional at build time
   * Modularise starryalley mods
     * Integrate startup modes? should be easy to make into a build time option
+    * Integrate [6H aux control](https://github.com/starryalley/Anduril2#allow-the-use-of-auxindicator-led-in-lower-levels--default_level-level-6c6h-while-light-is-on) and voltage aux while on (as a mode under 6H functionality? would need to allow aux use at any ramp level)
 * Better integrate multiple modifications to some parts of aux LED code
 * Make beacon brightness configurable at runtime
 * Find something useful for 3C on single channel (jump to 50%? or user-definable level? back to memory?)
