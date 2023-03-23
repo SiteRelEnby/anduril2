@@ -27,3 +27,5 @@
 
 // work around bizarre bug: lockout mode fails when set to solid color blinking
 #define USE_K93_LOCKOUT_KLUDGE
+
+#define USE_BEACON_ON_CONFIG
