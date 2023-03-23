@@ -47,7 +47,6 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     #else
     if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
     #endif //ifndef DISABLE_MOMENTARY_TURBO_FROM_LOCK
-    #endif //#ifdef USE_TINT_RAMPING
         #ifdef MOMENTARY_WHEN_LOCKED_DELAY
         if (arg > MOMENTARY_WHEN_LOCKED_DELAY) { //only use momentary if it is a longer hold than the user specified timeout (which can be less than HOLD_TIMEOUT)
         #else
