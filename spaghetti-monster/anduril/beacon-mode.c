@@ -79,6 +79,7 @@ uint8_t beacon_state(Event event, uint16_t arg) {
         beacon_on_ms = 100 * (arg / TICKS_PER_SECOND);
         if (beacon_on_ms < 100){
             beacon_on_ms = 100;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
     return EVENT_NOT_HANDLED;
