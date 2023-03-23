@@ -55,17 +55,22 @@ void blink_once() {
 }
 
 void blink_once_aux() {
-    #if defined(USE_AUX_RGB_LEDS) && !defined(NO_AUX)
-    rgb_led_update(RGB_GREEN|RGB_HIGH, 0);
-    delay_4ms(10);
-    rgb_led_update(RGB_OFF, 0);
-    #elif defined(USE_INDICATOR_LED) && !defined(NO_AUX)
-    indicator_led(2);
-    delay_4ms(10);
-    indicator_led(0);
+    #ifndef USE_MAIN_LEDS_FOR_ALL_BLINKS //feature flag to retain old behaviour
+      #if defined(USE_AUX_RGB_LEDS) && !defined(NO_AUX)
+        rgb_led_update(RGB_GREEN|RGB_HIGH, 0);
+        delay_4ms(10);
+        rgb_led_update(RGB_OFF, 0);
+      #elif defined(USE_INDICATOR_LED) && !defined(NO_AUX)
+        indicator_led(2);
+        delay_4ms(10);
+        indicator_led(0);
+      #else
+      // or fall back to main emitter if we have no AUX LED and no indicator LED
+      blink_once();
+      #endif //if defined(USE_AUX_RGB_LEDS) && !defined(NO_AUX)
     #else
-    // or fall back to main emitter if we have no AUX LED and no indicator LED
-    blink_once();
+      // or fall back to main emitter if we have no AUX LED and no indicator LED
+      blink_once();
     #endif
 }
 

@@ -63,6 +63,7 @@ The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 1
     * On tint ramping lights, two additional strobe modes to switch and ramp between channels (after tactical strobe mode)
     * Blink aux/button red in off/lockout modes when battery is <= 3.2V
       * Increased the speed and time in an on state of the breathing animation (aux will still switch off entirely below 3V)
+    * If aux LEDs are present, use those for lock/unlock/poweron blinks instead of main LEDs (can be disabled by building with `USE_MAIN_LEDS_FOR_ALL_BLINKS`)
   * 2H in beacon mode to set the time the light is on (1 blink = 100ms) (`USE_BEACON_ON_CONFIG`). Each blink while held is 100ms of time on.
     * Note that there is no thermal regulation in this mode so don't overheat your light - test it before leaving it unattended.
   * Green aux LEDs on power-on instead of blinking main LEDs
@@ -186,10 +187,12 @@ Get your light's default firmware and locate the correct header file, as this co
 //#define WAIT_FOR_MOMENTARY_WHEN_LOCKED
 
 //delay momentary from lock by this many clock ticks (default HOLD_TIMEOUT is 24), useful for a shorter delay than WAIT_FOR_MOMENTARY_WHEN_LOCKED.
-//I find that 2H is enough for me, at least on LEDs with a somewhat high Vf (e.g. 519A, W1/W2), but if you click a bit more slowly or have lower Vf, 3-4 might be good.
+//I find that 2 is enough for me, at least on LEDs with a somewhat high Vf (e.g. 519A, W1/W2), but if you click a bit more slowly or have lower Vf, 3-4 might be good.
 //#define MOMENTARY_WHEN_LOCKED_DELAY 2
 
 //#define DISABLE_MOMENTARY_TURBO_FROM_LOCK
+
+//#define USE_MAIN_LEDS_FOR_ALL_BLINKS //disable using aux/button LED for lock/unlock/poweron blinks instead of the main LEDs.
 
 //TODO: #define MOMENTARY_TURBO_FROM_LOCK_TIME_LIMIT 30 //limit momentary turbo from lock to this many seconds as an alternative to disabling it completely
 
@@ -224,12 +227,13 @@ Stuff that is not changed at all (e.g. thermal and voltage calibration) is not m
 |15C| version check | version check| version check | version check | |
 |   |LOCK MODE| LOCK MODE | LOCK MODE | LOCK MODE | |
 |Input|Dual channel modded|Dual channel stock|Single channel modded|Single channel stock | |
-|1H|  momentary moon | momentary moon|momentary moon|momentary moon | |
-|2H|  momentary floor/mem| momentary floor/mem| momentary floor/mem | momentary floor/mem | |
+|1H|  momentary moon | momentary moon | momentary moon | momentary moon | |
+|2H|  momentary floor/mem | momentary floor/mem| momentary floor/mem | momentary floor/mem | |
+|3C|  unlock and stay off | unlock and stay off | unlock and stay off | unlock and stay off | `USE_MAIN_LEDS_FOR_ALL_BLINKS` |
 |3H|  channel switch (default) | channel switch | momentary turbo | moon (ignored) | `DISABLE_MOMENTARY_TURBO_FROM_LOCK` |
 |4C|  Unlock to memory | unlock to memory | unlock to mem | unlock to mem | |
 |4H|  unlock to floor | unlock to floor | unlock to floor | unlock to floor | |
-|5C|  unlock to ch1 turbo |unlock to turbo | unlock to turbo | unlock to turbo | `DISABLE_UNLOCK_TO_TURBO` |
+|5C|  unlock to ch1 turbo | unlock to turbo | unlock to turbo | unlock to turbo | `DISABLE_UNLOCK_TO_TURBO` |
 |5H|  momentary ch1 turbo | moon (ignored) | moon (ignored) | moon (ignored) | |
 |6C|  unlock to ch2 turbo | moon (ignored) | moon (ignored) | moon (ignored) | `DISABLE_UNLOCK_TO_TURBO` |
 |6H|  momentary ch2 turbo | moon (ignored) | moon (ignored) | moon (ignored) | |
@@ -246,7 +250,7 @@ Stuff that is not changed at all (e.g. thermal and voltage calibration) is not m
 |2H|  ramp down | ramp down | ramp down | ramp down | |
 |3C|  200% turbo | ramp style toggle | (nothing (TODO)) | ramp style | |
 |3H|  channel switch (default) | channel switch | momentary turbo | momentary turbo | |
-|4C|  <ul><li>off and lock</li><li>ch1 turbo</li></ul> | off and lock | <ul><li>off and lock</li><li>(nothing)</li></ul> | off and lock | <ul><li>`USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING`</li><li>`DISABLE_4C_LOCK_FROM_RAMP`</li></ul> |
+|4C|  <ul><li>off and lock</li><li>ch1 turbo</li></ul> | off and lock | <ul><li>off and lock</li><li>(nothing)</li></ul> | off and lock | <ul><li>`USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING`</li><li>`DISABLE_4C_LOCK_FROM_RAMP`</li><li>`USE_MAIN_LEDS_FOR_ALL_BLINKS`</li></ul> |
 |4H|  <ul><li>momentary channel switch</li><li>momentary ch1 turbo</li></ul> | (nothing) | (nothing) | (nothing) | `USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING`|
 |5C|  <ul><li>ch1 turbo</li><li>ch2 turbo</li></ul> | momentary mode | (nothing) | momentary mode | `USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING` |
 |5H|  <ul><li>momentary ch1 turbo</li><li>momentary ch1 turbo</li></ul> | sunset mode | (nothing) | sunset mode | `USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING` |
