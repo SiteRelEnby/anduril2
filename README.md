@@ -65,6 +65,7 @@ The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 1
       * Increased the speed and time in an on state of the breathing animation (aux will still switch off entirely below 3V)
     * If aux LEDs are present, use those for lock/unlock/poweron blinks instead of main LEDs (can be disabled by building with `USE_MAIN_LEDS_FOR_ALL_BLINKS`, e.g. on lights where feedback from the aux is hard to see)
   * 2H in beacon mode to set the time the light is on (1 blink = 100ms) (`USE_BEACON_ON_CONFIG`). Each blink while held is 100ms of time on.
+    * Added 3/4H in beacon mode to increase/decrease brightness without exiting. This is not strictly a *new* feature as beacon mode normally uses the last ramped level, it just allows on the fly adjustment. Enabled with `USE_BEACON_BRIGHTNESS_RAMP`.
     * Note that there is no thermal regulation in this mode so don't overheat your light - test it before leaving it unattended.
   * Green aux LEDs on power-on instead of blinking main LEDs
   * Temperature aux LED mode (after voltage in the cycle)
@@ -182,12 +183,12 @@ Get your light's default firmware and locate the correct header file, as this co
 
 //#define DISABLE_UNLOCK_TO_TURBO //disables 5C/6C from lock shortcuts to unlock to turbo
 
-//delay momentary from lock until input is confirmed to definitely be 1H - prevents main LEDs flashing when doing more clicks from lock.
-//This setting guarantees a flash will be avoided when unlocking, but might be too slow for many people (including me) - see MOMENTARY_WHEN_LOCKED_DELAY for an alternative.
+// Delay momentary from lock until input is confirmed to definitely be 1H - prevents main LEDs flashing when doing more clicks from lock.
+// This setting guarantees a flash will be avoided when unlocking, but might be too slow for many people (including me) - see MOMENTARY_WHEN_LOCKED_DELAY for an alternative.
 //#define WAIT_FOR_MOMENTARY_WHEN_LOCKED
 
-//delay momentary from lock by this many clock ticks (default HOLD_TIMEOUT is 24), useful for a shorter delay than WAIT_FOR_MOMENTARY_WHEN_LOCKED.
-//I find that 2 is enough for me, at least on LEDs with a somewhat high Vf (e.g. 519A, W1/W2), but if you click a bit more slowly or have lower Vf, 3-4 might be good.
+// Delay momentary from lock by this many clock ticks (default HOLD_TIMEOUT is 24), useful for a shorter delay than WAIT_FOR_MOMENTARY_WHEN_LOCKED.
+// I find that 2 is enough for me, at least on LEDs with a somewhat high Vf (e.g. 519A, W1/W2), but if you click a bit more slowly or have lower Vf, 3-4 might be good.
 //#define MOMENTARY_WHEN_LOCKED_DELAY 2
 
 //#define DISABLE_MOMENTARY_TURBO_FROM_LOCK
@@ -195,9 +196,10 @@ Get your light's default firmware and locate the correct header file, as this co
 //#define USE_MAIN_LEDS_FOR_ALL_BLINKS //disable using aux/button LED for lock/unlock/poweron blinks instead of the main LEDs.
 //#define BLINK_ONCE_AUX_TIME_4MS 10 //when using aux instead of main LEDs, aux stay on green for this long (4ms increments)
 
-//TODO: #define MOMENTARY_TURBO_FROM_LOCK_TIME_LIMIT 30 //limit momentary turbo from lock to this many seconds as an alternative to disabling it completely
+// TODO: #define MOMENTARY_TURBO_FROM_LOCK_TIME_LIMIT 30 //limit momentary turbo from lock to this many seconds as an alternative to disabling it completely
 
 //#define USE_BEACON_ON_CONFIG //in beacon mode, 2H to set on time - each blink is 100ms.
+//#define USE_BEACON_BRIGHTNESS_RAMP //in beacon mode, 3/4H to ramp brightness up/down
 ```
 
 # UI reference
@@ -278,6 +280,8 @@ Stuff that is not changed at all (e.g. thermal and voltage calibration) is not m
 |Input|Dual channel modded|Dual channel stock|Single channel modded|Single channel stock| |
 |2C|  next mode | next mode | next mode | next mode | |
 |2H|  BEACON MODE: set time light is on for | (nothing) | BEACON MODE: set time light is on for | (nothing) | `USE_BEACON_ON_CONFIG` | |
+|3H|  BEACON MODE: ramp brightness up/down | (nothing) | BEACON MODE: ramp brightness up/down | (nothing) | `USE_BEACON_BRIGHTNESS_RAMP` | |
+|4H|  BEACON MODE: ramp brightness down | (nothing) | BEACON MODE: ramp brightness down | (nothing) | `USE_BEACON_BRIGHTNESS_RAMP` | |
 
 # Roadmap
 * (Configurable?) optional time limit for momentary turbo mode from lock (just in case something wedges the button held)
@@ -285,6 +289,7 @@ Stuff that is not changed at all (e.g. thermal and voltage calibration) is not m
   * Modularise starryalley mods
     * Integrate startup modes? should be easy to make into a build time option
     * Integrate [6H aux control](https://github.com/starryalley/Anduril2#allow-the-use-of-auxindicator-led-in-lower-levels--default_level-level-6c6h-while-light-is-on) and voltage aux while on (as a mode under 6H functionality? would need to allow aux use at any ramp level)
+    * Incorporate more changes from [SammysHP](https://github.com/SammysHP/flashlight-firmware/wiki/Modifications-Overview)
 * Better integrate multiple modifications to some parts of aux LED code
 * Make beacon brightness configurable at runtime
 * Find something useful for 3C on single channel (jump to 50%? or user-definable level? back to memory?)
