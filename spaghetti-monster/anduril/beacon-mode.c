@@ -22,6 +22,10 @@
 
 #include "beacon-mode.h"
 
+#ifdef USE_BEACON_BRIGHTNESS_RAMPING
+static int8_t ramp_direction = 1 ;
+#endif
+
 inline void beacon_mode_iter() {
     // one iteration of main loop()
     if (! button_last_state) {
