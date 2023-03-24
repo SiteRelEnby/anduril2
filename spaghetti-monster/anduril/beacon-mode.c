@@ -92,8 +92,10 @@ uint8_t beacon_state(Event event, uint16_t arg) {
 
     #ifdef USE_BEACON_BRIGHTNESS_RAMP
     else if (event == EV_click3_hold) {
-        beacon_brightness += beacon_ramp_direction;
-        set_level(beacon_brightness);
+        if ( beacon_brightness < 150 ) { //TODO: configurable - use ceiling? have a bump at 130 on dual channel lights?
+          beacon_brightness += beacon_ramp_direction;
+          set_level(beacon_brightness);
+        }
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     else if (event == EV_click3_hold_release) {
@@ -102,8 +104,10 @@ uint8_t beacon_state(Event event, uint16_t arg) {
     }
     else if (event == EV_click4_hold) {
         beacon_ramp_direction = 1;
-        beacon_brightness --;
-        set_level(beacon_brightness);
+        if (beacon_brightness > 1) { //TODO: use ramp floor?
+            beacon_brightness --;
+            set_level(beacon_brightness);
+        }
     }
     #endif
     return EVENT_NOT_HANDLED;
