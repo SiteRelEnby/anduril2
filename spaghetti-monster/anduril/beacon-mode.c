@@ -104,7 +104,7 @@ uint8_t beacon_state(Event event, uint16_t arg) {
     }
     else if (event == EV_click4_hold) {
         beacon_ramp_direction = 1;
-        if (beacon_brightness > 1) { //TODO: use ramp floor?
+        if (beacon_brightness > 2) { //TODO: use ramp floor? Level 1 is unreliable for 519A lights.
             beacon_brightness --;
             set_level(beacon_brightness);
         }
