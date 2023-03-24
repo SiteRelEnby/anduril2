@@ -22,10 +22,6 @@
 
 #include "beacon-mode.h"
 
-#ifdef USE_BEACON_BRIGHTNESS_RAMPING
-static int8_t ramp_direction = 1 ;
-#endif
-
 inline void beacon_mode_iter() {
     // one iteration of main loop()
     if (! button_last_state) {
@@ -41,6 +37,13 @@ inline void beacon_mode_iter() {
 }
 
 uint8_t beacon_state(Event event, uint16_t arg) {
+    #ifdef USE_BEACON_BRIGHTNESS_RAMPING
+    static int8_t beacon_ramp_direction = 1;
+    #endif
+    if (event == EV_enter_state) {
+        uint8_t beacon_brightness = memorized_level;
+    }
+
     // 1 click: off
     if (event == EV_1click) {
         set_state(off_state, 0);
