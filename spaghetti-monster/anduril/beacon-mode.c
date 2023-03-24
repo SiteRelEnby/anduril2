@@ -25,7 +25,7 @@
 inline void beacon_mode_iter() {
     // one iteration of main loop()
     if (! button_last_state) {
-        set_level(memorized_level); //TODO: set brightness?
+        set_level(beacon_brightness); //TODO: set brightness?
         #ifdef USE_BEACON_ON_CONFIG
 	nice_delay_ms(beacon_on_ms);
         #else
