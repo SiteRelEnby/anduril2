@@ -148,3 +148,4 @@
 #define DEFAULT_2C_STYLE_SIMPLE 2  // same but for Simple UI.
 
 #define USE_BEACON_ON_CONFIG
+#define USE_BEACON_BRIGHTNESS_RAMP

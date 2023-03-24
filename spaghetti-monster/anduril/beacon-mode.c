@@ -82,6 +82,23 @@ uint8_t beacon_state(Event event, uint16_t arg) {
         }
     }
     #endif //ifdef USE_BEACON_ON_CONFIG
+
+    #ifdef USE_BEACON_BRIGHTNESS_RAMP
+    else if (event == EV_click3_hold) {
+        beacon_brightness += ramp_direction;
+        set_level(beacon_brightness);
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    else if (event == EV_click3_hold_release) {
+        ramp_direction = -ramp_direction;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    else if (event == EV_click4_hold) {
+        ramp_direction = 1;
+        beacon_brightness --;
+        set_level(beacon_brightness);
+    }
+    #endif
     return EVENT_NOT_HANDLED;
 }
 
