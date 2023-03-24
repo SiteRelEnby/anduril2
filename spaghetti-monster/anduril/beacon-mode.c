@@ -37,11 +37,11 @@ inline void beacon_mode_iter() {
 }
 
 uint8_t beacon_state(Event event, uint16_t arg) {
-    #ifdef USE_BEACON_BRIGHTNESS_RAMPING
+    #ifdef USE_BEACON_BRIGHTNESS_RAMP
     static int8_t beacon_ramp_direction = 1;
     #endif
     if (event == EV_enter_state) {
-        uint8_t beacon_brightness = memorized_level;
+        beacon_brightness = memorized_level;
     }
 
     // 1 click: off
@@ -86,6 +86,13 @@ uint8_t beacon_state(Event event, uint16_t arg) {
         if (0 == (arg % TICKS_PER_SECOND)) {
             blink_once();
         }
+    }
+    #endif //ifdef USE_BEACON_ON_CONFIG
+
+    #ifdef USE_BEACON_BRIGHTNESS_RAMP
+    else if (event == EV_click3_hold) {
+        beacon_brightness += beacon_ramp_direction;
+        set_level(beacon_brightness);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     else if (event == EV_click2_hold_release) {
