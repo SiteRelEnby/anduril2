@@ -28,8 +28,9 @@ uint16_t beacon_on_ms = 100;
 #endif
 
 #ifdef USE_BEACON_BRIGHTNESS_RAMPING
-uint8_t beacon_brightness = DEFAULT_LEVEL ;
+uint8_t beacon_brightness = DEFAULT_LEVEL;
 #endif
+
 // beacon mode
 uint8_t beacon_state(Event event, uint16_t arg);
 inline void beacon_mode_iter();
