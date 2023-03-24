@@ -101,28 +101,11 @@ uint8_t beacon_state(Event event, uint16_t arg) {
         beacon_on_ms = 100 + (arg / TICKS_PER_SECOND);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-    #endif
-    #ifdef USE_BEACON_BRIGHTNESS_RAMP
-    else if ((event == EV_click3_hold) || (event == EV_click4_hold)) {
-        // ramp slower in discrete mode
-        if (ramp_style  &&  (arg % HOLD_TIMEOUT != 0)) {
-            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-        }
-        #ifdef USE_RAMP_SPEED_CONFIG
-        // ramp slower if user configured things that way
-        if ((! ramp_style) && (arg % ramp_speed)) {
-            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-        }
-        #endif
-        // fix ramp direction on first frame if necessary
-        if (!arg) {
-            // click, hold should always go down if possible
-            if (event == EV_click2_hold) { ramp_direction = -1; }
-            // make it ramp down instead, if already at max
-            else if (actual_level >= mode_max) { ramp_direction = -1; }
-            // make it ramp up if already at min
-            // (off->hold->stepped_min->release causes this state)
-            else if (actual_level <= mode_min) { ramp_direction = 1; }
+    else if (event == EV_click4_hold) {
+        beacon_ramp_direction = 1;
+        if (beacon_brightness > 2) { //TODO: use ramp floor? Level 1 is unreliable for 519A lights.
+            beacon_brightness --;
+            set_level(beacon_brightness);
         }
         // if the button is stuck, err on the side of safety and ramp down
         else if ((arg > TICKS_PER_SECOND * 5
