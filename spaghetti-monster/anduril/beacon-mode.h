@@ -26,7 +26,7 @@ uint8_t beacon_seconds = 2;
 #ifdef USE_BEACON_ON_CONFIG
 uint16_t beacon_on_ms = 100;
 #endif
-#ifdef USE_BEACON_BRIGHTNESS_RAMPING
+#ifdef USE_BEACON_BRIGHTNESS_RAMP
 uint8_t beacon_brightness = DEFAULT_LEVEL;
 #endif
 
