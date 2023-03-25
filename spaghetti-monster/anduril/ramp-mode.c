@@ -172,14 +172,12 @@ uint8_t steady_state(Event event, uint16_t arg) {
     #else
     #ifdef USE_LOCKOUT_MODE
     #ifndef DISABLE_4C_LOCK_FROM_RAMP
-    #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
     // 4 clicks: shortcut to lockout mode
     else if (event == EV_4clicks) {
         set_level(0);
         set_state(lockout_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-    #endif //ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
     #endif //ifndef DISABLE_4C_LOCK_FROM_RAMP
     #endif //ifdef USE_LOCKOUT_MODE
     #endif
@@ -470,12 +468,8 @@ uint8_t steady_state(Event event, uint16_t arg) {
 
     #if defined(USE_TINT_RAMPING)
     //4C: 200% turbo
-    #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
-    else if (event == EV_4clicks){
-    #else
-    else if (event == EV_6clicks){
-    #endif
-        if (actual_level == MAX_LEVEL) { //if we're already at 200%
+    else if (event == EV_3clicks){
+        if (target_level == MAX_LEVEL) { //if we're already at 200%
             set_level_and_therm_target(memorized_level); //go back to previous level if we set it (TODO: does this work right if ramped manually to ceiling?)
         }
         else {
