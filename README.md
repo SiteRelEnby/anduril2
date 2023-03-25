@@ -26,10 +26,10 @@ Also on Docker Hub: https://hub.docker.com/r/siterelenby/anduril-builder
 Note that my automated docker builds of my own projects and tools are multiarch but I have only personally tested on amd64, I can't think of any specific reason it wouldn't work on ARM though.
 
 ### Changes
-* Fix bug (full path creation causes issues one some of my boxen when trying to mount a filesystem with subdirs, and is in general useless)
+* Fix bug (full path creation causes issues on some of my boxen when trying to mount a filesystem with subdirs, and is in general useless)
 * Added a proper entrypoint script
   * Checks for the source directory being mounted at different paths under `/src`
-  * Return non-zero on build failure
+  * Return non-zero on build failure (useful for CI/CD pipelines etc.)
 
 ## Scripts
 
@@ -43,21 +43,25 @@ Build scripts and image should work fine with the default codebase as well (in t
 
 # Changes from upstream
 
-The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 10H config menus stay in the same place; only things most people don't use that much like momentary and sunset modes or ramp style toggle should be moved. In general, avoiding removing functionality completely, just making stuff that gets in the way less easy to accidentally hit, and ideally adding some modularity for the user to decide which changes to include. Right now most changes are not modular.
+The goal for this fork is to be reasonably modular - if you don't want/need a feature, it can be enabled or disabled. Ideally, it should be usable for someone familiar with anduril, e.g. by default 7H, 9H, and 10H config menus stay in the same place. Most ofthe extra options and configuration is done at build-time using feature flags (there just isn't enough space to make everything configurable). In general, avoiding removing functionality completely, just giving the user the option if they want it.
 
 ## All lights
 
-* Several less used options have been moved
-  * Aux config from off/lock can be moved to 8C/8H with `USE_8C_AUX_CONFIG` to make it harder to accidentally hit when trying to do 6C/H
-  * Ramp style selection moved to 8C (does anyone really change ramps that often?...)
-  * Momentary mode moved to 12C (may move again in the future)
-  * Sunset timer moved to 12H
-  * Option to disable 4C ramp-> off/lock (`DISABLE_4C_LOCK_FROM_RAMP`)
+* Remappable shortcuts. At the moment, some have been moved with no specific option to move back, but that's a work in progress. Currently remappable functions:
+  * Aux colour/mode
+  * Dual channel turbo shortcuts
+  * 200% turbo shortcut
+* Ramp style selection moved to 8C (does anyone really change ramps that often?...)
+* Momentary mode moved to 12C (may move again in the future)
+* Sunset timer moved to 12H
+* Options to disable some features
+  * `DISABLE_4C_LOCK_FROM_RAMP`: Disable 4C ramp-> off/lock (4C from off is not changed)
 * Incorporated some changes from [starryalley](https://github.com/starryalley/Anduril2):
-  * Candle and strobe modes should work the same way now
+  * Candle and strobe code is now a direct port:
+    * Strobe modes reordered (candle, lightning, fireworks, party strobe, tactical strobe, dual channel modes) to avoid accidentally blinding the user.
     * 2C to cycle to next strobe, 3C to cycle to previous.
     * 4C to decrease candle/lighting mode activity, 5C to increase, 6C to reset
-    * 4H in candle mode to change candle style
+    * 4H in candle mode to change candle style (3 options)
     * 7C in candle mode to toggle aux LEDs
     * Additional strobe mode: Fireworks mode (`USE_FIREWORK_MODE`), after lightning mode
     * On tint ramping lights, two additional strobe modes to switch and ramp between channels (after tactical strobe mode)
@@ -67,24 +71,34 @@ The goal is to keep reasonable commonality with base anduril, e.g. 7H, 9H, and 1
   * 2H in beacon mode to set the time the light is on (1 blink = 100ms) (`USE_BEACON_ON_CONFIG`). Each blink while held is 100ms of time on.
     * Added 3/4H in beacon mode to increase/decrease brightness without exiting. This is not strictly a *new* feature as beacon mode normally uses the last ramped level, it just allows on the fly adjustment. Enabled with `USE_BEACON_BRIGHTNESS_RAMP`.
     * Note that there is no thermal regulation in this mode so don't overheat your light - test it before leaving it unattended.
-  * Green aux LEDs on power-on instead of blinking main LEDs
+  * Green aux LEDs on power-on instead of blinking main LEDs (can be disabled with `USE_MAIN_LEDS_FOR_ALL_BLINKS`
   * Temperature aux LED mode (after voltage in the cycle)
 * Added options to only use momentary mode from lock after enough time has passed to make sure it was only 1H (`WAIT_FOR_MOMENTARY_WHEN_LOCKED` / `MOMENTARY_WHEN_LOCKED_DELAY`)
 * Made the default aux blinking mode blink more often and intensely
 * Build-time configuration for some additional stuff (in its own section)
   * Using aux LEDs to display the battery voltage while the light is on. This is by default only enabled for lights with an RGB button but no RGB aux (e.g. K1), but can be enabled for any light by setting `USE_AUX_RGB_LEDS_WHILE_ON` in the relevant header file. For lights with forward facing aux, added `RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF` and `RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW` to customise when the voltage is displayed, so if this causes a problem it can be disabled at low ramp levels. These also come in useful as a way to mark a specific level in the ramp with a visual cue (e.g. having the LED go to high at your thermally sustainable level).
+  * `DISABLE_4C_LOCK_FROM_RAMP`: Disable 4C to lock while the light is on
+* Move aux to a different combo:
+```
+#define AUX_CONFIG_CLICK_EVENT = EV_8clicks
+```
 * Use a less bzr/bizarre VCS
 * Remove reference to bad childrens' fantasy novels by a terrible person. Please [read another book](https://knowyourmeme.com/memes/read-another-book).
 
 ## Dual channel lights only
-* 2C now always goes to level 130 (single channel on maximum); 3C goes to 200%
-* 4H for momentary opposite channel (6H with `USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING`)
+* `DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL`: When set, 2C now always goes to level 130 (single channel on maximum) instead of using 7H configured mode
+* Shortcuts to channels 1 and 2 turbo modes, including momentary. This needs configuration in a light-specific header file:
+```
+#define CHANNEL_1_TURBO_CLICK_EVENT EV_5clicks
+#define CHANNEL_1_TURBO_HOLD_EVENT EV_click5_hold
+#define CHANNEL_1_TURBO_HOLD_RELEASE_EVENT EV_click5_hold_release
+
+#define CHANNEL_2_TURBO_CLICK_EVENT EV_6clicks
+#define CHANNEL_2_TURBO_HOLD_EVENT EV_click6_hold
+#define CHANNEL_2_TURBO_HOLD_RELEASE_EVENT EV_click6_hold_release
+```
+* Momentary opposite channel mode (4H) for momentary opposite channel
   * At the moment this will invert the ramp, e.g. if you are at a 25/75% mix between the two channels it will flip to 75/25. I may make this behaviour configurable in the future with other options.
-* Single channel turbo shortcuts
-  * 5C from off/lock/ramp mode for channel 1, hold for momentary
-  * 6C from off/lock/ramp mode for channel 2, hold for momentary
-  * Option to have the turbo shortcuts from 4C/H and 5C/H instead (`USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING`).
-    * Implies `DISABLE_4C_LOCK_FROM_RAMP` and moves momentary opposite channel to 6H to make room.
 * 8H to use the *opposite* channel switching mode (e.g. if 3C is configured for instant switching, 8H will ramp between channels)
 * `DEFAULT_TINT` build-time option
 * Option to make the light start in instant switching mode by default via header file (currently kind of a kludge as it needs a rebuild to change - although fixing that is low priority as it's not something that many people probably want to change much)
@@ -154,7 +168,6 @@ Get your light's default firmware and locate the correct header file, as this co
 //#define B_TIMING_ON B_TIMEOUT_T //wait before coming on - prevents a blink when doing other actions (config, lock, etc.) but adds a delay to 1C -> on
 // NOTE: on from lockout is more complicated since there is no way to directly configure it. TODO: should be simple enough to add a delay that's longer than RELEASE_TIMEOUT before momentary from lock...
 
-
 //#define DEFAULT_2C_STYLE 1  // 0: no turbo. 1: 2C always turbo. 2: 2C goes to top of ramp, or turbo if already at top
 //#define DEFAULT_2C_STYLE_SIMPLE 2  // same but for Simple UI.
 
@@ -170,16 +183,10 @@ Get your light's default firmware and locate the correct header file, as this co
 //#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF 30 //at or below here, aux off while on
 //#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW 50 //at or below here, aux low while on
 //#define USE_OPPOSITE_TINTRAMP_KLUDGE //start in channel switching mode rather than ramping
-//#define USE_8C_AUX_CONFIG //configure aux with 8C/H instead of 7C/H
 
 //#define USE_FIREWORK_MODE //enable fireworks mode
 
-// Moves dual channel turbo shortcuts from 5/6 C/H to 4/5, for ramp mode only. Leaving this unset stays consistent with off/lock modes,
-// but 4C/H functions might be used less often, so adding an option to put the turbo modes first.
-// This also moves momentary opposite channel to 6H and disables 4C to switch off and lock directly from ramp mode in order to make room. (TODO: make lock shortcut 6C?)
-//#define USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
-
-//#define DISABLE_4C_LOCK_FROM_RAMP //disable 4C -> lock without the above reordering.
+//#define DISABLE_4C_LOCK_FROM_RAMP //disable 4C -> lock while on
 
 //#define DISABLE_UNLOCK_TO_TURBO //disables 5C/6C from lock shortcuts to unlock to turbo
 
@@ -200,6 +207,8 @@ Get your light's default firmware and locate the correct header file, as this co
 
 //#define USE_BEACON_ON_CONFIG //in beacon mode, 2H to set on time - each blink is 100ms.
 //#define USE_BEACON_BRIGHTNESS_RAMP //in beacon mode, 3/4H to ramp brightness up/down
+
+//#define 2C_TURBO_ALWAYS_USE_SINGLE_CHANNEL //ignore 7H turbo config on dual channel lights and always go to single channel at 100%.
 ```
 
 # UI reference
@@ -211,8 +220,9 @@ Stuff that is not changed at all (e.g. thermal and voltage calibration) is not m
 |1C|  On (memory) |On (memory) | On (memory) | On (memory) |
 |1H|  Moon | Moon | Moon | Moon | |
 |2C|  On (ceiling) | On (ceiling) | On (ceiling) | On (ceiling) | |
-|2H|  Momentary 200% turbo | Momentary configured turbo | Momentary turbo | Momentary turbo | |
+|2H|  Momentary turbo (based on 10H turbo config) | Momentary configured turbo | Momentary turbo | Momentary turbo | `DEFAULT_2C_STYLE`<br />`DEFAULT_2C_STYLE_SIMPLE`<br />`2C_TURBO_ALWAYS_USE_SINGLE_CHANNEL` |
 |3C|  Blinky modes | Blinky modes | Blinky modes | Blinky modes | |
+|3H|  Candle/strobe modes | Candle/strobes | Candle/strobes | Candle/strobes | `USE_FIREWORK_MODE` |
 |4C|  Lock | Lock | Lock | Lock | |
 |4H|  (nothing) | (nothing) | (nothing) | (nothing) | |
 |5C|  ch1 turbo | momentary mode | (nothing) | momentary mode | |
@@ -249,7 +259,7 @@ Stuff that is not changed at all (e.g. thermal and voltage calibration) is not m
 |Input|Dual channel modded|Dual channel stock|Single channel modded|Single channel stock | |
 |1C|  off | off | off |off | |
 |1H|  ramp up | ramp up | ramp up | ramp up | |
-|2C|  single channel turbo | turbo | turbo | turbo | |
+|2C|  Turbo (based on 10H turbo config) | turbo (configured) | turbo (configured) | turbo (configured) | `DEFAULT_2C_STYLE`<br />`DEFAULT_2C_STYLE_SIMPLE` |
 |2H|  ramp down | ramp down | ramp down | ramp down | |
 |3C|  200% turbo | ramp style toggle | (nothing (TODO)) | ramp style | |
 |3H|  channel switch (default) | channel switch | momentary turbo | momentary turbo | |
@@ -290,8 +300,10 @@ Stuff that is not changed at all (e.g. thermal and voltage calibration) is not m
     * Integrate startup modes? should be easy to make into a build time option
     * Integrate [6H aux control](https://github.com/starryalley/Anduril2#allow-the-use-of-auxindicator-led-in-lower-levels--default_level-level-6c6h-while-light-is-on) and voltage aux while on (as a mode under 6H functionality? would need to allow aux use at any ramp level)
     * Incorporate more changes from [SammysHP](https://github.com/SammysHP/flashlight-firmware/wiki/Modifications-Overview)
+* When blinking aux red for low battery, wait for a while (blink 1-2x only? blink orange for the first 5-10 seconds then red if it remains low?) after running the light on a high setting to not trigger the warning unnecessarfily due to voltage sag from putting load on the battery
+  * How often is the battery voltage read?
+* Make beacon on time configuration faster betweeen blinks?
 * Better integrate multiple modifications to some parts of aux LED code
-* Make beacon brightness configurable at runtime
 * Find something useful for 3C on single channel (jump to 50%? or user-definable level? back to memory?)
 * Option (possibly in light-specific header file) to change which channel is considered channel 1 (as it stands the same value ended up being right for both of my lights but this obviously depends on the specific light)
 * New aux modes
