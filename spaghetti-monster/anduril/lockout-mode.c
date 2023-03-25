@@ -222,33 +222,10 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     }
     #endif
 
-    #ifdef USE_TINT_RAMPING
-    #ifndef DISABLE_UNLOCK_TO_TURBO
-    //5C: Channel 1 turbo shortcut // TODO: make this do something sensible on single channel lights. config option to swap channels around?
-    else if (event == EV_5clicks) {
-        tint = 254;
-        set_state(steady_state, 130);
-        set_level_and_therm_target(130);
-        // reset button sequence to avoid activating anything in ramp mode
-        //current_event = 0;
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    }
-    //6C: Channel 2 turbo shortcut // TODO: make this do something sensible on single channel lights. config option to swap channels around?
-    else if (event == EV_6clicks) {
-        tint = 1;
-        set_state(steady_state, 130);
-        set_level_and_therm_target(130);
-        // reset button sequence to avoid activating anything in ramp mode
-        //current_event = 0;
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    }
-    #endif //ifndef DISABLE_UNLOCK_TO_TURBO
-    #endif //ifdef USE_TINT_RAMPING
-
     #if defined(USE_INDICATOR_LED)
     // 7/8 clicks: rotate through indicator LED modes (lockout mode)
-    #if defined(USE_8C_AUX_CONFIG)
-    else if (event == EV_8clicks) {
+    #if defined(AUX_CONFIG_CLICK_EVENT)
+    else if (event == AUX_CONFIG_CLICK_EVENT) {
     #else
     else if (event == EV_7clicks) {
     #endif
@@ -272,8 +249,8 @@ uint8_t lockout_state(Event event, uint16_t arg) {
 
     #elif defined(USE_AUX_RGB_LEDS)
     // 7 clicks: change RGB aux LED pattern
-    #if defined(USE_8C_AUX_CONFIG)
-    else if (event == EV_8clicks) {
+    #if defined(AUX_CONFIG_CLICK_EVENT)
+    else if (event == AUX_CONFIG_CLICK_EVENT) {
     #else
     else if (event == EV_7clicks) {
     #endif
@@ -286,8 +263,8 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 7H: change RGB aux LED color
-    #if defined(USE_8C_AUX_CONFIG)
-    else if (event == EV_click8_hold) {
+    #if defined(AUX_CONFIG_HOLD_EVENT)
+    else if (event == AUX_CONFIG_HOLD_EVENT) {
     #else
     else if (event == EV_click7_hold) {
     #endif
@@ -302,8 +279,8 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 7H, release: save new color
-    #if defined(USE_8C_AUX_CONFIG)
-    else if (event == EV_click8_hold_release) {
+    #if defined(AUX_CONFIG_HOLD_RELEASE_EVENT)
+    else if (event == AUX_CONFIG_HOLD_RELEASE_EVENT) {
     #else
     else if (event == EV_click7_hold_release) {
     #endif

@@ -142,21 +142,18 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
     //disable special tint ramping stuff when in strobe/momentary mode to avoid Weird Things happening (but we want this to work when off/locked)
     else if ((current_state != strobe_state) && (current_state != momentary_state)){
 
-        //4/6H: momentary opposite channel
-        #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
-        if (event == EV_click4_hold) {
-        #else
-        if (event == EV_click6_hold) {
-        #endif
-            //if (! arg) {  // first frame only, to allow thermal regulation to work
-                if (momentary_opposite_active == 0) {
+        // momentary opposite channel
+        #ifdef MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT
+        if (event == MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT) {
+            if (! arg) {  // first frame only, to allow thermal regulation to work
+                //if (momentary_opposite_active == 0) {
                   //invert tint ramp
-                  momentary_opposite_active = 1;
+                  //momentary_opposite_active = 1;
                   tint = tint ^ 0xFF;
                   set_level(actual_level);
                   return EVENT_HANDLED;
-                }
-            //}
+                //}
+            }
             else {
                 return EVENT_HANDLED;
             }
@@ -165,40 +162,45 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
             //else { tint = 254; }
         }
         //return to first channel on release
-        #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
-        else if ((event == EV_click4_hold_release) && (current_state == steady_state)) {
-        #else
-        else if (event == EV_click6_hold_release) {
-        #endif
+        else if (event == MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT_RELEASE) {
             tint = tint ^ 0xFF;
-            momentary_opposite_active = 0;
+            //momentary_opposite_active = 0;
             //if (tint >= 129) { tint = 1; }
             //else { tint = 254; }
             //set_level_and_therm_target(memorized_level);
             set_level(actual_level);
             return EVENT_HANDLED;
         }
-        //6C: reserved for switching between stepped and smooth tint ramping (TODO)
+        #endif //MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT
 
         //channel-specific turbo shortcuts
         //these should probably really be their own file
 
-        //4/5C: Channel 1 turbo shortcut // TODO: config option to swap channels around?
-        #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
-        else if (event == EV_5clicks) { //5C from any mode
-        #else
-        else if (((event == EV_4clicks) && (current_state == steady_state)) || ((event == EV_5clicks) && current_state != steady_state)) { //4C when on, otherwise 5C
+        ////4/5C: Channel 1 turbo shortcut // TODO: config option to swap channels around?
+        ////#ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
+        ////else if (event == EV_5clicks) { //5C from any mode
+        ////#else
+        ////else if (((event == EV_4clicks) && (current_state == steady_state)) || ((event == EV_5clicks) && current_state != steady_state)) { //4C when on, otherwise 5C
+        ////#endif
+
+
+        #if (defined(CHANNEL_1_TURBO_CLICK_EVENT) && !defined(DISABLE_UNLOCK_TO_TURBO))
+          else if ((event == CHANNEL_1_TURBO_CLICK_EVENT) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
         #endif
+        #if (defined(CHANNEL_1_TURBO_CLICK_EVENT) && defined(DISABLE_UNLOCK_TO_TURBO))
+          else if ((event == CHANNEL_1_TURBO_CLICK_EVENT) && ((current_state == steady_state) || (current_state == off_state))){
+        #endif //#ifndef DISABLE_UNLOCK_TO_TURBO
+        #if defined(CHANNEL_1_TURBO_CLICK_EVENT)
             tint = 254;
             set_level_and_therm_target(130);
+            set_state(steady_state, 130);
             return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
         }
-        //4/5H: Momentary channel 1 turbo
-        #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
-        else if (event == EV_click5_hold) {
-        #else
-        else if (((event == EV_click4_hold) && (current_state == steady_state)) || ((event == EV_click5_hold) && current_state != steady_state)) { //4H when on, otherwise 5H
-        #endif
+        #endif //if defined(CHANNEL_1_TURBO_CLICK_EVENT)
+
+        #ifdef CHANNEL_1_TURBO_HOLD_EVENT
+          //if ((event == CHANNEL_1_TURBO_HOLD_EVENT) && ((current_state == steady_state) || (current_state == off_state))){ //TODO?
+          else if ((event == CHANNEL_1_TURBO_HOLD_EVENT) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
             if (!arg) {
                 prev_tint = tint;
                 prev_level = actual_level;
@@ -207,32 +209,51 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
             }
             return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
         }
-        #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
-        else if (event == EV_click5_hold_release){
-        #else
-        else if (((event == EV_click4_hold_release) && (current_state == steady_state)) || ((event == EV_click5_hold_release) && current_state != steady_state)) { //4H when on, otherwise 5H
-        #endif
-            //go back to ramp mode
+        #endif //ifdef CHANNEL_1_TURBO_HOLD_EVENT
+
+        ////#ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
+        ////else if (event == EV_click5_hold_release){
+        ////#else
+        ////else if (((event == EV_click4_hold_release) && (current_state == steady_state)) || ((event == EV_click5_hold_release) && current_state != steady_state)) { //4H when on, otherwise 5H
+        ////#endif
+        #ifdef CHANNEL_1_TURBO_HOLD_RELEASE_EVENT
+            //if ((event == CHANNEL_1_TURBO_HOLD_RELEASE_EVENT) && ((current_state == steady_state) || (current_state == off_state))){ //TODO?
+          else if ((event == CHANNEL_1_TURBO_HOLD_RELEASE_EVENT) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
             tint = prev_tint;
             set_level_and_therm_target(prev_level);
             return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-        }
+          }
+        #endif //#ifdef CHANNEL_1_TURBO_HOLD_RELEASE_EVENT
+
         //5/6C: channel 2 turbo shortcut
-        #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
-        else if (event == EV_6clicks) {
-        #else
-        else if (((event == EV_5clicks) && (current_state == steady_state)) || ((event == EV_6clicks) && current_state != steady_state)) { //5H when on, otherwise 6H
+        ////#ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
+        ////else if (event == EV_6clicks) {
+        ////#else
+        ////else if (((event == EV_5clicks) && (current_state == steady_state)) || ((event == EV_6clicks) && current_state != steady_state)) { //5H when on, otherwise 6H
+        ////#endif
+        #if (defined(CHANNEL_2_TURBO_CLICK_EVENT) && !defined(DISABLE_UNLOCK_TO_TURBO))
+          else if ((event == CHANNEL_2_TURBO_CLICK_EVENT) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
         #endif
+        #if (defined(CHANNEL_2_TURBO_CLICK_EVENT) && defined(DISABLE_UNLOCK_TO_TURBO))
+          else if ((event == CHANNEL_2_TURBO_CLICK_EVENT) && ((current_state == steady_state) || (current_state == off_state))){
+        #endif //#ifndef DISABLE_UNLOCK_TO_TURBO
+        #if defined(CHANNEL_2_TURBO_CLICK_EVENT)
             tint = 1;
             set_level_and_therm_target(130);
+            set_state(steady_state, 130);
             return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
         }
+        #endif //if defined(CHANNEL_2_TURBO_CLICK_EVENT)
+
         //5/6H: Momentary channel 2 turbo
-        #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
-        else if (event == EV_click6_hold) {
-        #else
-        else if (((event == EV_click5_hold) && (current_state == steady_state)) || ((event == EV_click6_hold) && current_state != steady_state)) { //5H when on, otherwise 6H
-        #endif
+        ////#ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
+        ////else if (event == EV_click6_hold) {
+        ////#else
+        ////else if (((event == EV_click5_hold) && (current_state == steady_state)) || ((event == EV_click6_hold) && current_state != steady_state)) { //5H when on, otherwise 6H
+        ////#endif
+        #ifdef CHANNEL_2_TURBO_HOLD_EVENT
+          //if ((event == CHANNEL_2_TURBO_HOLD_EVENT) && ((current_state == steady_state) || (current_state == off_state))){ //TODO?
+          else if ((event == CHANNEL_2_TURBO_HOLD_EVENT) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
             if (!arg){
                 prev_tint = tint;
                 prev_level = actual_level;
@@ -241,16 +262,15 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
             }
             return EVENT_HANDLED;
         }
-        #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
-        else if (event == EV_click6_hold_release){
-        #else
-        else if (((event == EV_click5_hold_release) && (current_state == steady_state)) || ((event == EV_click6_hold_release) && current_state != steady_state)) { //5H when on, otherwise 6H
         #endif
-            //go back to ramp mode
-            tint = prev_tint;
-            set_level_and_therm_target(prev_level);
-            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+
+        #ifdef CHANNEL_2_TURBO_HOLD_RELEASE_EVENT
+          else if (event == CHANNEL_2_TURBO_HOLD_RELEASE_EVENT) {
+          tint = prev_tint;
+          set_level_and_therm_target(prev_level);
+          return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
         }
+        #endif
 
     } //disable special tint ramping stuff when in strobe mode to avoid Weird Things happening
 
