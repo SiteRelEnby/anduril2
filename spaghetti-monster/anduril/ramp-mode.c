@@ -135,7 +135,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
         set_state(off_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-    #ifndef USE_TINT_RAMPING
+    #ifndef DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL
     // 2 clicks: go to/from highest level
     else if (event == EV_2clicks) {
         if (actual_level < turbo_level) {
@@ -149,7 +149,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
         #endif
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-    #endif //#ifndef USE_TINT_RAMPING
+    #endif // ifndef DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL
 
     #if defined(USE_OUTPUT_MUX) // output channel switching - override the 4C function
     else if (event == EV_4clicks) {
@@ -454,11 +454,10 @@ uint8_t steady_state(Event event, uint16_t arg) {
     //}
     //#endif
 
-    #ifdef USE_TINT_RAMPING
+    #if defined(USE_TINT_RAMPING) && defined(DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL)
     //2C: single channel ceiling, and exit to previous if already there
     else if (event == EV_2clicks){
-
-        if (actual_level == ramp_ceil) { //if we're already at 200%
+        if (target_level == ramp_ceil) { //if we're already at 200%
             set_level_and_therm_target(memorized_level); //go back to previous level if we set it (TODO: does this work right if ramped manually to ceiling?)
         }
         else {
@@ -467,8 +466,15 @@ uint8_t steady_state(Event event, uint16_t arg) {
         }
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-    //3C: 200% turbo
-    else if (event == EV_3clicks){
+    #endif //if defined(USE_TINT_RAMPING) && defined(DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL)
+
+    #if defined(USE_TINT_RAMPING)
+    //4C: 200% turbo
+    #ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
+    else if (event == EV_4clicks){
+    #else
+    else if (event == EV_6clicks){
+    #endif
         if (actual_level == MAX_LEVEL) { //if we're already at 200%
             set_level_and_therm_target(memorized_level); //go back to previous level if we set it (TODO: does this work right if ramped manually to ceiling?)
         }

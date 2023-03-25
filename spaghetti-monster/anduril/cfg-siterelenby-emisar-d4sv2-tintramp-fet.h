@@ -146,9 +146,22 @@
 #define USE_8C_AUX_CONFIG
 #define USE_FIREWORK_MODE
 
-#define DEFAULT_TINT 64
+#define DEFAULT_TINT 32
 
-#define MOMENTARY_WHEN_LOCKED_DELAY 4
+#define MOMENTARY_WHEN_LOCKED_DELAY 2
 
 #define USE_BEACON_BRIGHTNESS_RAMP
-#define USE_BEACON_ON_CONFIG
+
+#define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT_RELEASE EV_click4_hold_release
+#define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT EV_click4_hold
+
+#define DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL
+
+//on this light, the 'first' (tint == 254) channel is the opposite than I would like, so swap these.
+#define CHANNEL_1_TURBO_CLICK_EVENT EV_6clicks
+#define CHANNEL_1_TURBO_HOLD_EVENT EV_click6_hold
+#define CHANNEL_1_TURBO_HOLD_RELEASE_EVENT EV_click6_hold_release
+
+#define CHANNEL_2_TURBO_CLICK_EVENT EV_5clicks
+#define CHANNEL_2_TURBO_HOLD_EVENT EV_click5_hold
+#define CHANNEL_2_TURBO_HOLD_RELEASE_EVENT EV_click5_hold_release
