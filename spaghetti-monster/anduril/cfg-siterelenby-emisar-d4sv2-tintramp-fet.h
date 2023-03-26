@@ -190,8 +190,8 @@
 #define CHANNEL_RAMP_ONLY_HOLD_EVENT EV_click3_hold //ramp channels only (ignores 9H config) - saves a little bit of space if you only want ramping or are using CHANNEL_SWITCH_ONLY_CLICK_EVENT as well
 #define CHANNEL_RAMP_ONLY_RELEASE_EVENT EV_click3_hold_release
 
-//#define CHANNEL_SWITCH_CONFIGURABLE_HOLD_EVENT EV_click3_hold //default channel switch configurable in 10H ramp config
-//#define CHANNEL_SWITCH_CONFIGURABLE_HOLD_RELEASE_EVENT EV_click3_hold_release //default channel switch configurable in 10H ramp config
+//#define CHANNEL_SWITCH_CONFIGURABLE_HOLD_EVENT EV_click3_hold //default channel switch configurable in 9H config
+//#define CHANNEL_SWITCH_CONFIGURABLE_HOLD_RELEASE_EVENT EV_click3_hold_release //default channel switch configurable in 9H config
 
 ///////////////////////////////
 // off/lock states:
