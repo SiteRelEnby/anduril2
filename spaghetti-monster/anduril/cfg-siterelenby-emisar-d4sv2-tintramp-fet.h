@@ -62,8 +62,8 @@
 #undef SIMPLE_UI_STEPS
 #define SIMPLE_UI_STEPS 5
 #define USE_SIMPLE_UI_RAMPING_TOGGLE
-#define DEFAULT_2C_STYLE 1  // 0: no turbo. 1: 2C always turbo. 2: 2C goes to top of ramp, or turbo if already at top
-#define DEFAULT_2C_STYLE_SIMPLE 1  // same but for Simple UI.
+#define DEFAULT_2C_STYLE 2  // 0: no turbo. 1: 2C always turbo. 2: 2C goes to top of ramp, or turbo if already at top
+#define DEFAULT_2C_STYLE_SIMPLE 2  // same but for Simple UI.
 
 //disable simple UI by default
 #undef SIMPLE_UI_ACTIVE
@@ -161,8 +161,8 @@
 #define RAMP_STYLE_TOGGLE_EVENT EV_8clicks
 
 #define TURBO_200_CLICK_EVENT EV_4clicks
-//#define TURBO_200_MOMENTARY_HOLD_EVENT EV_3clicks
-//#define TURBO_200_MOMENTARY_RELEASE_EVENT EV_3clicks
+//#define TURBO_200_MOMENTARY_HOLD_EVENT EV_click7_hold
+//#define TURBO_200_MOMENTARY_RELEASE_EVENT EV_click7_hold_release
 
 //#define LOCK_FROM_ON_EVENT EV_4clicks
 #define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT_RELEASE EV_click4_hold_release
