@@ -186,11 +186,11 @@
 #define CHANNEL_2_TURBO_HOLD_EVENT EV_click5_hold
 #define CHANNEL_2_TURBO_HOLD_RELEASE_EVENT EV_click5_hold_release
 
+//#define CHANNEL_RAMP_ONLY_HOLD_EVENT EV_click3_hold
+//#define CHANNEL_RAMP_ONLY_RELEASE_EVENT EV_click3_hold_release
 
-#define CHANNEL_RAMP_ONLY_HOLD_EVENT EV_click3_hold
-#define CHANNEL_RAMP_ONLY_RELEASE_EVENT EV_click3_hold_release
-
-//#define CHANNEL_SWITCH_CONFIGURABLE_EVENT EV_click3_hold //default channel switch configurable in 10H ramp config
+#define CHANNEL_SWITCH_CONFIGURABLE_HOLD_EVENT EV_click3_hold //default channel switch configurable in 10H ramp config
+#define CHANNEL_SWITCH_CONFIGURABLE_HOLD_RELEASE_EVENT EV_click3_hold_release //default channel switch configurable in 10H ramp config
 
 ///////////////////////////////
 // off/lock states:

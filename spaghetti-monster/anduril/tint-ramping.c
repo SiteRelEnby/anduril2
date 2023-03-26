@@ -35,12 +35,93 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
     static uint8_t active = 0;
     //static uint8_t momentary_opposite_active = 0;
     static uint8_t prev_level = 0;
-    //static uint8_t channel_switch = 0;
+    #ifdef CHANNEL_SWITCH_CONFIGURABLE_HOLD_EVENT
+    static uint8_t channel_switch = 0;
+    #endif
 
     // making this match TK's idea: https://budgetlightforum.com/t/how-do-you-lock-your-lights/217263/7
     // 3C: currently, instant switch channels. In the future, switch between different defined tint ramps (https://budgetlightforum.com/t/group-buy-lt1s-pro-with-anduril2-nichia-519a-660nm-red-leds/71123/298)
 
     if (0) {}
+
+    #ifdef CHANNEL_SWITCH_CONFIGURABLE_HOLD_EVENT
+    else if (event == CHANNEL_SWITCH_CONFIGURABLE_HOLD_EVENT) {
+        ///// tint-toggle mode
+        // toggle once on first frame; ignore other frames
+        if (tint_style){ //this would normally mean it's in instant channel switching mode, but see the FIXME below
+            #ifdef USE_OPPOSITE_TINTRAMP_KLUDGE //FIXME: this is an ugly hack. see siterelenby-dm112 .h file
+            channel_switch = 0;
+            #else
+            channel_switch = 1;
+            #endif
+        }
+        else { //normally in channel ramping mode, see FIXME
+            #ifdef USE_OPPOSITE_TINTRAMP_KLUDGE //FIXME: this is an ugly hack. see siterelenby-dm112 .h file
+            channel_switch = 1;
+            #else
+            channel_switch = 0;
+            #endif
+        }
+        if (channel_switch == 1) {
+            // only respond on first frame
+            if (arg) return EVENT_NOT_HANDLED;
+
+            // force tint to be 1 or 254
+            if (tint != 254) { tint = 1; }
+            // invert between 1 and 254
+            tint = tint ^ 0xFF;
+            set_level(actual_level);
+            return EVENT_HANDLED;
+        }
+
+        ///// smooth tint-ramp mode
+        // reset at beginning of movement
+        if (! arg) {
+            active = 1;  // first frame means this is for us
+            past_edge_counter = 0;  // doesn't start until user hits the edge
+        }
+        // ignore event if we weren't the ones who handled the first frame
+        if (! active) return EVENT_HANDLED;
+
+        // change normal tints
+        if ((tint_ramp_direction > 0) && (tint < 254)) {
+            tint += 1;
+        }
+        else if ((tint_ramp_direction < 0) && (tint > 1)) {
+            tint -= 1;
+        }
+        // if the user kept pressing long enough, go the final step
+        if (past_edge_counter == 64) {
+            past_edge_counter ++;
+            tint ^= 1;  // 0 -> 1, 254 -> 255
+            blip();
+        }
+        // if tint change stalled, let user know we hit the edge
+        else if (prev_tint == tint) {
+            if (past_edge_counter == 0) blip();
+            // count up but don't wrap back to zero
+            if (past_edge_counter < 255) past_edge_counter ++;
+        }
+        prev_tint = tint;
+        set_level(actual_level);
+        return EVENT_HANDLED;
+    }
+
+    // click, click, hold, release: reverse direction for next ramp
+    else if (event == CHANNEL_SWITCH_CONFIGURABLE_HOLD_RELEASE_EVENT) {
+        active = 0;  // ignore next hold if it wasn't meant for us
+        // reverse
+        tint_ramp_direction = -tint_ramp_direction;
+        if (tint <= 1) tint_ramp_direction = 1;
+        else if (tint >= 254) tint_ramp_direction = -1;
+        // remember tint after battery change
+        save_config();
+        // bug?: for some reason, brightness can seemingly change
+        // from 1/150 to 2/150 without this next line... not sure why
+        set_level(actual_level);
+        return EVENT_HANDLED;
+    }
+    #endif
 
     #ifdef CHANNEL_SWITCH_ONLY_CLICK_EVENT
     else if (event == CHANNEL_SWITCH_ONLY_CLICK_EVENT) {
