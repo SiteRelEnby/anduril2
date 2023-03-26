@@ -255,6 +255,21 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
         }
         #endif
 
+
+        #if defined(USE_TINT_RAMPING) && defined(DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL)
+        //2C: single channel ceiling, and exit to previous if already there
+        else if (event == EV_2clicks){
+            if (target_level == ramp_ceil) { //if we're already at 200%
+                set_level_and_therm_target(memorized_level); //go back to previous level if we set it (TODO: does this work right if ramped manually to ceiling?)
+            }
+            else {
+                memorized_level = nearest_level(actual_level); //save previous level
+                set_level_and_therm_target(ramp_ceil); //go to ceiling
+            }
+            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        }
+        #endif //if defined(USE_TINT_RAMPING) && defined(DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL)
+
         #if defined(TURBO_200_MOMENTARY_HOLD_EVENT) && defined (TURBO_200_MOMENTARY_HOLD_RELEASE_EVENT)
         else if (event == TURBO_200_MOMENTARY_HOLD_EVENT){
             //momentary 200%
@@ -272,18 +287,10 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
 
 
         //channel-specific turbo shortcuts
-        //these should probably really be their own file
-
-        ////4/5C: Channel 1 turbo shortcut // TODO: config option to swap channels around?
-        ////#ifndef USE_DUAL_TURBO_SHORTCUTS_FROM_4C_WHEN_RAMPING
-        ////else if (event == EV_5clicks) { //5C from any mode
-        ////#else
-        ////else if (((event == EV_4clicks) && (current_state == steady_state)) || ((event == EV_5clicks) && current_state != steady_state)) { //4C when on, otherwise 5C
-        ////#endif
-
+        //these should probably really be their own file?
 
         #if (defined(CHANNEL_1_TURBO_CLICK_EVENT) && !defined(DISABLE_UNLOCK_TO_TURBO))
-          else if ((event == CHANNEL_1_TURBO_CLICK_EVENT) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
+          else if ((event == CHANNEL_1_TURBO_CLICK_EVENT) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){ //TODO: can this just be the event, or are there other states that need to be handled?
         #endif
         #if (defined(CHANNEL_1_TURBO_CLICK_EVENT) && defined(DISABLE_UNLOCK_TO_TURBO))
           else if ((event == CHANNEL_1_TURBO_CLICK_EVENT) && ((current_state == steady_state) || (current_state == off_state))){

@@ -161,7 +161,7 @@
 
 #define RAMP_STYLE_TOGGLE_EVENT EV_8clicks
 
-#define TURBO_200_CLICK_EVENT EV_3clicks
+#define TURBO_200_CLICK_EVENT EV_4clicks
 //#define TURBO_200_MOMENTARY_HOLD_EVENT EV_3clicks
 //#define TURBO_200_MOMENTARY_RELEASE_EVENT EV_3clicks
 
@@ -174,7 +174,7 @@
 #define CHANNEL_CYCLE_HOLD_EVENT EV_click7_hold
 
 #define RAMP_CONFIG_HOLD_EVENT EV_click9_hold
-//#define MANUAL_MEMORY_SAVE_CLICK_EVENT EV_click10_hold
+#define MANUAL_MEMORY_SAVE_CLICK_EVENT EV_10clicks
 
 ///////////////////////////////
 // on/off/lock states:
@@ -187,11 +187,11 @@
 #define CHANNEL_2_TURBO_HOLD_EVENT EV_click5_hold
 #define CHANNEL_2_TURBO_HOLD_RELEASE_EVENT EV_click5_hold_release
 
-//#define CHANNEL_RAMP_ONLY_HOLD_EVENT EV_click3_hold
-//#define CHANNEL_RAMP_ONLY_RELEASE_EVENT EV_click3_hold_release
+#define CHANNEL_RAMP_ONLY_HOLD_EVENT EV_click3_hold //ramp channels only (ignores 9H config) - saves a little bit of space if you only want ramping or are using CHANNEL_SWITCH_ONLY_CLICK_EVENT as well
+#define CHANNEL_RAMP_ONLY_RELEASE_EVENT EV_click3_hold_release
 
-#define CHANNEL_SWITCH_CONFIGURABLE_HOLD_EVENT EV_click3_hold //default channel switch configurable in 10H ramp config
-#define CHANNEL_SWITCH_CONFIGURABLE_HOLD_RELEASE_EVENT EV_click3_hold_release //default channel switch configurable in 10H ramp config
+//#define CHANNEL_SWITCH_CONFIGURABLE_HOLD_EVENT EV_click3_hold //default channel switch configurable in 10H ramp config
+//#define CHANNEL_SWITCH_CONFIGURABLE_HOLD_RELEASE_EVENT EV_click3_hold_release //default channel switch configurable in 10H ramp config
 
 ///////////////////////////////
 // off/lock states:
