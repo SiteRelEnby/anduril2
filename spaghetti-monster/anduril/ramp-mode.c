@@ -171,14 +171,14 @@ uint8_t steady_state(Event event, uint16_t arg) {
     //#endif
     #else
     #ifdef USE_LOCKOUT_MODE
-    #ifndef DISABLE_4C_LOCK_FROM_RAMP
+    #ifdef LOCK_FROM_ON_EVENT
     // 4 clicks: shortcut to lockout mode
-    else if (event == EV_4clicks) {
+    else if (event == LOCK_FROM_ON_EVENT) {
         set_level(0);
         set_state(lockout_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-    #endif //ifndef DISABLE_4C_LOCK_FROM_RAMP
+    #endif //ifdef LOCK_FROM_ON_EVENT
     #endif //ifdef USE_LOCKOUT_MODE
     #endif
 
@@ -401,8 +401,9 @@ uint8_t steady_state(Event event, uint16_t arg) {
     }
     #endif
 
-    // 8 clicks: toggle smooth vs discrete ramping
-    else if (event == EV_8clicks) {
+    //toggle smooth vs discrete ramping
+    #ifdef RAMP_STYLE_TOGGLE_EVENT
+    else if (event == RAMP_STYLE_TOGGLE_EVENT) {
         ramp_style = !ramp_style;
         save_config();
         #ifdef START_AT_MEMORIZED_LEVEL
@@ -416,6 +417,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
         #endif
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
+    #endif
 
     // If we allowed 3C in Simple UI, now block further actions
     #if defined(USE_SIMPLE_UI) && defined(USE_SIMPLE_UI_RAMPING_TOGGLE)
@@ -466,32 +468,16 @@ uint8_t steady_state(Event event, uint16_t arg) {
     }
     #endif //if defined(USE_TINT_RAMPING) && defined(DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL)
 
-    #if defined(USE_TINT_RAMPING)
-    //4C: 200% turbo
-    else if (event == EV_3clicks){
-        if (target_level == MAX_LEVEL) { //if we're already at 200%
-            set_level_and_therm_target(memorized_level); //go back to previous level if we set it (TODO: does this work right if ramped manually to ceiling?)
-        }
-        else {
-            memorized_level = nearest_level(actual_level); //save previous level
-            set_level_and_therm_target(MAX_LEVEL);
-        }
-        //set_level_and_therm_target(turbo_level);
-        //memorized_level = nearest_level(actual_level);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    }
-    #endif //#ifdef USE_TINT_RAMPING
-
     #ifdef USE_RAMP_CONFIG
     // 7H: configure this ramp mode
-    else if (event == EV_click7_hold) {
+    else if (event == RAMP_CONFIG_HOLD_EVENT) {
         push_state(ramp_config_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
 
-    #ifdef USE_MANUAL_MEMORY
-    else if (event == EV_10clicks) {
+    #if defined(USE_MANUAL_MEMORY) && defined (MANUAL_MEMORY_SAVE_CLICK_EVENT)
+    else if (event == MANUAL_MEMORY_SAVE_CLICK_EVENT) {
         // turn on manual memory and save current brightness
         manual_memory = actual_level;
         #ifdef USE_TINT_RAMPING
@@ -518,8 +504,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
     #endif  // ifdef USE_MANUAL_MEMORY
 
     #ifdef USE_MOMENTARY_MODE
-    // use 12C for momentary
-    else if (event == EV_12clicks) {
+    else if (event == MOMENTARY_CLICK_EVENT) {
         set_level(0);
         set_state(momentary_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
