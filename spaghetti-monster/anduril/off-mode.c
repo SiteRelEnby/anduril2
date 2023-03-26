@@ -289,8 +289,8 @@ uint8_t off_state(Event event, uint16_t arg) {
     #endif
     #ifdef USE_INDICATOR_LED
     // 7 clicks: change indicator LED mode
-    #if defined(USE_8C_AUX_CONFIG)
-    else if (event == EV_8clicks) {
+    #if defined(AUX_CONFIG_CLICK_EVENT)
+    else if (event == AUX_CONFIG_CLICK_EVENT) {
     #else
     else if (event == EV_7clicks) {
     #endif
