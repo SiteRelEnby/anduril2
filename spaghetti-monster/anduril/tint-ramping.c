@@ -126,7 +126,8 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
     #ifdef CHANNEL_SWITCH_ONLY_CLICK_EVENT
     else if (event == CHANNEL_SWITCH_ONLY_CLICK_EVENT) {
             // force tint to be 1 or 254
-            if (tint != 254) { tint = 1; }
+            if (tint != 254) { tint = 1; tint_ramp_direction = -1; }
+            else { tint_ramp_direction = 1; }
             // invert between 1 and 254
             tint = tint ^ 0xFF;
             set_level(actual_level);
