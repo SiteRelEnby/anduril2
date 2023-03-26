@@ -310,8 +310,8 @@ uint8_t off_state(Event event, uint16_t arg) {
     }
     #elif defined(USE_AUX_RGB_LEDS)
     // 7 clicks: change RGB aux LED pattern
-    #if defined(USE_8C_AUX_CONFIG)
-    else if (event == EV_8clicks) {
+    #if defined(AUX_CONFIG_CLICK_EVENT)
+    else if (event == AUX_CONFIG_CLICK_EVENT) {
     #else
     else if (event == EV_7clicks) {
     #endif
@@ -324,8 +324,8 @@ uint8_t off_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 7 clicks (hold last): change RGB aux LED color
-    #if defined(AUX_CONFIG_CLICK_EVENT)
-    else if (event == AUX_CONFIG_CLICK_EVENT) {
+    #if defined(AUX_CONFIG_HOLD_EVENT)
+    else if (event == AUX_CONFIG_HOLD_EVENT) {
     #else
     else if (event == EV_click7_hold) {
     #endif
