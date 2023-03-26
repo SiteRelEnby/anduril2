@@ -284,9 +284,7 @@ uint8_t off_state(Event event, uint16_t arg) {
     }
     #endif
     #ifdef USE_MOMENTARY_MODE
-    // 5 clicks: momentary mode
-    //moved to 11C
-    else if (event == EV_12clicks) {
+    else if (event == MOMENTARY_CLICK_EVENT_OFF) {
         blink_once();
         set_state(momentary_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
