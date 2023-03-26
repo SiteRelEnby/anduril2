@@ -33,54 +33,17 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
     // in addition to changing state...  so ignore any tint-ramp events which
     // don't look like they were meant to be here
     static uint8_t active = 0;
-    static uint8_t momentary_opposite_active = 0;
+    //static uint8_t momentary_opposite_active = 0;
     static uint8_t prev_level = 0;
-    static uint8_t channel_switch = 0;
+    //static uint8_t channel_switch = 0;
 
-    // click, click, hold: change the tint
-    if ( (event == EV_click3_hold) || (event == EV_click8_hold )) {
-        ///// tint-toggle mode
-        // toggle once on first frame; ignore other frames
-        if (tint_style){ //this would normally mean it's in instant channel switching mode, but see the FIXME below
-            if (event == EV_click3_hold) {
-                //3H: use channel switching as configured
-                #ifdef USE_OPPOSITE_TINTRAMP_KLUDGE //FIXME: this is an ugly hack. see siterelenby-dm112 .h file
-                channel_switch = 0;
-                #else
-                channel_switch = 1;
-                #endif
-            }
-            else {
-                //8H: Do the opposite.
-                #ifdef USE_OPPOSITE_TINTRAMP_KLUDGE //FIXME: this is an ugly hack. see siterelenby-dm112 .h file
-                channel_switch = 1;
-                #else
-                channel_switch = 0;
-                #endif
-            }
-        }
-        else { //normally in channel ramping mode, see FIXME
-            if (event == EV_click3_hold) {
-                //3H: use channel ramping as configured
-                #ifdef USE_OPPOSITE_TINTRAMP_KLUDGE //FIXME: this is an ugly hack. see siterelenby-dm112 .h file
-                channel_switch = 1;
-                #else
-                channel_switch = 0;
-                #endif
-            }
-            else {
-                //8H: Do the opposite.
-                #ifdef USE_OPPOSITE_TINTRAMP_KLUDGE //FIXME: this is an ugly hack. see siterelenby-dm112 .h file
-                channel_switch = 0;
-                #else
-                channel_switch = 1;
-                #endif
-            }
-        }
-        if (channel_switch == 1) {
-            // only respond on first frame
-            if (arg) return EVENT_NOT_HANDLED;
+    // making this match TK's idea: https://budgetlightforum.com/t/how-do-you-lock-your-lights/217263/7
+    // 3C: currently, instant switch channels. In the future, switch between different defined tint ramps (https://budgetlightforum.com/t/group-buy-lt1s-pro-with-anduril2-nichia-519a-660nm-red-leds/71123/298)
 
+    if (0) {}
+
+    #ifdef CHANNEL_SWITCH_ONLY_CLICK_EVENT
+    else if (event == CHANNEL_SWITCH_ONLY_CLICK_EVENT) {
             // force tint to be 1 or 254
             if (tint != 254) { tint = 1; }
             // invert between 1 and 254
@@ -88,7 +51,29 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
             set_level(actual_level);
             return EVENT_HANDLED;
         }
+    #endif
 
+    #ifdef CHANNEL_CYCLE_HOLD_EVENT
+    else if (event == CHANNEL_CYCLE_HOLD_EVENT) {
+            if (arg == 0){
+                // force tint to be 1 or 254
+                if (tint != 254) { tint = 1; }
+                // invert between 1 and 254
+                tint = tint ^ 0xFF;
+                set_level(actual_level);
+            }
+            //keep alternating current channels if held. In the future this will cycle through all available channels for >2.
+            else if ((arg % 32) == 0){ //every 32 frames (TODO: configurable?)
+                tint = tint ^ 0xFF;
+                set_level(actual_level);
+            }
+            return EVENT_HANDLED;
+        }
+    #endif
+
+
+    #if defined(CHANNEL_RAMP_ONLY_HOLD_EVENT) && defined(CHANNEL_RAMP_ONLY_RELEASE_EVENT)
+    else if ( event == CHANNEL_RAMP_ONLY_HOLD_EVENT) {
         ///// smooth tint-ramp mode
         // reset at beginning of movement
         if (! arg) {
@@ -123,7 +108,7 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
     }
 
     // click, click, hold, release: reverse direction for next ramp
-    else if ( (event == EV_click3_hold_release) || (event == EV_click8_hold_release) ) {
+    else if (event == CHANNEL_RAMP_ONLY_RELEASE_EVENT) {
         active = 0;  // ignore next hold if it wasn't meant for us
         // reverse
         tint_ramp_direction = -tint_ramp_direction;
@@ -136,6 +121,7 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
         set_level(actual_level);
         return EVENT_HANDLED;
     }
+    #endif
 
     //TODO: These should probably be moved to their own file?
 
@@ -172,6 +158,37 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
             return EVENT_HANDLED;
         }
         #endif //MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT
+
+        #ifdef TURBO_200_CLICK_EVENT
+        else if (event == TURBO_200_CLICK_EVENT){
+            if (target_level == MAX_LEVEL) { //if we're already at 200%
+                set_level_and_therm_target(memorized_level); //go back to previous level if we set it
+            }
+            else {
+                memorized_level = nearest_level(actual_level); //save previous level
+                set_level_and_therm_target(MAX_LEVEL);
+            }
+            //set_level_and_therm_target(turbo_level);
+            //memorized_level = nearest_level(actual_level);
+            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        }
+        #endif
+
+        #if defined(TURBO_200_MOMENTARY_HOLD_EVENT) && defined (TURBO_200_MOMENTARY_HOLD_RELEASE_EVENT)
+        else if (event == TURBO_200_MOMENTARY_HOLD_EVENT){
+            //momentary 200%
+            if (!arg){
+                memorized_level = nearest_level(actual_level); //save previous level
+                set_level_and_therm_target(MAX_LEVEL);
+            }
+            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        }
+        else if (event == TURBO_200_MOMENTARY_HOLD_RELEASE_EVENT){
+            set_level_and_therm_target(memorized_level);
+            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        }
+        #endif
+
 
         //channel-specific turbo shortcuts
         //these should probably really be their own file

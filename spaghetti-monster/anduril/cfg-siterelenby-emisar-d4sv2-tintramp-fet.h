@@ -151,12 +151,34 @@
 #define USE_BEACON_ON_CONFIG
 #define USE_BEACON_BRIGHTNESS_RAMP
 
+
+//#define DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL
+
+// on state:
+#define MOMENTARY_CLICK_EVENT EV_12clicks
+
+#define SUNSET_TIMER_HOLD_EVENT EV_click12_hold
+
+#define RAMP_STYLE_TOGGLE_EVENT EV_8clicks
+
+#define TURBO_200_CLICK_EVENT EV_3clicks
+//#define TURBO_200_MOMENTARY_HOLD_EVENT EV_3clicks
+//#define TURBO_200_MOMENTARY_RELEASE_EVENT EV_3clicks
+
+//#define LOCK_FROM_ON_EVENT EV_4clicks
 #define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT_RELEASE EV_click4_hold_release
 #define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT EV_click4_hold
 
-#define DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL
+#define CHANNEL_SWITCH_ONLY_CLICK_EVENT EV_3clicks
 
-//on this light, the 'first' (tint == 254) channel is the opposite than I would like, so swap these.
+#define CHANNEL_CYCLE_HOLD_EVENT EV_click7_hold
+
+#define RAMP_CONFIG_HOLD_EVENT EV_click9_hold
+//#define MANUAL_MEMORY_SAVE_CLICK_EVENT EV_click10_hold
+
+///////////////////////////////
+// on/off/lock states:
+// on this light, the 'first' (tint == 254) channel is the opposite than I would like, so swap these.
 #define CHANNEL_1_TURBO_CLICK_EVENT EV_6clicks
 #define CHANNEL_1_TURBO_HOLD_EVENT EV_click6_hold
 #define CHANNEL_1_TURBO_HOLD_RELEASE_EVENT EV_click6_hold_release
@@ -165,8 +187,23 @@
 #define CHANNEL_2_TURBO_HOLD_EVENT EV_click5_hold
 #define CHANNEL_2_TURBO_HOLD_RELEASE_EVENT EV_click5_hold_release
 
+
+#define CHANNEL_RAMP_ONLY_HOLD_EVENT EV_click3_hold
+#define CHANNEL_RAMP_ONLY_RELEASE_EVENT EV_click3_hold_release
+
+//#define CHANNEL_SWITCH_CONFIGURABLE_EVENT EV_click3_hold //default channel switch configurable in 10H ramp config
+
+///////////////////////////////
+// off/lock states:
 #define AUX_CONFIG_CLICK_EVENT EV_8clicks
 #define AUX_CONFIG_HOLD_EVENT EV_click8_hold
 #define AUX_CONFIG_HOLD_RELEASE_EVENT EV_click8_hold
 
-#define DISABLE_4C_LOCK_FROM_RAMP
+///////////////////////////////
+// off state
+#define MOMENTARY_CLICK_EVENT_OFF MOMENTARY_CLICK_EVENT //can set a separate shortcut from off mode
+
+///////////////////////////////
+// strobe state
+#define MOMENTARY_CLICK_EVENT_STROBE MOMENTARY_CLICK_EVENT //can set a separate shortcut from strobe mode
+
