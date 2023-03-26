@@ -63,7 +63,7 @@
 #define SIMPLE_UI_STEPS 5
 #define USE_SIMPLE_UI_RAMPING_TOGGLE
 #define DEFAULT_2C_STYLE 1  // 0: no turbo. 1: 2C always turbo. 2: 2C goes to top of ramp, or turbo if already at top
-#define DEFAULT_2C_STYLE_SIMPLE 2  // same but for Simple UI.
+#define DEFAULT_2C_STYLE_SIMPLE 1  // same but for Simple UI.
 
 //disable simple UI by default
 #undef SIMPLE_UI_ACTIVE
