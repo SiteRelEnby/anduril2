@@ -52,7 +52,7 @@ The main feature of this fork. Many functions can be remapped by changing a defi
 //mappings from ON:
 #define SUNSET_TIMER_HOLD_EVENT EV_click5_hold
 #define RAMP_STYLE_TOGGLE_EVENT EV_3clicks
-#define RAMP_CONFIG_HOLD_EVENT EV_7clicks
+#define RAMP_CONFIG_HOLD_EVENT EV_click7_hold
 #define MANUAL_MEMORY_SAVE_CLICK_EVENT EV_10clicks
 #define MOMENTARY_CLICK_EVENT EV_5clicks
 #define LOCK_FROM_ON_EVENT EV_4clicks
