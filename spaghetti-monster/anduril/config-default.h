@@ -196,7 +196,23 @@
 
 #endif
 
+//new features to default to enabled
 #define USE_FIREWORK_MODE
 #define USE_BEACON_ON_CONFIG
 #define USE_BEACON_BRIGHTNESS_RAMP
 #define BLINK_ONCE_AUX_TIME_4MS 10 //40ms
+
+//things that will make it more like upstream if uncommented but that are annoying, so leaving them here commented for the user to decide
+//#define USE_MAIN_LEDS_FOR_ALL_BLINKS
+
+//similarly, things a user may reasonably want to disable for all their lights
+//#define DISABLE_MOMENTARY_TURBO_FROM_LOCK
+//#define DISABLE_UNLOCK_TO_TURBO
+
+//custom mappings - setting defaults like upstream here
+#define SUNSET_TIMER_HOLD_EVENT EV_click5_hold
+#define MOMENTARY_CLICK_EVENT EV_5clicks
+#define MOMENTARY_CLICK_EVENT_STROBE MOMENTARY_CLICK_EVENT
+#define MOMENTARY_CLICK_EVENT_OFF MOMENTARY_CLICK_EVENT
+#define RAMP_CONFIG_HOLD_EVENT EV_click7_hold
+
