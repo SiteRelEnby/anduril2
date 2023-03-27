@@ -274,6 +274,7 @@ Settings related to my mods, will be ignored in stock anduril:
     * Incorporate more changes from [SammysHP](https://github.com/SammysHP/flashlight-firmware/wiki/Modifications-Overview)
 * When blinking aux red for low battery, wait for a while (blink 1-2x only? blink orange for the first 5-10 seconds then red if it remains low?) after running the light on a high setting to not trigger the warning unnecessarily due to voltage sag from putting load on the battery
   * How often is the battery voltage read?
+* `LOCKOUT_3H_ACTION` - configurable between momentary turbo and channel ramping/switching for dual channel lights
 * Make beacon on time configuration faster betweeen blinks?
 * Better integrate multiple modifications to some parts of aux LED code
 * Find something useful for 3C on single channel (jump to 50%? or user-definable level? back to memory?)
