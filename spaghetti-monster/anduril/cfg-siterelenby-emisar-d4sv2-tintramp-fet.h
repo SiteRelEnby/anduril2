@@ -159,7 +159,7 @@
 
 #define SUNSET_TIMER_HOLD_EVENT EV_click12_hold
 
-#define RAMP_STYLE_TOGGLE_EVENT EV_8clicks
+#define RAMP_STYLE_TOGGLE_EVENT EV_9clicks
 
 #define TURBO_200_CLICK_EVENT EV_4clicks
 //#define TURBO_200_MOMENTARY_HOLD_EVENT EV_click7_hold
