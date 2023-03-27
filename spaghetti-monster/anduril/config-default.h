@@ -196,6 +196,8 @@
 
 #endif
 
+#define VOLTAGE_WARN_DELAY_TICKS 375 //375*6ms = ~6s
+
 //new features to default to enabled
 #define USE_FIREWORK_MODE
 #define USE_BEACON_ON_CONFIG

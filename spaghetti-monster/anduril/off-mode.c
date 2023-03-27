@@ -77,12 +77,21 @@ uint8_t off_state(Event event, uint16_t arg) {
         #else
         if (voltage < VOLTAGE_LOW_SAFE) {
         #endif
-            #ifdef USE_INDICATOR_LED
-            indicator_led_update(6, arg);
-            #elif defined(USE_AUX_RGB_LEDS)
-            rgb_led_update(RGB_RED|RGB_BREATH, arg);
-            #else
-            if (0 == (arg & 0x1f)) blink_once();
+            #ifdef VOLTAGE_WARN_DELAY_TICKS
+            if (arg > VOLTAGE_WARN_DELAY_TICKS) {
+            #endif
+              #ifdef USE_INDICATOR_LED
+              indicator_led_update(6, arg);
+              #elif defined(USE_AUX_RGB_LEDS)
+              rgb_led_update(RGB_RED|RGB_BREATH, arg);
+              #else
+              if (0 == (arg & 0x1f)) blink_once();
+              #endif
+            #ifdef VOLTAGE_WARN_DELAY_TICKS
+            }
+            else {
+              rgb_led_update(RGB_YELLOW|RGB_BREATH, arg); //do a softer warning for the first VOLTAGE_WARN_DELAY_TICKS to not warn unnecessarily
+            }
             #endif
         } else {
             #ifdef USE_INDICATOR_LED
