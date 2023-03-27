@@ -153,5 +153,3 @@
 #define AUX_CONFIG_CLICK_EVENT EV_8clicks
 #define AUX_CONFIG_HOLD_EVENT EV_click8_hold
 #define AUX_CONFIG_HOLD_RELEASE_EVENT EV_click8_hold
-
-#define DISABLE_4C_LOCK_FROM_RAMP
