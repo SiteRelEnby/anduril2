@@ -27,9 +27,6 @@
 #endif
 
 uint8_t off_state(Event event, uint16_t arg) {
-    #ifdef USE_TINT_RAMPING
-    static uint8_t prev_tint;
-    #endif
     // turn emitter off when entering state
     if (event == EV_enter_state) {
         #if defined(USE_AUX_RGB_LEDS) || defined(USE_INDICATOR_LED)
