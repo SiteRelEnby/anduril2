@@ -38,6 +38,9 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
     #ifdef CHANNEL_SWITCH_CONFIGURABLE_HOLD_EVENT
     static uint8_t channel_switch = 0;
     #endif
+    #if defined(CHANNEL_1_TURBO_HOLD_EVENT) || defined (CHANNEL_2_TURBO_HOLD_EVENT)
+    static uint8_t momentary_from_lock = 0; //temporary variable to store if we are in a momentary mode from lockout_state for channel-specific turbo modes
+    #endif
 
     // making this match TK's idea: https://budgetlightforum.com/t/how-do-you-lock-your-lights/217263/7
     // 3C: currently, instant switch channels. In the future, switch between different defined tint ramps (https://budgetlightforum.com/t/group-buy-lt1s-pro-with-anduril2-nichia-519a-660nm-red-leds/71123/298)
@@ -311,9 +314,10 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
                 prev_tint = tint;
                 prev_level = actual_level;
                 tint = 254;
+                if (current_state == lockout_state){ momentary_from_lock = 1 ; set_state(steady_state, arg); } //necessary to get it to stay on from lock? using push_state() doesn't seem to work.
                 set_level_and_therm_target(130);
             }
-            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+            return EVENT_HANDLED;
         }
         #endif //ifdef CHANNEL_1_TURBO_HOLD_EVENT
 
@@ -325,6 +329,7 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
         #ifdef CHANNEL_1_TURBO_HOLD_RELEASE_EVENT
             //if ((event == CHANNEL_1_TURBO_HOLD_RELEASE_EVENT) && ((current_state == steady_state) || (current_state == off_state))){ //TODO?
           else if ((event == CHANNEL_1_TURBO_HOLD_RELEASE_EVENT) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
+            if (momentary_from_lock == 1){ set_state(lockout_state, arg); momentary_from_lock = 0; }
             tint = prev_tint;
             set_level_and_therm_target(prev_level);
             return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
@@ -344,10 +349,12 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
           else if ((event == CHANNEL_2_TURBO_CLICK_EVENT) && ((current_state == steady_state) || (current_state == off_state))){
         #endif //#ifndef DISABLE_UNLOCK_TO_TURBO
         #if defined(CHANNEL_2_TURBO_CLICK_EVENT)
+          if (! arg){
             tint = 1;
             set_level_and_therm_target(130);
             set_state(steady_state, 130);
-            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+            if (current_state != lockout_state) {return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;}
+          }
         }
         #endif //if defined(CHANNEL_2_TURBO_CLICK_EVENT)
 
@@ -364,6 +371,7 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
                 prev_tint = tint;
                 prev_level = actual_level;
                 tint = 1;
+                if (current_state == lockout_state){ momentary_from_lock = 1 ; set_state(steady_state, arg); } //necessary to get it to stay on from lock? using push_state() doesn't seem to work.
                 set_level_and_therm_target(130);
             }
             return EVENT_HANDLED;
@@ -372,10 +380,11 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
 
         #ifdef CHANNEL_2_TURBO_HOLD_RELEASE_EVENT
           else if (event == CHANNEL_2_TURBO_HOLD_RELEASE_EVENT) {
-          tint = prev_tint;
-          set_level_and_therm_target(prev_level);
-          return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-        }
+            if (momentary_from_lock == 1){ set_state(lockout_state, arg); momentary_from_lock = 0; }
+            tint = prev_tint;
+            set_level_and_therm_target(prev_level);
+            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+          }
         #endif
 
     } //disable special tint ramping stuff when in strobe mode to avoid Weird Things happening
