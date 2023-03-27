@@ -28,65 +28,35 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     static uint8_t prev_tint;
     #endif
 
-    #ifdef USE_MOON_DURING_LOCKOUT_MODE
-    // momentary(ish) moon mode during lockout
-    // button is being held
-    #ifdef USE_AUX_RGB_LEDS
-    // don't turn on during RGB aux LED configuration
-    if (event == EV_click8_hold) { set_level(0); } else
-    #endif
+    if (0) {} //placeholder
 
-    #ifdef USE_TINT_RAMPING
-    //momentary turbo modes need to go here to not get caught by the below
-    //5H: Momentary ch1 turbo
-    if (event == EV_click5_hold) {
-        if (!arg){
-           prev_tint = tint;
-           tint = 254;
-           set_level_and_therm_target(130);
-           return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-         }
-    }
-    else if (event == EV_click5_hold_release){
-        //go back to lock mode
-        tint = prev_tint;
-        set_level(0);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    }
-    //6H: Momentary ch2 turbo
-    else if (event == EV_click6_hold) {
-        if (!arg){
-            prev_tint = tint;
-            tint = 1;
-            set_level_and_therm_target(130);
+    #ifdef USE_MOON_DURING_LOCKOUT_MODE
+      // momentary(ish) moon mode during lockout
+      // button is being held
+      #ifdef USE_AUX_RGB_LEDS
+        // don't turn on during RGB aux LED configuration
+        #ifdef AUX_CONFIG_HOLD_EVENT
+          else if (event == AUX_CONFIG_HOLD_EVENT) { set_level(0); }
+        #else
+          else if (event == EV_click7_hold) { set_level(0); }
+        #endif
+      #endif
+      #ifndef DISABLE_MOMENTARY_TURBO_FROM_LOCK
+        #ifdef USE_3H_TURBO_FROM_LOCK
+          // 3H: momentary turbo
+          if (event == EV_click3_hold){
+            if (!arg){
+              set_level_and_therm_target(150); //TODO: use 2C_STYLE?
+              return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+            }
+          }
+          else if (event == EV_click3_hold_release){
+            set_level(0);
             return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-        }
-    }
-    else if (event == EV_click6_hold_release){
-        //go back to lock mode
-        tint = prev_tint;
-        set_level(0);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    }
-    else if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
-    #else //single channel lights
-    #ifndef DISABLE_MOMENTARY_TURBO_FROM_LOCK
-    // 3C: momentary turbo
-    if (event == EV_click3_hold){
-        if (!arg){
-            set_level_and_therm_target(150);
-            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-        }
-    }
-    else if (event == EV_click3_hold_release){
-        set_level(0);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    }
-    else if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
-    #else
-    if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
-    #endif //ifndef DISABLE_MOMENTARY_TURBO_FROM_LOCK
-    #endif //#ifdef USE_TINT_RAMPING
+          }
+        #endif
+      #endif //ifndef DISABLE_MOMENTARY_TURBO_FROM_LOCK
+      else if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
         #ifdef MOMENTARY_WHEN_LOCKED_DELAY
         if (arg > MOMENTARY_WHEN_LOCKED_DELAY) { //only use momentary if it is a longer hold than the user specified timeout (which can be less than HOLD_TIMEOUT)
         #else
