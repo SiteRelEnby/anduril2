@@ -302,7 +302,7 @@ uint8_t off_state(Event event, uint16_t arg) {
       #endif
         blink_once();
         set_state(tactical_state, 0);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
     #ifdef USE_INDICATOR_LED
