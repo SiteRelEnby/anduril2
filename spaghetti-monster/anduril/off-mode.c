@@ -297,8 +297,12 @@ uint8_t off_state(Event event, uint16_t arg) {
     }
     #endif
     #ifdef USE_TACTICAL_MODE
-    // 6 clicks: tactical mode
-    else if (event == EV_6clicks) {
+      #ifdef TACTICAL_MODE_CLICK_EVENT
+        else if (event == TACTICAL_MODE_CLICK_EVENT) {
+      #else
+        // 6 clicks: tactical mode
+        else if (event == EV_6clicks) {
+      #endif
         blink_once();
         set_state(tactical_state, 0);
         return MISCHIEF_MANAGED;
