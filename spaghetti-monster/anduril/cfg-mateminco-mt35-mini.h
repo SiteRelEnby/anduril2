@@ -56,3 +56,5 @@
 //#undef USE_RAMP_SPEED_CONFIG
 //#undef USE_VOLTAGE_CORRECTION
 //#undef USE_2C_STYLE_CONFIG
+// too big, turn off extra features
+#undef USE_TACTICAL_MODE

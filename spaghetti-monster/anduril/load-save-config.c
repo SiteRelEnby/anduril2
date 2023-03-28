@@ -95,8 +95,15 @@ void load_config() {
         #ifdef USE_AUTOLOCK
         autolock_time = eeprom[autolock_time_e];
         #endif
+<<<<<<< HEAD
         #ifdef USE_OUTPUT_MUX
         output_mux = eeprom[output_mux_e];
+=======
+        #ifdef USE_TACTICAL_MODE
+        tactical_levels[0] = eeprom[tactical_lvl_1_e];
+        tactical_levels[1] = eeprom[tactical_lvl_2_e];
+        tactical_levels[2] = eeprom[tactical_lvl_3_e];
+>>>>>>> added a "tactical mode" on "Off -> 6C"
         #endif
     }
     #ifdef START_AT_MEMORIZED_LEVEL
@@ -179,6 +186,10 @@ void save_config() {
     #endif
     #ifdef USE_OUTPUT_MUX
     eeprom[output_mux_e] = output_mux;
+    #ifdef USE_TACTICAL_MODE
+    eeprom[tactical_lvl_1_e] = tactical_levels[0];
+    eeprom[tactical_lvl_2_e] = tactical_levels[1];
+    eeprom[tactical_lvl_3_e] = tactical_levels[2];
     #endif
 
     save_eeprom();

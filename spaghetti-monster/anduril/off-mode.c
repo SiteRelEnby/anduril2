@@ -296,6 +296,14 @@ uint8_t off_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
+    #ifdef USE_TACTICAL_MODE
+    // 6 clicks: tactical mode
+    else if (event == EV_6clicks) {
+        blink_once();
+        set_state(tactical_state, 0);
+        return MISCHIEF_MANAGED;
+    }
+    #endif
     #ifdef USE_INDICATOR_LED
     // 7 clicks: change indicator LED mode
     #if defined(AUX_CONFIG_CLICK_EVENT)
