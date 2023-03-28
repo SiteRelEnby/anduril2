@@ -211,7 +211,7 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
     //TODO: These should probably be moved to their own file?
 
     //disable special tint ramping stuff when in strobe/momentary mode to avoid Weird Things happening (but we want this to work when off/locked)
-    else if ((current_state != strobe_state) && (current_state != momentary_state)){
+    else if ((current_state != strobe_state) && (current_state != momentary_state) && current_state != tactical_state){
 
         // momentary opposite channel
         #ifdef MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT
