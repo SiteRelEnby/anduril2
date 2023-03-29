@@ -39,7 +39,7 @@ Build scripts and image should work fine with the default codebase as well (in t
 
 # Current upstream version this mod is based on
 
-10/02/2023
+28/03/2023 (add tactical mode)
 
 # Changes from upstream
 
@@ -64,9 +64,10 @@ The main feature of this fork. Many functions can be remapped by changing a defi
 #define MOMENTARY_CLICK_EVENT_STROBE MOMENTARY_CLICK_EVENT //can set a separate shortcut from strobe mode
 
 // mappings from off/lock state:
-#define AUX_CONFIG_CLICK_EVENT EV_8clicks
-#define AUX_CONFIG_HOLD_EVENT EV_click8_hold
-#define AUX_CONFIG_HOLD_RELEASE_EVENT EV_click8_hold
+#define AUX_CONFIG_CLICK_EVENT EV_7clicks
+#define AUX_CONFIG_HOLD_EVENT EV_click7_hold
+#define AUX_CONFIG_HOLD_RELEASE_EVENT EV_click7_hold
+#define TACTICAL_MODE_CLICK_EVENT EV_6clicks
 
 // mappings from any state other than momentary:
 #define CHANNEL_SWITCH_CONFIGURABLE_HOLD_EVENT EV_click3_hold //default channel switch configurable in 9H config
@@ -92,7 +93,7 @@ Mappings for new features (see below for an explanation of these features):
 
 #define CHANNEL_SWITCH_ONLY_CLICK_EVENT EV_3clicks //always switches instantly between channels
 
-#define CHANNEL_CYCLE_HOLD_EVENT EV_click7_hold //switches instantly between channels, and continues to cycle channels if held longer. This is somewhat a placeholder for future support for more than 2 channels.
+#define CHANNEL_CYCLE_HOLD_EVENT EV_click7_hold //switches instantly between channels, and continues to cycle channels if held longer. This is somewhat a placeholder for future support for more than 2 channels as TK has indicated that the future plan is to have 3C cycle channels and 3H select channel mixing algo.
 
 #define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT_RELEASE EV_click4_hold_release
 #define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT EV_click4_hold
@@ -116,31 +117,49 @@ Note that the build does not (currently?) check for conflicts, which may cause w
     * Ramp config menu (default 7H)
     * Stepped/smooth ramp toggle (default 3C)
     * Aux colour/mode (default 7C/H)
+    * Lock from ramp mode (default 4C) - can also be entirely disabled.
   * New features:
     * Dual channel turbo shortcuts
     * 200% turbo shortcut
-* 2H in beacon mode to set the time the light is on (1 blink = 100ms) (`USE_BEACON_ON_CONFIG`). Each blink while held is 100ms of time on.
-* Added 3/4H in beacon mode to increase/decrease brightness without exiting. This is not strictly a *new* feature as beacon mode normally uses the last ramped level, it just allows on the fly adjustment. Enabled with `USE_BEACON_BRIGHTNESS_RAMP`.
+    * Channel ramping only (ignoring 9H config)
+    * Channel switching only (ignoring 9H config)
+    * Channel cycle - continues to switch channels when held. Somewhat of a placeholder for future support of >2 channels but also works fine with two.
+* Additional options in beacon mode
+  * 2H to set the time the light is on (1 blink = 100ms) (`USE_BEACON_ON_CONFIG`). Each blink while held is 100ms of time on.
+  * 3/4H to increase/decrease brightness without exiting. This is not strictly a *new* feature as beacon mode normally uses the last ramped level, it just allows on the fly adjustment. Enabled with `USE_BEACON_BRIGHTNESS_RAMP`.
   * Note that there is no thermal regulation in this mode so don't overheat your light - test it before leaving it unattended.
 * Incorporated some changes from [starryalley](https://github.com/starryalley/Anduril2):
   * Candle and strobe code is now a direct port:
-    * Strobe modes reordered (candle, lightning, fireworks, party strobe, tactical strobe, dual channel modes) to avoid accidentally blinding the user.
+    * Strobe modes reordered (candle, lightning, fireworks (if enabled), party strobe, tactical strobe, dual channel modes) to avoid accidentally blinding the user.
     * 2C to cycle to next strobe, 3C to cycle to previous.
     * 4C to decrease candle/lighting mode activity, 5C to increase, 6C to reset
     * 4H in candle mode to change candle style (3 options)
     * 7C in candle mode to toggle aux LEDs
     * Additional strobe mode: Fireworks mode (`USE_FIREWORK_MODE`), after lightning mode
+    * 2C to cycle to next strobe, 3C to cycle to previous.
+    * 4C to decrease candle/lighting mode activity, 5C to increase, 6C to reset. 4H to change candle style (3 options). 7C to toggle aux LEDs.`
     * On tint ramping lights, two additional strobe modes to switch and ramp between channels (after tactical strobe mode)
   * Blink aux/button red in off/lockout modes when battery is <= 3.2V
+      * For the first ~5 seconds, blink aux in orange instead for a 'soft' battery warning to compensate for voltage drop after running a light on high
+        * TODO: look into only using the soft warning if the light was recently on a high setting (>=100?)
       * Increased the speed and time in an on state of the breathing animation (aux will still switch off entirely below 3V)
   * If aux LEDs are present, use those for lock/unlock/poweron blinks instead of main LEDs (can be disabled by building with `USE_MAIN_LEDS_FOR_ALL_BLINKS`, e.g. on lights where feedback from the aux is hard to see)
   * Temperature aux LED mode (after voltage in the cycle)
 * Added options to only use momentary mode from lock after enough time has passed to make sure it was only 1H (`WAIT_FOR_MOMENTARY_WHEN_LOCKED` / `MOMENTARY_WHEN_LOCKED_DELAY`)
 * Made the default aux blinking mode blink more often and intensely
 * Build-time configuration for some additional stuff (in its own section)
-  * Using aux LEDs to display the battery voltage while the light is on.
+  * Ability to enable using aux LEDs to display the battery voltage while the light is on.
     * This is by default only enabled for lights with an RGB button but no RGB aux (e.g. K1), but can be enabled for any light by setting `USE_AUX_RGB_LEDS_WHILE_ON` in the relevant header file.
     * For lights with forward facing aux, added `RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF` and `RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW` to customise when the voltage is displayed, so if this causes a problem it can be disabled at low ramp levels. These also come in useful as a way to mark a specific level in the ramp with a visual cue (e.g. having the LED go to high at your thermally sustainable level).
+* [Tactical mode](https://budgetlightforum.com/t/why-i-still-use-anduril-1-for-edc-anduril-2-lacking-an-anduril-1-feature-suggestion-and-request-for-programmer/217573). This is actually a new upstream feature that has not made it into any releases yet. Enable with `USE_TACTICAL_MODE`
+  * Default 6C from off to enter/exit (remappable in this fork with `TACTICAL_MODE_CLICK_EVENT`). Tactical mode has 3 different momentary level slots that can be configured to be either level 1-150 as normal, or levels above 151 which correspond to strobe modes (151 == party strobe, 152 == tactical strobe, 153 == lightning mode, 154 == candle mode, etc...)
+  * Tactical mode controls:
+    * 1H: Tactical slot 1
+    * 2H: Tactical slot 2
+    * 3H: Tactical slot 3
+    * 6H (unless remapped): Exit tactical mode
+    * 7H: tactical mode config menu. Enter the level for each slot.
+  * Slots can be preconfigured in your header file with `TACTICAL_LEVELS` - E.G. `TACTICAL_LEVELS 150,(RAMP_SIZE+2),100` for turbo/strobe/high.
 * Use a less bzr/bizarre VCS
 * Remove reference to bad childrens' fantasy novels by a terrible person. Please [read another book](https://knowyourmeme.com/memes/read-another-book).
 
@@ -158,14 +177,14 @@ Note that the build does not (currently?) check for conflicts, which may cause w
 ```
 * Momentary opposite channel mode (e.g. `#define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT_RELEASE EV_click4_hold_release` `#define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT EV_click4_hold`
   * At the moment this will invert the ramp, e.g. if you are at a 25/75% mix between the two channels it will flip to 75/25. I may make this behaviour configurable in the future with other options.
-* Mappable shortcuts for instant channel switching only and for ramping only, ignoring 7H config (`CHANNEL_RAMP_ONLY_HOLD_EVENT`, `CHANNEL_RAMP_ONLY_RELEASE_EVENT`, `CHANNEL_SWITCH_ONLY_CLICK_EVENT`)
-* `DEFAULT_TINT` build-time option
+* Mappable shortcuts for instant channel switching only and for ramping only, ignoring 9H config (`CHANNEL_RAMP_ONLY_HOLD_EVENT`, `CHANNEL_RAMP_ONLY_RELEASE_EVENT`, `CHANNEL_SWITCH_ONLY_CLICK_EVENT`)
+* `DEFAULT_TINT` build-time option to make the light start at a value other than 50% mix
 * Option to make the light start in instant switching mode by default via header file (currently kind of a kludge as it just inverts the two states, so the 9H options are swapped round from normal too when enabled - although fixing that is low priority as it's not something that many people probably want to change much) (`USE_OPPOSITE_TINTRAMP_KLUDGE`)
 * Shortcuts to turbo modes for each channel (`CHANNEL_1_TURBO_CLICK_EVENT`, `CHANNEL_2_TURBO_CLICK_EVENT`)
 * Momentary turbo modes for each channel (`CHANNEL_1_TURBO_HOLD_EVENT`, `CHANNEL_1_TURBO_HOLD_RELEASE_EVENT`,  `CHANNEL_2_TURBO_HOLD_EVENT`, `CHANNEL_2_TURBO_HOLD_RELEASE_EVENT`)
 
 ## Single channel lights only
-* 3H from lock for turbo (can be disabled with `DISABLE_MOMENTARY_TURBO_FROM_LOCK`). This does not work for dual channel lights by default because channel swiching on 3H will override it. TODO: 5H? Something like `LOCKOUT_3H_ACTION`? (should probably force 200% in case the user is on the wrong channel?)
+* 3H from lock for turbo (can be disabled with `DISABLE_MOMENTARY_TURBO_FROM_LOCK`). This does not work for dual channel lights by default because channel swiching on 3H will override it. TODO: 5H? Something like `LOCKOUT_3H_ACTION`? (should probably force 200% here in case the user is on the wrong channel? configurable?)
 
 # Lights tested with
 These are lights that I own. Currently all of them are running this fork. Not every single commit or release will be tested on every single light.
@@ -175,10 +194,12 @@ These are lights that I own. Currently all of them are running this fork. Not ev
 * K1
 * KR1
 * DT8K (based on KR4 header file)
+* D2 (based on D4Sv2-tintramp (no FET) header file)
+* DM11 (SBT90)
+* D4K (noFET)
 * D4 (boost driver; no FET)
 
 # Build-time configuration
-
 
 ## Building a custom image
 
@@ -224,6 +245,9 @@ Get your light's default firmware and locate the correct header file, as this co
 
 //#define DEFAULT_2C_STYLE 1  // 0: no turbo. 1: 2C always turbo. 2: 2C goes to top of ramp, or turbo if already at top
 //#define DEFAULT_2C_STYLE_SIMPLE 2  // same but for Simple UI.
+
+//#define USE_TACTICAL_MODE //enable tactical mode. See also TACTICAL_MODE_CLICK_EVENT
+//#define TACTICAL_LEVELS 150,(RAMP_SIZE+2),100 //set tactical levels (max+1 = party strobe, max+2 = tactical strobe, etc...)
 ```
 
 Settings related to my mods, will be ignored in stock anduril:
@@ -263,6 +287,7 @@ Settings related to my mods, will be ignored in stock anduril:
 //#define USE_BEACON_BRIGHTNESS_RAMP //in beacon mode, 3/4H to ramp brightness up/down
 
 //#define 2C_TURBO_ALWAYS_USE_SINGLE_CHANNEL //ignore 7H turbo config on dual channel lights and always go to single channel at 100%.
+
 ```
 
 # Roadmap
