@@ -443,29 +443,45 @@ uint8_t steady_state(Event event, uint16_t arg) {
     }
     #endif
 
-    #if defined(USE_MANUAL_MEMORY) && defined (MANUAL_MEMORY_SAVE_CLICK_EVENT)
-    else if (event == MANUAL_MEMORY_SAVE_CLICK_EVENT) {
-        // turn on manual memory and save current brightness
-        manual_memory = actual_level;
-        #ifdef USE_TINT_RAMPING
-        manual_memory_tint = tint;  // remember tint too
-        #endif
-        save_config();
-        blink_once();
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    }
+    #if defined(USE_MANUAL_MEMORY)
+      #ifdef MANUAL_MEMORY_SAVE_CLICK_EVENT
+        else if (event == MANUAL_MEMORY_SAVE_CLICK_EVENT) {
+          // turn on manual memory and save current brightness
+          manual_memory = actual_level;
+          #ifdef USE_TINT_RAMPING
+          manual_memory_tint = tint;  // remember tint too
+          #endif
+          save_config();
+          blink_once();
+          return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        }
+      #else
+        else if (event == EV_10clicks) {
+          // turn on manual memory and save current brightness
+          manual_memory = actual_level;
+          #ifdef USE_TINT_RAMPING
+          manual_memory_tint = tint;  // remember tint too
+          #endif
+          save_config();
+          blink_once();
+          return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        }
+
+      #endif //ifdef MANUAL_MEMORY_SAVE_CLICK_EVENT
     else if (event == EV_click10_hold) {
-        #ifdef USE_RAMP_EXTRAS_CONFIG
+      #ifdef USE_RAMP_EXTRAS_CONFIG
         // let user configure a bunch of extra ramp options
         push_state(ramp_extras_config_state, 0);
-        #else  // manual mem, but no timer
-        // turn off manual memory; go back to automatic
-        if (0 == arg) {
-            manual_memory = 0;
-            save_config();
-            blink_once();
-        }
+      #else  // manual mem, but no timer
+        #ifndef DONT_DISABLE_MANUAL_MEMORY_ON_ZERO
+          // turn off manual memory; go back to automatic
+          if (0 == arg) {
+              manual_memory = 0;
+              save_config();
+              blink_once();
+          }
         #endif
+      #endif
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif  // ifdef USE_MANUAL_MEMORY
@@ -549,7 +565,24 @@ void ramp_extras_config_save(uint8_t step, uint8_t value) {
     // FIXME: should be limited to (65535 / SLEEP_TICKS_PER_MINUTE)
     //   to avoid overflows or impossibly long timeouts
     //   (by default, the effective limit is 145, but it allows up to 255)
-    else if (2 == step) { manual_memory_timer = value; }
+    else if (2 == step)
+    {
+        #ifndef DONT_DISABLE_MANUAL_MEMORY_ON_ZERO
+          if (value != 0) {
+        #endif
+        #ifdef DISABLE_MANUAL_MEMORY_ENTRY_VALUE
+          if (value == DISABLE_MANUAL_MEMORY_ENTRY_VALUE){ manual_memory_timer = 0; }
+          else {
+        #endif
+        manual_memory_timer = value;
+        #ifdef DISABLE_MANUAL_MEMORY_ENTRY_VALUE
+          }
+        #endif
+
+        #ifndef DONT_DISABLE_MANUAL_MEMORY_ON_ZERO
+        }
+        #endif
+    }
     #endif
 
     #ifdef USE_RAMP_AFTER_MOON_CONFIG
