@@ -155,3 +155,12 @@
 //disable simple UI by default
 #undef SIMPLE_UI_ACTIVE
 #define SIMPLE_UI_ACTIVE 0
+
+
+//enable voltage readout from aux while on. TODO: make this be able to be enabled/disabled at runtime
+#define USE_AUX_RGB_LEDS_WHILE_ON
+
+//thresholds (ramp level 1-150) below which the voltage LED display will be switched to low/off. Useless without USE_AUX_RGB_LEDS_WHILE_ON
+//TODO: runtime-configurable?
+#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF 5 //aux off for the very lowest levels
+#undef RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW    //no need for this because the DM1.12 optics really don't let the aux interfere with the beam much
