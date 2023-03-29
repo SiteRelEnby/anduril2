@@ -151,7 +151,7 @@
 #define USE_BEACON_BRIGHTNESS_RAMP
 
 
-//#define DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL
+#define DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL
 
 // on state:
 #define MOMENTARY_CLICK_EVENT EV_12clicks
@@ -165,6 +165,8 @@
 //#define TURBO_200_MOMENTARY_RELEASE_EVENT EV_click7_hold_release
 
 //#define LOCK_FROM_ON_EVENT EV_4clicks
+#undef LOCK_FROM_ON_EVENT
+
 #define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT_RELEASE EV_click4_hold_release
 #define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT EV_click4_hold
 
@@ -191,6 +193,8 @@
 
 //#define CHANNEL_SWITCH_CONFIGURABLE_HOLD_EVENT EV_click3_hold //default channel switch configurable in 9H config
 //#define CHANNEL_SWITCH_CONFIGURABLE_HOLD_RELEASE_EVENT EV_click3_hold_release //default channel switch configurable in 9H config
+#undef CHANNEL_SWITCH_CONFIGURABLE_HOLD_EVENT
+#undef CHANNEL_SWITCH_CONFIGURABLE_HOLD_RELEASE_EVENT
 
 ///////////////////////////////
 // off/lock states:
@@ -201,8 +205,9 @@
 ///////////////////////////////
 // off state
 #define MOMENTARY_CLICK_EVENT_OFF MOMENTARY_CLICK_EVENT //can set a separate shortcut from off mode
+#define TACTICAL_MODE_CLICK_EVENT EV_9clicks
+#define TACTICAL_LEVELS 150,(RAMP_SIZE+2),130
 
 ///////////////////////////////
 // strobe state
 #define MOMENTARY_CLICK_EVENT_STROBE MOMENTARY_CLICK_EVENT //can set a separate shortcut from strobe mode
-
