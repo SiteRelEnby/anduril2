@@ -187,3 +187,5 @@
 #define TURBO_200_CLICK_EVENT EV_4clicks
 
 #define RAMP_STYLE_TOGGLE_EVENT EV_9clicks
+
+#define USE_3H_TURBO_FROM_LOCK

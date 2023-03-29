@@ -162,3 +162,5 @@
 #define SUNSET_TIMER_HOLD_EVENT EV_click12_hold
 
 #define RAMP_STYLE_TOGGLE_EVENT EV_9clicks
+
+#define USE_3H_TURBO_FROM_LOCK
