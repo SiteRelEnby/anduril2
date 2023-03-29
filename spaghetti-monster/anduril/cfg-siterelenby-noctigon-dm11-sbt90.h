@@ -164,3 +164,6 @@
 //TODO: runtime-configurable?
 #define RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF 5 //aux off for the very lowest levels
 #undef RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW    //no need for this because the DM1.12 optics really don't let the aux interfere with the beam much
+
+#undef DISABLE_MANUAL_MEMORY_ENTRY_VALUE
+#define DISABLE_MANUAL_MEMORY_ENTRY_VALUE 3
