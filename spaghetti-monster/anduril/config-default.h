@@ -209,6 +209,9 @@
 #define USE_BEACON_BRIGHTNESS_RAMP
 #define BLINK_ONCE_AUX_TIME_4MS 10 //40ms
 
+//new features to keep matching default behaviour by default
+#define DISABLE_MANUAL_MEMORY_ENTRY_VALUE 0
+
 //things that will make it more like upstream if uncommented but that are annoying, so leaving them here commented for the user to decide
 //#define USE_MAIN_LEDS_FOR_ALL_BLINKS
 
@@ -222,4 +225,4 @@
 #define MOMENTARY_CLICK_EVENT_STROBE MOMENTARY_CLICK_EVENT
 #define MOMENTARY_CLICK_EVENT_OFF MOMENTARY_CLICK_EVENT
 #define RAMP_CONFIG_HOLD_EVENT EV_click7_hold
-
+#define MANUAL_MEMORY_SAVE_CLICK_EVENT EV_10clicks

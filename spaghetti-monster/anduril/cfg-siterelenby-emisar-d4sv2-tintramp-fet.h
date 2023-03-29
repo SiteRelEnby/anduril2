@@ -211,3 +211,7 @@
 ///////////////////////////////
 // strobe state
 #define MOMENTARY_CLICK_EVENT_STROBE MOMENTARY_CLICK_EVENT //can set a separate shortcut from strobe mode
+
+//use 3 instead of 0 to disable manual memory from 10H while on, option 2
+#undef DISABLE_MANUAL_MEMORY_ENTRY_VALUE
+#define DISABLE_MANUAL_MEMORY_ENTRY_VALUE 3
