@@ -43,7 +43,7 @@ Build scripts and image should work fine with the default codebase as well (in t
 
 # Changes from upstream
 
-The goal for this fork is to be reasonably modular - if you don't want/need a feature, it can be enabled or disabled. Ideally, it should be usable for someone familiar with anduril, e.g. by default 7H, 9H, and 10H config menus stay in the same place. Most ofthe extra options and configuration is done at build-time using feature flags (there just isn't enough space to make everything configurable). In general, avoiding removing functionality completely, just giving the user the option if they want it.
+The goal for this fork is to be reasonably modular - if you don't want/need a feature, it can be enabled or disabled. Ideally, it should be usable for someone familiar with anduril, e.g. by default 7H, 9H, and 10H config menus stay in the same place. Most of the extra options and configuration is done at build-time using feature flags (there just isn't enough space to make everything configurable). In general, avoiding removing functionality completely, just giving the user the option if they want it.
 
 ## Custom mode mappings
 
@@ -75,12 +75,22 @@ The main feature of this fork. Many functions can be remapped by changing a defi
 
 ```
 
-Some stock features can be disabled completely by unsetting their event as well:
+Some stock features can be disabled completely by unsetting their event as well. This will save some image size as well:
 ```
 #undef LOCK_FROM_ON_EVENT
+#undef CHANNEL_SWITCH_CONFIGURABLE_HOLD_EVENT
+#undef CHANNEL_SWITCH_CONFIGURABLE_HOLD_RELEASE_EVENT
+
+// Options to prevent the 10H ramp extras config menu's second item from disabling manual memory if left to time out with no number entry.
+// Letting this happen breaks a fundamental law of UI design: destructive actions shouldn't happen due to *inaction*.
+// (Also, one time accidentally turboing yourself in the face because you accidentally disabled manual memory earlier and didn't notice is one time too many...)
+
+#undef MANUAL_MEMORY_SAVE_CLICK_EVENT //this does not disable manual memory, it just disables saving a new value to it so your build-time configured value will always be the same and can't be overwritten.
+#define DONT_DISABLE_MANUAL_MEMORY_ON_ZERO //from the 10H ramp extras config menu, if the second option is selected, don't disable manual memory. Effectively locks manual memory on (but still allows the timeout to be changed, as well as the actual memorised value to if MANUAL_MEMORY_SAVE_CLICK_EVENT is still defined)
+#define DISABLE_MANUAL_MEMORY_ENTRY_VALUE 3 //if you don't want to completely prevent yourself disabling manual memory, set a value here, and if *this* number is entered for the second ramp extras config item (manual memory timeout), manual memory will be disabled (and won't be if the number entry is left to time out at zero).
 ```
 
-Mappings for new features (see below for an explanation of these features):
+Mappings for new features (see below for an explanation of these features). Adding each of these will generally add a small amount of size to the generated image:
 ```
 // mappings from ON:
 #define TURBO_200_CLICK_EVENT EV_4clicks
@@ -104,7 +114,7 @@ Some example files to look at as examples for your own build:
 * `spaghetti-monster/anduril/cfg-siterelenby-emisar-d4sv2-tintramp-fet.h`
 * `spaghetti-monster/anduril/cfg-siterelenby-noctigon-dm112-tintramp-fet.h`
 
-Note that the build does not (currently?) check for conflicts, which may cause weird things to happen, or may just cause the function to not work.
+Note that the build does not (TODO: currently?) check for conflicts, which may cause weird things to happen, or may just cause the function to not work.
 
 ## All lights
 
@@ -112,12 +122,14 @@ Note that the build does not (currently?) check for conflicts, which may cause w
   * Remappable default functionality:
     * Momentary mode (default 5C)
     * Sunset timer (default 5H)
-    * Lock from on (default 4H - can also be entirely disabled)
-    * Tint/channel ramping (default 3H)
+    * Lock from on (default 4H - can also be disabled by unsetting)
+    * Channel ramp/switch (default 3H - can also be disabled by unsetting as this fork adds alternate channel switching modes)
     * Ramp config menu (default 7H)
     * Stepped/smooth ramp toggle (default 3C)
     * Aux colour/mode (default 7C/H)
-    * Lock from ramp mode (default 4C) - can also be entirely disabled.
+    * Lock from ramp mode (default 4C - can also be disabled by unsetting)
+    * Tactical mode (default 6C - can also be disabled by unsetting)
+    * Save manual memory (default 10) - can also be disabled by unsetting)
   * New features:
     * Dual channel turbo shortcuts
     * 200% turbo shortcut
@@ -151,6 +163,9 @@ Note that the build does not (currently?) check for conflicts, which may cause w
   * Ability to enable using aux LEDs to display the battery voltage while the light is on.
     * This is by default only enabled for lights with an RGB button but no RGB aux (e.g. K1), but can be enabled for any light by setting `USE_AUX_RGB_LEDS_WHILE_ON` in the relevant header file.
     * For lights with forward facing aux, added `RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF` and `RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW` to customise when the voltage is displayed, so if this causes a problem it can be disabled at low ramp levels. These also come in useful as a way to mark a specific level in the ramp with a visual cue (e.g. having the LED go to high at your thermally sustainable level).
+  * Options to prevent the 10H ramp extras config menu's second item from disabling manual memory if left to time out with no number entry. Letting this happen breaks a fundamental law of UI design: destructive actions shouldn't happen due to *inaction*. (Also, one time accidentally turboing yourself in the face because you accidentally disabled manual memory earlier and didn't notice is one time too many...)
+    * `#define DONT_DISABLE_MANUAL_MEMORY_ON_ZERO` - from the 10H ramp extras config menu, if the second option is selected, don't disable manual memory. Effectively locks manual memory on (but still allows the timeout to be changed)
+    * `#define DISABLE_MANUAL_MEMORY_ENTRY_VALUE 3` - if you don't want to completely prevent yourself disabling manual memory, set a value here, and if *this* number is entered for the second ramp extras config item (manual memory timeout), manual memory will be disabled (and won't be if the number entry is left to time out at zero).
 * [Tactical mode](https://budgetlightforum.com/t/why-i-still-use-anduril-1-for-edc-anduril-2-lacking-an-anduril-1-feature-suggestion-and-request-for-programmer/217573). This is actually a new upstream feature that has not made it into any releases yet. Enable with `USE_TACTICAL_MODE`
   * Default 6C from off to enter/exit (remappable in this fork with `TACTICAL_MODE_CLICK_EVENT`). Tactical mode has 3 different momentary level slots that can be configured to be either level 1-150 as normal, or levels above 151 which correspond to strobe modes (151 == party strobe, 152 == tactical strobe, 153 == lightning mode, 154 == candle mode, etc...)
   * Tactical mode controls:
@@ -159,13 +174,13 @@ Note that the build does not (currently?) check for conflicts, which may cause w
     * 3H: Tactical slot 3
     * 6H (unless remapped): Exit tactical mode
     * 7H: tactical mode config menu. Enter the level for each slot.
-  * Slots can be preconfigured in your header file with `TACTICAL_LEVELS` - E.G. `TACTICAL_LEVELS 150,(RAMP_SIZE+2),100` for turbo/strobe/high.
+  * Slots can be preconfigured in your header file with `TACTICAL_LEVELS` - e.g. `TACTICAL_LEVELS RAMP_SIZE,(RAMP_SIZE+2),100` for turbo/strobe/high.
 * Use a less bzr/bizarre VCS
 * Remove reference to bad childrens' fantasy novels by a terrible person. Please [read another book](https://knowyourmeme.com/memes/read-another-book).
 
 ## Dual channel lights only
 * `DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL`: When set, 2C now always goes to level 130 (single channel on maximum) instead of using 7H configured mode
-* Shortcuts to channels 1 and 2 turbo modes, including momentary. This needs configuration in a light-specific header file:
+* Shortcuts to channel 1 and 2 turbo modes, including momentary. This needs configuration in a light-specific header file:
 ```
 #define CHANNEL_1_TURBO_CLICK_EVENT EV_5clicks
 #define CHANNEL_1_TURBO_HOLD_EVENT EV_click5_hold
@@ -179,7 +194,7 @@ Note that the build does not (currently?) check for conflicts, which may cause w
   * At the moment this will invert the ramp, e.g. if you are at a 25/75% mix between the two channels it will flip to 75/25. I may make this behaviour configurable in the future with other options.
 * Mappable shortcuts for instant channel switching only and for ramping only, ignoring 9H config (`CHANNEL_RAMP_ONLY_HOLD_EVENT`, `CHANNEL_RAMP_ONLY_RELEASE_EVENT`, `CHANNEL_SWITCH_ONLY_CLICK_EVENT`)
 * `DEFAULT_TINT` build-time option to make the light start at a value other than 50% mix
-* Option to make the light start in instant switching mode by default via header file (currently kind of a kludge as it just inverts the two states, so the 9H options are swapped round from normal too when enabled - although fixing that is low priority as it's not something that many people probably want to change much) (`USE_OPPOSITE_TINTRAMP_KLUDGE`)
+* Option to make the light start in instant switching mode by default via header file (currently kind of a kludge as it just inverts the two states, so the 9H options are swapped round from normal too when enabled - although fixing that is low priority as it's not something that many people probably want to change much, plus doing it this way saves some space on the MCU) (`USE_OPPOSITE_TINTRAMP_KLUDGE`)
 * Shortcuts to turbo modes for each channel (`CHANNEL_1_TURBO_CLICK_EVENT`, `CHANNEL_2_TURBO_CLICK_EVENT`)
 * Momentary turbo modes for each channel (`CHANNEL_1_TURBO_HOLD_EVENT`, `CHANNEL_1_TURBO_HOLD_RELEASE_EVENT`,  `CHANNEL_2_TURBO_HOLD_EVENT`, `CHANNEL_2_TURBO_HOLD_RELEASE_EVENT`)
 
@@ -191,9 +206,9 @@ These are lights that I own. Currently all of them are running this fork. Not ev
 
 * D4Sv2 (dual channel, FET)
 * DM1.12 (FET on flood channel. based on D4Sv2 header file)
-* K1
-* KR1
-* DT8K (based on KR4 header file)
+* K1 (noFET)
+* KR1 (noFET)
+* DT8K (linear+FET, based on KR4 header file)
 * D2 (based on D4Sv2-tintramp (no FET) header file)
 * DM11 (SBT90)
 * D4K (noFET)
@@ -216,12 +231,12 @@ Get your light's default firmware and locate the correct header file, as this co
 //#define RAMP_SMOOTH_FLOOR   1   // smooth ramp floor
 //#define RAMP_SMOOTH_CEIL    130 // smooth ramp ceiling
 //#define RAMP_DISCRETE_FLOOR 1   // smooth ramp floor
-//define RAMP_DISCRETE_CEIL   130 // stepped ramp ceiling
+//#define RAMP_DISCRETE_CEIL   130 // stepped ramp ceiling
 //#define RAMP_DISCRETE_STEPS 10  // stepped ramp length
 
-//enable voltage readout via aux/switch when on (see also RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF and RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW for modded versions)
+// enable voltage readout via aux/switch when on (see also RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF and RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW for modded versions)
 //#define USE_AUX_RGB_LEDS_WHILE_ON
-//disable voltage readout via aux when on
+// disable voltage readout via aux when on
 //#undef USE_AUX_RGB_LEDS_WHILE_ON
 
 //#define RAMP_STYLE 0 //0 is smooth, 1 is stepped
@@ -247,7 +262,7 @@ Get your light's default firmware and locate the correct header file, as this co
 //#define DEFAULT_2C_STYLE_SIMPLE 2  // same but for Simple UI.
 
 //#define USE_TACTICAL_MODE //enable tactical mode. See also TACTICAL_MODE_CLICK_EVENT
-//#define TACTICAL_LEVELS 150,(RAMP_SIZE+2),100 //set tactical levels (max+1 = party strobe, max+2 = tactical strobe, etc...)
+//#define TACTICAL_LEVELS 150,(RAMP_SIZE+2),100 //set default tactical levels (max+1 = party strobe, max+2 = tactical strobe, etc...)
 ```
 
 Settings related to my mods, will be ignored in stock anduril:
@@ -255,15 +270,15 @@ Settings related to my mods, will be ignored in stock anduril:
 #define USE_AUX_RGB_LEDS_WHILE_ON //show voltage using RGB aux even if this isn't just a button LED
 #define RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF 30 // Sets the threshold at which to switch the voltage RGB aux off
 #define RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW 50 //Sets the threshold at which to switch the voltage RGB aux to low mode
-#define USE_OPPOSITE_TINTRAMP_KLUDGE: When defined, makes the light start in channel switching mode. A very inelegant solution but it works so not being redone for now. May be replaced with a better way in the future.
+#define USE_OPPOSITE_TINTRAMP_KLUDGE: When defined, makes the light start in channel switching mode. A very inelegant solution but it works so not being redone for now (plus it probably saves some space over a more elegant solution). May be supplemented with a better way in the future.
 
 // Delay momentary from lock until input is confirmed to definitely be 1H - prevents main LEDs flashing when doing more clicks from lock.
 // This setting guarantees a flash will be avoided when unlocking, but might be too slow for many people (including me) - see MOMENTARY_WHEN_LOCKED_DELAY for an alternative.
 //#define WAIT_FOR_MOMENTARY_WHEN_LOCKED
 
-#define MOMENTARY_WHEN_LOCKED_DELAY 2 //number of ticks to wait (default for HOLD_TIMEOUT is 24) before activating momentary mode when locked - prevents a flash when inputting a higher number of clicks, without waiting for the full HOLD_TIMEOUT delay with WAIT_FOR_MOMENTARY_WHEN_LOCKED. 1-2 is fine at least for lights with higher Vf, but depends on the user's preference. >4 is probably excessive.
+#define MOMENTARY_WHEN_LOCKED_DELAY 1 //number of ticks to wait (default for HOLD_TIMEOUT is 24) before activating momentary mode when locked - prevents a flash when inputting a higher number of clicks, without waiting for the full HOLD_TIMEOUT delay with WAIT_FOR_MOMENTARY_WHEN_LOCKED. 1-2 is fine at least for lights with higher Vf, but depends on the user's preference. >4 is probably excessive.
 
-// default channel mix for when the light first starts up or is reset. Can be set to any value 1-254.
+// default channel mix for when the light first starts up or is reset. Can be set to any value 1-254, or 0/255 for auto tint modes.
 #define DEFAULT_TINT 1
 //#define DEFAULT_TINT 128
 //#define DEFAULT_TINT 254
@@ -300,6 +315,8 @@ Settings related to my mods, will be ignored in stock anduril:
 * When blinking aux red for low battery, wait for a while (blink 1-2x only? blink orange for the first 5-10 seconds then red if it remains low?) after running the light on a high setting to not trigger the warning unnecessarily due to voltage sag from putting load on the battery
   * How often is the battery voltage read?
 * `LOCKOUT_3H_ACTION` - configurable between momentary turbo and channel ramping/switching for dual channel lights
+* Option to blink aux on 1C (+2C?) from locked as a reminder of the current state.
+* Option to save channel mix separately to level for manual memory
 * Make beacon on time configuration faster betweeen blinks?
 * Better integrate multiple modifications to some parts of aux LED code
 * Find something useful for 3C on single channel (jump to 50%? or user-definable level? back to memory?)
