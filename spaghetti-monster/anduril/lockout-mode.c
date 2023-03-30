@@ -22,6 +22,19 @@
 
 #include "lockout-mode.h"
 
+#ifdef BLINK_LOCK_REMINDER
+void blink_lock_reminder(){
+  blink_once_aux(RGB_RED);
+  delay_4ms(15);
+  #ifdef USE_AUX_RGB_LEDS //one blink is enough with main emitters
+    blink_once_aux(RGB_RED);
+    delay_4ms(15);
+    blink_once_aux(RGB_RED);
+    delay_4ms(15);
+  #endif
+}
+#endif
+
 uint8_t lockout_state(Event event, uint16_t arg) {
     //var for momentary channel-specific turbo
     #ifdef USE_TINT_RAMPING
@@ -150,16 +163,9 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     #endif
 
     #ifdef BLINK_LOCK_REMINDER
-    else if (event == EV_1click) {
-      blink_once_aux(RGB_RED);
-      delay_4ms(15);
-    #ifdef USE_AUX_RGB_LEDS //one blink is enough with main emitters
-      blink_once_aux(RGB_RED);
-      delay_4ms(15);
-      blink_once_aux(RGB_RED);
-      delay_4ms(15);
-      return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    #endif
+    else if ((event == EV_1click) || (event == EV_2clicks)) {
+        blink_lock_reminder();
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
 
@@ -300,4 +306,3 @@ uint8_t autolock_config_state(Event event, uint16_t arg) {
 
 
 #endif
-
