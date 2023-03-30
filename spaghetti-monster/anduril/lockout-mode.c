@@ -149,9 +149,24 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     }
     #endif
 
+    #ifdef BLINK_LOCK_REMINDER
+    else if (event == EV_1click) {
+      blink_once_aux(RGB_RED);
+      delay_4ms(15);
+    #ifdef USE_AUX_RGB_LEDS //one blink is enough with main emitters
+      blink_once_aux(RGB_RED);
+      delay_4ms(15);
+      blink_once_aux(RGB_RED);
+      delay_4ms(15);
+      return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    #endif
+    }
+    #endif
+
     // 3 clicks: exit and turn off
     else if (event == EV_3clicks) {
-        blink_once_aux();
+        blink_once_aux(RGB_GREEN);
+        delay_4ms(5);
         set_state(off_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }

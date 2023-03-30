@@ -222,7 +222,7 @@ void setup() {
         // regular e-switch light, no hard clicky power button
 
         // blink at power-on to let user know power is connected
-        blink_once_aux();
+        blink_once_aux(RGB_GREEN);
 
         #ifdef USE_FACTORY_RESET
         if (button_is_pressed())
