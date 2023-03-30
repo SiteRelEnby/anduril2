@@ -48,11 +48,34 @@ uint8_t blink_digit(uint8_t num) {
     // "zero" digit gets a single short blink
     uint8_t ontime = BLINK_SPEED * 2 / 12;
     if (!num) { ontime = 8; num ++; }
-
     for (; num>0; num--) {
-        set_level(BLINK_BRIGHTNESS);
-        nice_delay_ms(ontime);
-        set_level(0);
+        #if (defined(BLINK_NUMBERS_WITH_AUX) && (defined(USE_BUTTON_LED) || defined(USE_AUX_RGB_LEDS)))
+          if (blink_digit_type == 2){
+        #endif
+          set_level(BLINK_BRIGHTNESS);
+          nice_delay_ms(ontime);
+          set_level(0);
+        #ifdef BLINK_NUMBERS_WITH_AUX
+        }
+        else {
+          #ifdef USE_AUX_RGB_LEDS
+          //rgb_led_set(BLINK_NUMBERS_WITH_AUX_COLOUR << 1); //left shift is for high brightness, can be removed for low
+          //the above is equivalent to rgb_led_update(BLINK_NUMBERS_WITH_AUX_COLOUR|RGB_HIGH, 0) but using lower level FSM functions before that stuff is defined
+          rgb_led_set(BLINK_NUMBERS_WITH_AUX_COLOUR); //left shift is for high brightness, can be removed for low
+          #endif
+          #ifdef USE_BUTTON_LED
+          button_led_set(2); //use 1 for low
+          #endif
+          nice_delay_ms(ontime);
+          //rgb_led_update(RGB_OFF, 0);
+          #ifdef USE_AUX_RGB_LEDS
+          rgb_led_set(0); //off
+          #endif
+          #ifdef USE_BUTTON_LED
+          button_led_set(0); //off
+          #endif
+        }
+        #endif
         nice_delay_ms(BLINK_SPEED * 3 / 12);
     }
     return nice_delay_ms(BLINK_SPEED * 8 / 12);
@@ -83,6 +106,12 @@ uint8_t blink_big_num(uint16_t num) {
 #endif
 #ifdef USE_BLINK_NUM
 uint8_t blink_num(uint8_t num) {
+
+    #if (defined(BLINK_NUMBERS_WITH_AUX) && (defined(USE_BUTTON_LED) || defined(USE_AUX_RGB_LEDS)))
+    //wait a little extra time before starting when using aux instead of main emitters to let the user look at the aux / move her hand off the button
+    if (blink_digit_type == 1){ nice_delay_ms(400); }
+    #endif
+
     #if 1
     uint8_t hundreds = num / 100;
     num = num % 100;
@@ -138,7 +167,7 @@ void indicator_led(uint8_t lvl) {
             AUXLED2_PORT.OUTSET = (1 << AUXLED2_PIN); // set as high
             #endif
             break;
-      
+
         #else
 
         case 0:  // indicator off
@@ -201,7 +230,7 @@ void button_led_set(uint8_t lvl) {
             break;
 
         #else
-        
+
         case 0:  // LED off
             BUTTON_LED_DDR  &= 0xff ^ (1 << BUTTON_LED_PIN);
             BUTTON_LED_PUE  &= 0xff ^ (1 << BUTTON_LED_PIN);
@@ -231,7 +260,7 @@ void rgb_led_set(uint8_t value) {
         uint8_t lvl = (value >> (i<<1)) & 0x03;
         uint8_t pin = pins[i];
         switch (lvl) {
-        
+
             #ifdef AVRXMEGA3  // ATTINY816, 817, etc
 
             case 0:  // LED off
@@ -249,7 +278,7 @@ void rgb_led_set(uint8_t value) {
                 break;
 
             #else
-        
+
             case 0:  // LED off
                 AUXLED_RGB_DDR  &= 0xff ^ (1 << pin);
                 AUXLED_RGB_PUE  &= 0xff ^ (1 << pin);
@@ -265,8 +294,8 @@ void rgb_led_set(uint8_t value) {
                 AUXLED_RGB_PUE  |= (1 << pin);
                 AUXLED_RGB_PORT |= (1 << pin);
                 break;
-                
-            #endif  // MCU type                    
+
+            #endif  // MCU type
         }
     }
 }
