@@ -56,12 +56,17 @@ uint8_t steady_state(Event event, uint16_t arg) {
         // 0 = no turbo
         // 1 = Anduril 1 direct to turbo
         // 2 = Anduril 2 direct to ceiling, or turbo if already at ceiling
-        if (0 == style_2c) turbo_level = mode_max;
-        else if (1 == style_2c) turbo_level = MAX_LEVEL;
-        else {
-            if (memorized_level < mode_max) { turbo_level = mode_max; }
-            else { turbo_level = MAX_LEVEL; }
-        }
+
+        #ifdef DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL
+          turbo_level = 130;
+        #else
+          if (0 == style_2c) turbo_level = mode_max;
+          else if (1 == style_2c) turbo_level = MAX_LEVEL;
+          else {
+              if (memorized_level < mode_max) { turbo_level = mode_max; }
+              else { turbo_level = MAX_LEVEL; }
+          }
+        #endif
     #elif defined(USE_2C_MAX_TURBO)  // Anduril 1 style always
         // simple UI: to/from ceiling
         // full UI: to/from turbo (Anduril1 behavior)
@@ -135,7 +140,6 @@ uint8_t steady_state(Event event, uint16_t arg) {
         set_state(off_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-    #ifndef DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL
     // 2 clicks: go to/from highest level
     else if (event == EV_2clicks) {
         if (actual_level < turbo_level) {
@@ -149,7 +153,6 @@ uint8_t steady_state(Event event, uint16_t arg) {
         #endif
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-    #endif // ifndef DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL
 
     #if defined(USE_OUTPUT_MUX) // output channel switching - override the 4C function
     else if (event == EV_4clicks) {
