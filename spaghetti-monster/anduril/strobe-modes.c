@@ -33,6 +33,10 @@ uint8_t saved_tint = 128;
 uint8_t tint_locked = 0;
 #endif
 
+#ifdef USE_TINT_RAMPING
+uint8_t past_edge_counter = 0;
+#endif
+
 // enable static PWM
 static inline void set_static_pwm() {
     #ifdef USE_DYN_PWM
@@ -192,15 +196,40 @@ uint8_t strobe_state(Event event, uint16_t arg) {
             set_level(bike_flasher_brightness);
         }
         #endif
-        
+
         #ifdef USE_TINT_RAMPING
         else if (st == tint_alternating_strobe_e) {
             tint_alt_brightness += ramp_direction;
             if (tint_alt_brightness < 2) tint_alt_brightness = 2;
-            else if (tint_alt_brightness > MAX_LEVEL) tint_alt_brightness = MAX_LEVEL;
+            //else if (tint_alt_brightness > MAX_LEVEL) tint_alt_brightness = MAX_LEVEL;
+            else if (tint_alt_brightness > (MAX_LEVEL-20)) tint_alt_brightness = (MAX_LEVEL-20);
             set_level(tint_alt_brightness);
         }
         else if (st == tint_smooth_ramp_e) {
+            if (! arg) {
+                past_edge_counter = 0;  // doesn't start until user hits the edge
+            }
+            if ((tint_smooth_brightness > 2) && (tint_smooth_brightness < (MAX_LEVEL-20))){
+                tint_smooth_brightness += ramp_direction;
+            }
+            else if (past_edge_counter == 1){ blip(); }
+            if (tint_smooth_brightness >= 130){
+              if (past_edge_counter == 64) {
+                past_edge_counter ++;
+                tint += ramp_direction;
+                blip();
+            }
+            if (past_edge_counter == 0) blip();
+            // count up but don't wrap back to zero
+            if (past_edge_counter < 255) past_edge_counter ++;
+            // if the user kept pressing long enough, go the final step
+            if (past_edge_counter == 64) {
+              past_edge_counter ++;
+              tint ^= 1;  // 0 -> 1, 254 -> 255
+              blip();
+            }
+
+
             tint_smooth_brightness += ramp_direction;
             if (tint_smooth_brightness < 2) tint_smooth_brightness = 2;
             else if (tint_smooth_brightness > MAX_LEVEL) tint_smooth_brightness = MAX_LEVEL;
