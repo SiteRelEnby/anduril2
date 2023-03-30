@@ -166,3 +166,15 @@
 #define USE_3H_TURBO_FROM_LOCK
 #undef DISABLE_MANUAL_MEMORY_ENTRY_VALUE
 #define DISABLE_MANUAL_MEMORY_ENTRY_VALUE 3
+
+#define BLINK_NUMBERS_WITH_AUX
+#define BLINK_NUMBERS_WITH_AUX_COLOUR 0x14<<1 //cyan, high. see table below.
+/*
+    0b00000001,  // 0: red: high 0x01<<1, low 0x01
+    0b00000101,  // 1: yellow: 0x05<<1, low 0x05
+    0b00000100,  // 2: green: 0x04<<1, low 0x04
+    0b00010100,  // 3: cyan: 0x14<<1, low 0x14
+    0b00010000,  // 4: blue: 0x10<<1, low 0x10
+    0b00010001,  // 5: purple: 0x11<<1, low 0x11
+    0b00010101,  // 6: white: 0x15<<1, low 0x15
+*/
