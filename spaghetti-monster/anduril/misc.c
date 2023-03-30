@@ -54,13 +54,13 @@ void blink_once() {
     set_level(brightness);
 }
 
-void blink_once_aux() {
+void blink_once_aux(uint8_t blink_once_aux_colour) {
     #ifdef USE_MAIN_LEDS_FOR_ALL_BLINKS //feature flag to retain old behaviour
       blink_once();
     #endif
     #ifndef USE_MAIN_LEDS_FOR_ALL_BLINKS
       #if defined(USE_AUX_RGB_LEDS) && !defined(NO_AUX)
-        rgb_led_update(RGB_GREEN|RGB_HIGH, 0);
+        rgb_led_update(blink_once_aux_colour|RGB_HIGH, 0);
         delay_4ms(BLINK_ONCE_AUX_TIME_4MS);
         rgb_led_update(RGB_OFF, 0);
       #elif defined(USE_INDICATOR_LED) && !defined(NO_AUX) //if defined(USE_AUX_RGB_LEDS) && !defined(NO_AUX)
