@@ -209,31 +209,23 @@ uint8_t strobe_state(Event event, uint16_t arg) {
             if (! arg) {
                 past_edge_counter = 0;  // doesn't start until user hits the edge
             }
-            if ((tint_smooth_brightness > 2) && (tint_smooth_brightness < (MAX_LEVEL-20))){
+            if ((tint_smooth_brightness > 2) && (tint_smooth_brightness < (RAMP_SIZE-20))){ //don't go to 1 (unreliable) or over the single channel max
                 tint_smooth_brightness += ramp_direction;
             }
-            else if (past_edge_counter == 1){ blip(); }
-            if (tint_smooth_brightness >= 130){
-              if (past_edge_counter == 64) {
-                past_edge_counter ++;
-                tint += ramp_direction;
-                blip();
-            }
-            if (past_edge_counter == 0) blip();
-            // count up but don't wrap back to zero
-            if (past_edge_counter < 255) past_edge_counter ++;
-            // if the user kept pressing long enough, go the final step
-            if (past_edge_counter == 64) {
-              past_edge_counter ++;
-              tint ^= 1;  // 0 -> 1, 254 -> 255
-              blip();
-            }
-
-
-            tint_smooth_brightness += ramp_direction;
-            if (tint_smooth_brightness < 2) tint_smooth_brightness = 2;
-            else if (tint_smooth_brightness > MAX_LEVEL) tint_smooth_brightness = MAX_LEVEL;
-            set_level(tint_smooth_brightness);
+            else if ((tint_smooth_brightness == (MAX_LEVEL-20) && (past_edge_counter == 0))){ set_level(RAMP_SIZE-20); nice_delay_ms(20); blip(); nice_delay_ms(20); past_edge_counter++; } ///top of single channel, blink and start the counter
+            //else { //brightness is in range for both channels
+              if (past_edge_counter < 255) { past_edge_counter++; }
+              if (past_edge_counter == 128) { //blink again to indicate start of both channels
+                  blip();
+              }
+              // if the user kept pressing long enough, go to both chanels always on
+              if ((past_edge_counter > 128) && ((arg % 16) == 0)) { //button was held past the bump, increment every 16 frames since we don't have as far to go
+                if (tint_smooth_brightness < (MAX_LEVEL-1)) { tint_smooth_brightness += ramp_direction; } //don't go up to 150/150 which would just be a solid colour
+                //blip();
+              }
+//            else if (tint_smooth_brightness > MAX_LEVEL) tint_smooth_brightness = MAX_LEVEL;
+              set_level(tint_smooth_brightness);
+            //}
         }
         #endif
 
