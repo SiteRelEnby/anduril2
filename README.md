@@ -136,6 +136,7 @@ Note that the build does not (TODO: currently?) check for conflicts, which may c
     * Channel ramping only (ignoring 9H config)
     * Channel switching only (ignoring 9H config)
     * Channel cycle - continues to switch channels when held. Somewhat of a placeholder for future support of >2 channels but also works fine with two.
+    * Blink RGB aux (if present) red when locked on 1C (`BLINK_LOCK_REMINDER`)
 * Additional options in beacon mode
   * 2H to set the time the light is on (1 blink = 100ms) (`USE_BEACON_ON_CONFIG`). Each blink while held is 100ms of time on.
   * 3/4H to increase/decrease brightness without exiting. This is not strictly a *new* feature as beacon mode normally uses the last ramped level, it just allows on the fly adjustment. Enabled with `USE_BEACON_BRIGHTNESS_RAMP`.
@@ -295,6 +296,8 @@ Settings related to my mods, will be ignored in stock anduril:
 
 //#define USE_MAIN_LEDS_FOR_ALL_BLINKS //disable using aux/button LED for lock/unlock/poweron blinks instead of the main LEDs.
 //#define BLINK_ONCE_AUX_TIME_4MS 10 //when using aux instead of main LEDs, aux stay on green for this long (4ms increments)
+
+//#define BLINK_LOCK_REMINDER //blink aux (or main emitters if no aux) on 1c from locked
 
 // TODO: #define MOMENTARY_TURBO_FROM_LOCK_TIME_LIMIT 30 //limit momentary turbo from lock to this many seconds as an alternative to disabling it completely
 

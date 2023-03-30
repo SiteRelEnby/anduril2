@@ -203,11 +203,13 @@
 #define VOLTAGE_WARN_DELAY_TICKS 40    //(makes sense if it's 50% in awake and 50% in asleep state). 40 = ~5s
 //#define VOLTAGE_WARN_INSTANT 28 //always warn instantly if voltage drops below this level (even with voltage drop)
 
-//new features to default to enabled
+//new features to default to enabled because they don't do unexpected things that could be bad
 #define USE_FIREWORK_MODE
 #define USE_BEACON_ON_CONFIG
 #define USE_BEACON_BRIGHTNESS_RAMP
-#define BLINK_ONCE_AUX_TIME_4MS 10 //40ms
+//#define BLINK_ONCE_AUX_TIME_4MS 10 //40ms
+#define BLINK_ONCE_AUX_TIME_4MS 15 //60ms
+#define BLINK_LOCK_REMINDER
 
 //new features to keep matching default behaviour by default
 #define DISABLE_MANUAL_MEMORY_ENTRY_VALUE 0
