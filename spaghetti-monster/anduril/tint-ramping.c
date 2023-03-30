@@ -259,21 +259,6 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
         }
         #endif
 
-
-        #if defined(USE_TINT_RAMPING) && defined(DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL)
-        //2C: single channel ceiling, and exit to previous if already there
-        else if (event == EV_2clicks){
-            if (target_level == ramp_ceil) { //if we're already at 200%
-                set_level_and_therm_target(memorized_level); //go back to previous level if we set it (TODO: does this work right if ramped manually to ceiling?)
-            }
-            else {
-                memorized_level = nearest_level(actual_level); //save previous level
-                set_level_and_therm_target(ramp_ceil); //go to ceiling
-            }
-            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-        }
-        #endif //if defined(USE_TINT_RAMPING) && defined(DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL)
-
         #if defined(TURBO_200_MOMENTARY_HOLD_EVENT) && defined (TURBO_200_MOMENTARY_HOLD_RELEASE_EVENT)
         else if (event == TURBO_200_MOMENTARY_HOLD_EVENT){
             //momentary 200%
