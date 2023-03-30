@@ -655,7 +655,12 @@ void globals_config_save(uint8_t step, uint8_t value) {
     #ifdef USE_JUMP_START
     else if (step == 1+jump_start_config_step) { jump_start_level = value; }
     #endif
-}
+    #ifdef BLINK_NUMBERS_WITH_AUX
+      else if (step == 1+blink_numbers_config_step) {
+        if (value) { blink_digit_type = value; } //ignore (keep previous) if 0. 1 = aux, 2 = main LEDs
+      }
+    #endif
+ }
 
 uint8_t globals_config_state(Event event, uint16_t arg) {
     // TODO: set number of steps based on how many configurable options

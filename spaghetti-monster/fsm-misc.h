@@ -25,6 +25,14 @@ void auto_clock_speed();
 #endif
 
 #if defined(USE_BLINK_NUM) || defined(USE_BLINK_DIGIT)
+
+#ifdef BLINK_NUMBERS_WITH_AUX
+uint8_t blink_digit_type = 1;
+#ifndef BLINK_NUMBERS_WITH_AUX_COLOUR
+#define BLINK_NUMBERS_WITH_AUX_COLOUR 0x14<<1 //cyan, high
+#endif
+#endif
+
 #ifndef BLINK_BRIGHTNESS
 #define BLINK_BRIGHTNESS (MAX_LEVEL/6)
 #endif

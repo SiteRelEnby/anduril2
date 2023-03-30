@@ -232,6 +232,9 @@ typedef enum {
     #ifdef USE_JUMP_START
     jump_start_config_step,
     #endif
+    #ifdef BLINK_NUMBERS_WITH_AUX
+    blink_numbers_config_step,
+    #endif
     globals_config_num_steps
 } globals_config_steps_e;
 

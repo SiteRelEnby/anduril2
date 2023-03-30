@@ -137,6 +137,9 @@ Note that the build does not (TODO: currently?) check for conflicts, which may c
     * Channel switching only (ignoring 9H config)
     * Channel cycle - continues to switch channels when held. Somewhat of a placeholder for future support of >2 channels but also works fine with two.
     * Blink RGB aux (if present) red when locked on 1C (`BLINK_LOCK_REMINDER`)
+    * Optionally use aux instead of main emitters to blink numbers (`BLINK_NUMBERS_WITH_AUX`)
+      * Configure in the 9H menu as the last item (3 on dual channel, 2 on single channel). 1C = use aux. 2C = use main emitters.
+      * Set the colour with `BLINK_NUMBERS_WITH_AUX_COLOUR` - e.g. `#define BLINK_NUMBERS_WITH_AUX_COLOUR 0x14<<1 //cyan, high` (see configuration section for other values)
 * Additional options in beacon mode
   * 2H to set the time the light is on (1 blink = 100ms) (`USE_BEACON_ON_CONFIG`). Each blink while held is 100ms of time on.
   * 3/4H to increase/decrease brightness without exiting. This is not strictly a *new* feature as beacon mode normally uses the last ramped level, it just allows on the fly adjustment. Enabled with `USE_BEACON_BRIGHTNESS_RAMP`.
@@ -264,6 +267,21 @@ Get your light's default firmware and locate the correct header file, as this co
 
 //#define USE_TACTICAL_MODE //enable tactical mode. See also TACTICAL_MODE_CLICK_EVENT
 //#define TACTICAL_LEVELS 150,(RAMP_SIZE+2),100 //set default tactical levels (max+1 = party strobe, max+2 = tactical strobe, etc...)
+
+//#define RGB_LED_OFF_DEFAULT 0x27 //high, disco
+//#define RGB_LED_LOCKOUT_DEFAULT 0x18 //low, rainbow
+//0x00 = off    Low     High    Blinking
+//R             0x10    0x20    0x30
+//R+G           0x11    0x21    0x31
+//G             0x12    0x22    0x32
+//G+B           0x13    0x23    0x33
+//B             0x14    0x24    0x34
+//R+B           0x15    0x25    0x35
+//R+G+B         0x16    0x26    0x36
+//Disco         0x17    0x27    0x37
+//Rainbow       0x18    0x28    0x38
+//Voltage       0x19    0x29    0x39
+//TODO: how is temperature set? this table works for both stock and modded AFAIK... :thonk: too much bit twiddling for one day.
 ```
 
 Settings related to my mods, will be ignored in stock anduril:
@@ -298,6 +316,18 @@ Settings related to my mods, will be ignored in stock anduril:
 //#define BLINK_ONCE_AUX_TIME_4MS 10 //when using aux instead of main LEDs, aux stay on green for this long (4ms increments)
 
 //#define BLINK_LOCK_REMINDER //blink aux (or main emitters if no aux) on 1c from locked
+
+//#define BLINK_NUMBERS_WITH_AUX //use aux to blink numbers instead of main emitters (9H menu, last item - 1C = use aux, 2C = use main)
+//#define BLINK_NUMBERS_WITH_AUX_COLOUR 0x14<<1 //cyan, high //set colour (TODO: make configurable at runtime). 3 == Cyan - see spaghetti-monster/anduril/aux-leds.h for definitions
+/*
+//    0b00000001, red: high 0x01<<1, low 0x01
+//    0b00000101, yellow: high 0x05<<1, low 0x05
+//    0b00000100, green: high 0x04<<1, low 0x04
+//    0b00010100, cyan: high 0x14<<1, low 0x14
+//    0b00010000, blue: high 0x10<<1, low 0x10
+//    0b00010001, purple: high 0x11<<1, low 0x11
+//    0b00010101, white: high 0x15<<1, low 0x15
+*/
 
 // TODO: #define MOMENTARY_TURBO_FROM_LOCK_TIME_LIMIT 30 //limit momentary turbo from lock to this many seconds as an alternative to disabling it completely
 
