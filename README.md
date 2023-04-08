@@ -11,6 +11,12 @@ Anduril2 originally by [ToyKeeper](https://code.launchpad.net/~toykeeper/flashli
   * `UPSTREAM_BRANCH`: name of the branch to create for upstream code. Defaults to `upstream` if unset.
   * `REMOTE`: name of the remote to push to; if not specified, defaults to `origin`.
 
+## Wurkkos TS10 / Sofirn LT1S Pro support
+
+This is untested by me (if you want to buy me these lights, I will test it fully ;) ), support added from [here](https://code.launchpad.net/~gabe/flashlight-firmware/anduril2) so consider it experimental - main consideration for the TS10 is it being a light with a single colour button LED without any RGB aux, and I have no idea for the LT1S Pro until I get one as that includes some more significant code changes.
+
+Currently in the `wurkkos_ts10_sofirn_lt1s_pro` branch, currently based on main as of 2023-04-07
+
 # Build utilities
 
 ## anduril-buildenv-docker
