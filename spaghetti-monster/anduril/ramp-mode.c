@@ -660,7 +660,7 @@ void globals_config_save(uint8_t step, uint8_t value) {
     #endif
     #ifdef BLINK_NUMBERS_WITH_AUX
       else if (step == 1+blink_numbers_config_step) {
-        if (value) { blink_digit_type = value; } //ignore (keep previous) if 0. 1 = aux, 2 = main LEDs
+        if ((value) && (value <= MAX_LEVEL)) { blink_digit_type = value; } //ignore (keep previous) if 0. 1 = aux, 2+ = main LEDs
       }
     #endif
  }

@@ -50,9 +50,11 @@ uint8_t blink_digit(uint8_t num) {
     if (!num) { ontime = 8; num ++; }
     for (; num>0; num--) {
         #if (defined(BLINK_NUMBERS_WITH_AUX) && (defined(USE_BUTTON_LED) || defined(USE_AUX_RGB_LEDS)))
-          if (blink_digit_type == 2){
-        #endif
+          if (blink_digit_type >= 2){
+          set_level(blink_digit_type);
+        #else
           set_level(BLINK_BRIGHTNESS);
+        #endif
           nice_delay_ms(ontime);
           set_level(0);
         #ifdef BLINK_NUMBERS_WITH_AUX
