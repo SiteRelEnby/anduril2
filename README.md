@@ -17,6 +17,8 @@ This is untested by me (if you want to buy me these lights, I will test it fully
 
 Currently in the `wurkkos_ts10_sofirn_lt1s_pro` branch, currently based on main as of 2023-04-07
 
+Update: Firmware currently not working on the TS10, just ordered one so will work on it when I get the chance.
+
 # Build utilities
 
 ## anduril-buildenv-docker
