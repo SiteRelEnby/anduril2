@@ -142,9 +142,9 @@ Note that the build does not (TODO: currently?) check for conflicts, which may c
     * Channel ramping only (ignoring 9H config)
     * Channel switching only (ignoring 9H config)
     * Channel cycle - continues to switch channels when held. Somewhat of a placeholder for future support of >2 channels but also works fine with two.
-    * Blink RGB aux (if present) red when locked on 1C (`BLINK_LOCK_REMINDER`)
+    * Blink RGB aux (if present) red when locked on 1/2C (`BLINK_LOCK_REMINDER`)
     * Optionally use aux instead of main emitters to blink numbers (`BLINK_NUMBERS_WITH_AUX`)
-      * Configure in the 9H menu as the last item (3 on dual channel, 2 on single channel). 1C = use aux. 2C = use main emitters.
+      * Configure in the 9H menu as the last item (3 on dual channel, 2 on single channel). 1C = use aux. 2C+ = use main emitters - number of clicks is the brightness level to use (e.g. 25C, 50C, 150C...).
       * Set the colour with `BLINK_NUMBERS_WITH_AUX_COLOUR` - e.g. `#define BLINK_NUMBERS_WITH_AUX_COLOUR 0x14<<1 //cyan, high` (see configuration section for other values)
 * Additional options in beacon mode
   * 2H to set the time the light is on (1 blink = 100ms) (`USE_BEACON_ON_CONFIG`). Each blink while held is 100ms of time on.
@@ -349,12 +349,12 @@ Settings related to my mods, will be ignored in stock anduril:
 * In progress: Make modifications and features user-configurable and modular
   * Modularise starryalley mods
     * Integrate startup modes? should be easy to make into a build time option
-    * Integrate [6H aux control](https://github.com/starryalley/Anduril2#allow-the-use-of-auxindicator-led-in-lower-levels--default_level-level-6c6h-while-light-is-on) and voltage aux while on (as a mode under 6H functionality? would need to allow aux use at any ramp level. Need to wait for that fork to implement voltage mode there first)
+    * Integrate [6H aux control](https://github.com/starryalley/Anduril2#allow-the-use-of-auxindicator-led-in-lower-levels--default_level-level-6c6h-while-light-is-on) and voltage aux while on (as a mode under 6H functionality? would need to allow aux use at any ramp level. Need to wait for that fork to implement voltage mode there first or it's going to become a massive pain to merge and rebase on changes)
     * Incorporate more changes from [SammysHP](https://github.com/SammysHP/flashlight-firmware/wiki/Modifications-Overview)
-* When blinking aux red for low battery, wait for a while (blink 1-2x only? blink orange for the first 5-10 seconds then red if it remains low?) after running the light on a high setting to not trigger the warning unnecessarily due to voltage sag from putting load on the battery
+* When blinking aux red for low battery, wait for a while (blink 1-2x only? blink orange for the first 5-10 seconds then red if it remains low?) after running the light on a high setting to not trigger the warning unnecessarily due to voltage sag from putting load on the battery. Use `memorized_level`? needs memory enabled in the build but I think not actually active?
   * How often is the battery voltage read?
 * `LOCKOUT_3H_ACTION` - configurable between momentary turbo and channel ramping/switching for dual channel lights
-* Option to blink aux on 1C (+2C?) from locked as a reminder of the current state.
+* Make aux colour for blinking numbers configurable at runtime
 * Option to save channel mix separately to level for manual memory
 * Make beacon on time configuration faster betweeen blinks?
 * Better integrate multiple modifications to some parts of aux LED code
