@@ -230,6 +230,9 @@ These are lights that I own. Currently all of them are running this fork. Not ev
 
 Get your light's default firmware and locate the correct header file, as this contains important hardware-specific config. Make a copy of it, and modify the following variables to your preference. These settings will persist across a factory reset (making it much more convenient to build an image once, then if your settings ever get messed up, you can factory reset to go back to *your* settings. Most of these are fairly self-explanatory. Note that the first half *SHOULD* work in stock unmodified anduril too, but this has not been tested by me personally. See above for build-time settings added by mods.
 
+Example header files:
+* [Nonintrusive new features enabled, stock mappings](spaghetti-monster/anduril/config-example-stock-mappings.h): `spaghetti-monster/anduril/config-example-stock-mappings.h`
+
 ```
 //#define SIMPLE_UI_ACTIVE 0    // disable simple UI by default/from factory reset
 
@@ -273,6 +276,8 @@ Get your light's default firmware and locate the correct header file, as this co
 
 //#define USE_TACTICAL_MODE //enable tactical mode. See also TACTICAL_MODE_CLICK_EVENT
 //#define TACTICAL_LEVELS 150,(RAMP_SIZE+2),100 //set default tactical levels (max+1 = party strobe, max+2 = tactical strobe, etc...)
+
+//#undef USE_THERM_AUTOCALIBRATE //disable automatic thermal calibration on reset/first boot. Set this if you are going to calibrate your MCU's temperature directly and don't want anduril to change it.
 
 //#define RGB_LED_OFF_DEFAULT 0x27 //high, disco
 //#define RGB_LED_LOCKOUT_DEFAULT 0x18 //low, rainbow
