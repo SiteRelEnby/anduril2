@@ -156,7 +156,7 @@
 
 #define AUX_CONFIG_CLICK_EVENT EV_8clicks
 #define AUX_CONFIG_HOLD_EVENT EV_click8_hold
-#define AUX_CONFIG_HOLD_RELEASE_EVENT EV_click9_hold
+#define AUX_CONFIG_HOLD_RELEASE_EVENT EV_click8_hold_release
 
 #define CHANNEL_1_TURBO_CLICK_EVENT EV_6clicks
 #define CHANNEL_1_TURBO_HOLD_EVENT EV_click6_hold
