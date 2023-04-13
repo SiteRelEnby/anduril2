@@ -58,8 +58,9 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         #ifdef USE_3H_TURBO_FROM_LOCK
           // 3H: momentary turbo
           if (event == EV_click3_hold){
+            //if ((!arg) && (setting_rgb_mode_now == 0)){
             if (!arg){
-              set_level_and_therm_target(150); //TODO: use 2C_STYLE?
+              set_level_and_therm_target(150); //TODO: use 2C_STYLE? config for dual channel?
               return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
             }
           }
@@ -69,7 +70,7 @@ uint8_t lockout_state(Event event, uint16_t arg) {
           }
         #endif
       #endif //ifndef DISABLE_MOMENTARY_TURBO_FROM_LOCK
-      else if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
+      else if (((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) && (setting_rgb_mode_now == 0)) {
         #ifdef MOMENTARY_WHEN_LOCKED_DELAY
         if (arg > MOMENTARY_WHEN_LOCKED_DELAY) { //only use momentary if it is a longer hold than the user specified timeout (which can be less than HOLD_TIMEOUT)
         #else
