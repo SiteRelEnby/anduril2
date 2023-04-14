@@ -105,3 +105,7 @@
 #define USE_MAIN_LEDS_FOR_ALL_BLINKS
 #undef DISABLE_MANUAL_MEMORY_ENTRY_VALUE
 #define DISABLE_MANUAL_MEMORY_ENTRY_VALUE 3
+
+#define USE_LOW_VOLTAGE_WARNING    //enable feature
+#define VOLTAGE_WARN_DELAY_TICKS 40    //(makes sense if it's 50% in awake and 50% in asleep state). 40 = ~5s
+#define VOLTAGE_WARN_HIGH_RAMP_LEVEL 75 //level above which we expect some voltage drop that could make battery appear low for a while when switched off

@@ -131,14 +131,21 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     }
     #if defined(TICK_DURING_STANDBY)
     else if (event == EV_sleep_tick) {
+
         #ifdef DUAL_VOLTAGE_FLOOR
         if (((voltage < VOLTAGE_LOW_SAFE) && (voltage > DUAL_VOLTAGE_FLOOR)) || (voltage < DUAL_VOLTAGE_LOW_LOW_SAFE)) {
         #else
         if (voltage < VOLTAGE_LOW_SAFE) {
         #endif
-            #ifdef VOLTAGE_WARN_DELAY_TICKS
-            if (arg > VOLTAGE_WARN_DELAY_TICKS) {
-            #endif
+            //warn on low battery
+            #ifdef USE_LOW_VOLTAGE_WARNING
+            #if (defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL) && defined (VOLTAGE_WARN_DELAY_TICKS))
+              if (memorized_level <= VOLTAGE_WARN_HIGH_RAMP_LEVEL) { //trigger a soft warning first if this is potentially caused by voltage drop from running on high, otherwise go straight to red (likely an actually low battery)
+              //light was (likely) not last used on high
+            #elif defined (VOLTAGE_WARN_DELAY_TICKS)
+               if (arg > VOLTAGE_WARN_DELAY_TICKS) {
+            #endif //(defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL)  && defined (VOLTAGE_WARN_DELAY_TICKS))
+              //after the time period for soft warning has elapsed where we have a delay set but no threshold high ramp level, or if there's no delay, do the main warning
               #ifdef USE_INDICATOR_LED
               indicator_led_update(6, arg);
               #elif defined(USE_AUX_RGB_LEDS)
@@ -146,12 +153,18 @@ uint8_t lockout_state(Event event, uint16_t arg) {
               #else
               if (0 == (arg & 0x1f)) blink_once();
               #endif
-            #ifdef VOLTAGE_WARN_DELAY_TICKS
             }
             else {
-              rgb_led_update(RGB_YELLOW|RGB_BREATH, arg); //do a softer warning for the first VOLTAGE_WARN_DELAY_TICKS to not warn unnecessarily
+              //light was (likely) on at a lower setting if we have a threshold ramp level, or we haven't waited long enough for voltage drop to resolve yet
+              #ifdef USE_INDICATOR_LED
+              indicator_led_update(6, arg);
+              #elif defined(USE_AUX_RGB_LEDS)
+              rgb_led_update(RGB_YELLOW|RGB_BREATH, arg);
+              #else
+              if (0 == (arg & 0x1f)) blink_once();
+              #endif
             }
-            #endif
+
         } else {
             #ifdef USE_INDICATOR_LED
             indicator_led_update(indicator_led_mode >> 4, arg);
@@ -159,9 +172,10 @@ uint8_t lockout_state(Event event, uint16_t arg) {
             rgb_led_update(rgb_led_lockout_mode, arg);
             #endif
         }
+        #endif //ifdef USE_LOW_VOLTAGE_WARNING
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-    #endif
+    #endif //defined(TICK_DURING_STANDBY)
 
     #ifdef BLINK_LOCK_REMINDER
     else if ((event == EV_1click) || (event == EV_2clicks)) {
