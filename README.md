@@ -377,3 +377,58 @@ Settings related to my mods, will be ignored in stock anduril:
 # General disclaimer
 
 I am not responsible if you brick or otherwise break your light for any reason (bad flash, wrong firmware, mods did something unexpected, etc.). In general, I always test my changes myself on at least one light but I don't keep all of mine up to date with every commit or even every relevant one.
+
+# Detailed light support
+
+## attiny85 lights (unsupported)
+
+Supported MCUs might only be the attiny1634 at the moment. By default, should build successfully for attiny85 MCUs but does not fit in the available space even with no new features added. Best bet for making those work with something from here is probably to just take the code and apply it to upstream anduril. I will not provide support for these lights. Maybe if you pay me to ;)
+
+<details>
+  <summary>attiny85 lights:</summary>
+```
+0111    emisar-d4                       attiny85
+0112    emisar-d4-219c                  attiny85
+0121    emisar-d1                       attiny85
+0122    emisar-d1s                      attiny85
+0131    emisar-d4s                      attiny85
+0132    emisar-d4s-219c                 attiny85
+0141    emisar-d18                      attiny85
+0142    emisar-d18-219                  attiny85
+0311    fw3a                            attiny85
+0312    fw3a-219                        attiny85
+0313    fw3a-nofet                      attiny85
+0321    blf-gt                          attiny85
+0322    blf-gt-mini                     attiny85
+0411    ff-rot66                        attiny85
+0412    ff-rot66-219                    attiny85
+0413    ff-rot66g2                      attiny85
+0421    ff-pl47                         attiny85
+0422    ff-pl47-219                     attiny85
+0423    ff-pl47g2                       attiny85
+0441    ff-e01                          attiny85
+0511    mateminco-mf01s                 attiny85
+0521    mateminco-mf01-mini             attiny85
+0531    mateminco-mt35-mini             attiny85
+0611    blf-q8                          attiny85
+0612    sofirn-sp36                     attiny85
+0621    blf-lantern                     attiny85
+```
+</details>
+
+## attiny1616 lights (WIP)
+
+These lights should be supported, but at the moment attiny1616 support isn't working. There are multiple large changes upstream at the moment so I will probably wait for those to be merged before working on this.
+
+The Wurkkos TS10 will probably be the first supported t1616 light, see [Wurkkos TS10 / Sofirn LT1S Pro support](#wurkkos-ts10--sofirn-lt1s-pro-support).
+
+<details>
+  <summary>attiny1616 lights:</summary>
+```
+0613    blf-q8-t1616                    attiny1616
+0614    sofirn-sp36-t1616               attiny1616
+0622    blf-lantern-t1616               attiny1616
+0631    sofirn-sp10-pro                 attiny1616
+1618    gchart-fet1-t1616               attiny1616
+```
+</details>
