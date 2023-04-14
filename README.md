@@ -164,8 +164,8 @@ Note that the build does not (TODO: currently?) check for conflicts, which may c
     * 4C to decrease candle/lighting mode activity, 5C to increase, 6C to reset. 4H to change candle style (3 options). 7C to toggle aux LEDs.`
     * On tint ramping lights, two additional strobe modes to switch and ramp between channels (after tactical strobe mode)
   * Blink aux/button red in off/lockout modes when battery is <= 3.2V
-      * For the first ~5 seconds, blink aux in orange instead for a 'soft' battery warning to compensate for voltage drop after running a light on high
-        * TODO: look into only using the soft warning if the light was recently on a high setting (>=100?)
+    * Blink aux orange instead of red for the first `VOLTAGE_WARN_DELAY_TICKS` ticks (TODO: set in seconds?) if this var is set.
+      * `VOLTAGE_WARN_HIGH_RAMP_LEVEL` - sets a ramp level to be considered a "high" setting that will result in voltage drop (this probably needs some finetuning and testing per driver and emitter. When `memorized_level` (i.e. last ramped level) is above this, the orange low battery warning will be used; if not (i.e. the light was last used on a lower setting but still reads low) it will go straight to red.
       * Increased the speed and time in an on state of the breathing animation (aux will still switch off entirely below 3V)
   * If aux LEDs are present, use those for lock/unlock/poweron blinks instead of main LEDs (can be disabled by building with `USE_MAIN_LEDS_FOR_ALL_BLINKS`, e.g. on lights where feedback from the aux is hard to see)
   * Temperature aux LED mode (after voltage in the cycle)
@@ -348,6 +348,9 @@ Settings related to my mods, will be ignored in stock anduril:
 //#define USE_BEACON_BRIGHTNESS_RAMP //in beacon mode, 3/4H to ramp brightness up/down
 
 //#define 2C_TURBO_ALWAYS_USE_SINGLE_CHANNEL //ignore 7H turbo config on dual channel lights and always go to single channel at 100%.
+
+//#define VOLTAGE_WARN_DELAY_TICKS 40 //for this many ticks after the light is switched off, use a soft low voltage warning (orange aux instead of red). TODO: How much time passes definitively for this var? Affected by underclocking when asleep. Implement in seconds instead?
+//#define VOLTAGE_WARN_HIGH_RAMP_LEVEL 75 //if set, only do a soft low voltage warning for the first VOLTAGE_WARN_DELAY_TICKS if the light was last on at or above this level
 
 ```
 
