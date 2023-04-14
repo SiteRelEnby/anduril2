@@ -222,7 +222,11 @@ void setup() {
         // regular e-switch light, no hard clicky power button
 
         // blink at power-on to let user know power is connected
+        #ifdef USE_AUX_RGB_LEDS
         blink_once_aux(RGB_GREEN);
+        #else
+        blink_once_aux(1);  //if there are no RGB aux, aux-leds.h doesn't get imported so we don't have colour definitions. In this case the arg doesn't matter.
+        #endif
 
         #ifdef USE_FACTORY_RESET
         if (button_is_pressed())
@@ -312,7 +316,7 @@ void loop() {
     #ifdef RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF
     } //jump here if skipping this entire code path because level is low
     #endif //#ifdef RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF
-    } //don't update LED with battery status in strobe mode
+    } //don't update LED with battery status in strobe/momentary mode
     #endif //#ifdef USE_AUX_RGB_LEDS_WHILE_ON
 
     if (0) {}  // placeholder

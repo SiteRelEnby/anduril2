@@ -78,41 +78,42 @@ uint8_t off_state(Event event, uint16_t arg) {
         if (voltage < VOLTAGE_LOW_SAFE) {
         #endif
             //warn on low battery
-            #ifdef USE_LOW_VOLTAGE_WARNING
-            #if (defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL) && defined (VOLTAGE_WARN_DELAY_TICKS))
-              if (memorized_level <= VOLTAGE_WARN_HIGH_RAMP_LEVEL) { //trigger a soft warning first if this is potentially caused by voltage drop from running on high, otherwise go straight to red (likely an actually low battery)
-              //light was (likely) not last used on high
-            #elif defined (VOLTAGE_WARN_DELAY_TICKS)
-               if (arg > VOLTAGE_WARN_DELAY_TICKS) {
-            #endif //(defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL)  && defined (VOLTAGE_WARN_DELAY_TICKS))
+            #ifdef USE_LOW_VOLTAGE_WARNING //flag for entire feature on/off
+              #if (defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL) && defined (VOLTAGE_WARN_DELAY_TICKS))
+                if (memorized_level <= VOLTAGE_WARN_HIGH_RAMP_LEVEL) { //trigger a soft warning first if this is potentially caused by voltage drop from running on high, otherwise go straight to red (likely an actually low battery)
+                //light was (likely) not last used on high
+              #elif defined (VOLTAGE_WARN_DELAY_TICKS)
+                if (arg > VOLTAGE_WARN_DELAY_TICKS) {
+              #endif //(defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL)  && defined (VOLTAGE_WARN_DELAY_TICKS))
               //after the time period for soft warning has elapsed where we have a delay set but no threshold high ramp level, or if there's no delay, do the main warning
               #ifdef USE_INDICATOR_LED
-              indicator_led_update(6, arg);
+                indicator_led_update(6, arg);
               #elif defined(USE_AUX_RGB_LEDS)
-              rgb_led_update(RGB_RED|RGB_BREATH, arg);
+                rgb_led_update(RGB_RED|RGB_BREATH, arg);
               #else
-              if (0 == (arg & 0x1f)) blink_once();
+                if (0 == (arg & 0x1f)) blink_once();
               #endif
             }
             else {
               //light was (likely) on at a lower setting if we have a threshold ramp level, or we haven't waited long enough for voltage drop to resolve yet
               #ifdef USE_INDICATOR_LED
-              indicator_led_update(6, arg);
+                indicator_led_update(6, arg);
               #elif defined(USE_AUX_RGB_LEDS)
-              rgb_led_update(RGB_YELLOW|RGB_BREATH, arg);
+                rgb_led_update(RGB_YELLOW|RGB_BREATH, arg);
               #else
-              if (0 == (arg & 0x1f)) blink_once();
+                if (0 == (arg & 0x1f)) blink_once();
               #endif
             }
 
-        } else {
+        }
+        else { //voltage isn't low, continue
+        #endif //ifdef USE_LOW_VOLTAGE_WARNING
             #ifdef USE_INDICATOR_LED
             indicator_led_update(indicator_led_mode & 0xf, arg);
             #elif defined(USE_AUX_RGB_LEDS)
             rgb_led_update(rgb_led_off_mode, arg);
             #endif
         }
-        #endif //ifdef USE_LOW_VOLTAGE_WARNING
 
         #ifdef USE_AUTOLOCK
             // lock the light after being off for N minutes
@@ -241,11 +242,15 @@ uint8_t off_state(Event event, uint16_t arg) {
     #ifdef USE_LOCKOUT_MODE
     // 4 clicks: soft lockout
     else if (event == EV_4clicks) {
+        #ifdef USE_AUX_RGB_LEDS
         blink_once_aux(RGB_CYAN);
+        #else
+        blink_once_aux(1); //if there are no RGB aux, aux-leds.h doesn't get imported so we don't have colour definitions. In this case the arg doesn't matter.
+        #endif
         set_state(lockout_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-    #endif
+    #endif //ifdef USE_LOCKOUT_MODE
     #if defined(USE_FACTORY_RESET) && defined(USE_SOFT_FACTORY_RESET)
     // 13 clicks and hold the last click: invoke factory reset (reboot)
     else if (event == EV_click13_hold) {

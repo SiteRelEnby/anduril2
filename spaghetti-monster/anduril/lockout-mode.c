@@ -24,7 +24,11 @@
 
 #ifdef BLINK_LOCK_REMINDER
 void blink_lock_reminder(){
+  #ifdef USE_AUX_RGB_LEDS
   blink_once_aux(RGB_RED);
+  #else
+  blink_once_aux(1); //if there are no RGB aux, aux-leds.h doesn't get imported so we don't have colour definitions. In this case the arg doesn't matter.
+  #endif
   delay_4ms(15);
   #ifdef USE_AUX_RGB_LEDS //one blink is enough with main emitters
     blink_once_aux(RGB_RED);
@@ -70,7 +74,11 @@ uint8_t lockout_state(Event event, uint16_t arg) {
           }
         #endif
       #endif //ifndef DISABLE_MOMENTARY_TURBO_FROM_LOCK
+      #ifdef USE_AUX_RGB_LEDS
       else if (((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) && (setting_rgb_mode_now == 0)) {
+      #else
+      else if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) { //lights without RGB aux (no need to be setting RGB mode...)
+      #endif
         #ifdef MOMENTARY_WHEN_LOCKED_DELAY
         if (arg > MOMENTARY_WHEN_LOCKED_DELAY) { //only use momentary if it is a longer hold than the user specified timeout (which can be less than HOLD_TIMEOUT)
         #else
@@ -165,14 +173,15 @@ uint8_t lockout_state(Event event, uint16_t arg) {
               #endif
             }
 
-        } else {
+        }
+        else { //voltage isn't low, continue
+        #endif //ifdef USE_LOW_VOLTAGE_WARNING
             #ifdef USE_INDICATOR_LED
             indicator_led_update(indicator_led_mode >> 4, arg);
             #elif defined(USE_AUX_RGB_LEDS)
             rgb_led_update(rgb_led_lockout_mode, arg);
             #endif
         }
-        #endif //ifdef USE_LOW_VOLTAGE_WARNING
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif //defined(TICK_DURING_STANDBY)
@@ -186,7 +195,11 @@ uint8_t lockout_state(Event event, uint16_t arg) {
 
     // 3 clicks: exit and turn off
     else if (event == EV_3clicks) {
+        #ifdef USE_AUX_RGB_LEDS
         blink_once_aux(RGB_GREEN);
+        #else
+        blink_once_aux(1); //if there are no RGB aux, aux-leds.h doesn't get imported so we don't have colour definitions. In this case the arg doesn't matter.
+        #endif
         delay_4ms(5);
         set_state(off_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
