@@ -60,6 +60,12 @@ echo "===== $PASS builds succeeded, $FAIL failed ====="
 exitcode=0
 if [ 0 != $FAIL ]; then
   echo "FAIL:$FAILED"
-  exitcode=1
+  if [ 0 != $PASS ]; then
+    #at least some builds passed, but not all
+    exitcode=1
+  else
+    #everything failed
+    exitcode=2
+  fi
 fi
 exit $exitcode
