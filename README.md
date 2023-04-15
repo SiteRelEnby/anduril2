@@ -432,3 +432,9 @@ The Wurkkos TS10 will probably be the first supported t1616 light, see [Wurkkos 
 1618    gchart-fet1-t1616               attiny1616
 ```
 </details>
+
+# Builds and release
+
+Release schedule is "whenever I feel it justifies one". I will build images for my lights for each release. These should be reasonably stable and tested as they are the lights I am thinking of when I hack on this.
+
+In addition, all the supported (currently only attiny1634) default build targets will be built. These *should* use default anduril mappings with the features defined in `config-default.h`. Do not assume these builds are stable or bug-free, they are mostly provided for people to try it out. In the future I may make a repo for other people's configs to automate new firmware builds for to lower the knowledge demand of building this fork.
