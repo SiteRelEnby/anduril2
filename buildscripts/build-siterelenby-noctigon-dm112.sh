@@ -6,4 +6,4 @@ SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 # For running from a subdir:
 # SCRIPTPATH was set above so it's known-good
 BUILDPATH="$(cd ${SCRIPTPATH} && cd .. && pwd -P )"
-docker run --rm -v ${BUILDPATH}:/src -e COMMITHASH="$(git rev-parse --short HEAD)" -i -t anduril-builder:latest siterelenby-noctigon-dm112-tintramp-fet
+docker run --rm -v ${BUILDPATH}:/src -e COMMITHASH="$(git rev-parse --short HEAD)" -i anduril-builder:latest siterelenby-noctigon-dm112-tintramp-fet
