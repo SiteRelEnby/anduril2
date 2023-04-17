@@ -38,7 +38,7 @@ volatile uint8_t adc_reset = 2;
 #endif
 // safer low-battery threshold in volts * 10
 #ifndef VOLTAGE_LOW_SAFE
-#define VOLTAGE_LOW_SAFE 32
+#define VOLTAGE_LOW_SAFE 33
 #endif
 // MCU sees voltage 0.X volts lower than actual, add X/2 to readings
 #ifndef VOLTAGE_FUDGE_FACTOR
