@@ -13,11 +13,9 @@ Anduril2 originally by [ToyKeeper](https://code.launchpad.net/~toykeeper/flashli
 
 ## Wurkkos TS10 / Sofirn LT1S Pro support
 
-This is untested by me (if you want to buy me these lights, I will test it fully ;) ), support added from [here](https://code.launchpad.net/~gabe/flashlight-firmware/anduril2) so consider it experimental - main consideration for the TS10 is it being a light with a single colour button LED without any RGB aux, and I have no idea for the LT1S Pro until I get one as that includes some more significant code changes.
+Support added from [here](https://code.launchpad.net/~gabe/flashlight-firmware/anduril2) so consider it experimental - main consideration for the TS10 is it being a light with a single colour button LED without any RGB aux, and I have no idea for the LT1S Pro until I get one as that includes some more significant code changes. Most likely LT1S Pro support will wait until TK's current changes are in the main repo so I can rebase on that.
 
-Currently in the `wurkkos_ts10_sofirn_lt1s_pro` branch, currently based on main as of 2023-04-07
-
-Update: Firmware currently not working on the TS10, just ordered one so will work on it when I get the chance.
+Currently in the `wurkkos_ts10_sofirn_lt1s_pro` branch, currently based on main as of 2023-04-07. I now have a TS10 so may work on it before the changes are merged if I find time.
 
 # Build utilities
 
@@ -235,6 +233,10 @@ Get your light's default firmware and locate the correct header file, as this co
 Example header files:
 * [Nonintrusive new features enabled, stock mappings](spaghetti-monster/anduril/config-example-stock-mappings.h): `spaghetti-monster/anduril/config-example-stock-mappings.h`
 
+## Complete configuration reference
+
+### Stock compatible config
+
 ```
 //#define SIMPLE_UI_ACTIVE 0    // disable simple UI by default/from factory reset
 
@@ -271,7 +273,7 @@ Example header files:
 //#define B_TIMING_OFF B_TIMEOUT_T //only turn the light off when sure that's what the user wanted, causes 'delayed' off (default)
 //#define B_TIMING_ON B_RELEASE_T //more immediate on, but causes a blink when selecting a higher button combo from off mode (default)
 //#define B_TIMING_ON B_TIMEOUT_T //wait before coming on - prevents a blink when doing other actions (config, lock, etc.) but adds a delay to 1C -> on
-// NOTE: on from lockout is more complicated since there is no way to directly configure it. TODO: should be simple enough to add a delay that's longer than RELEASE_TIMEOUT before momentary from lock...
+// NOTE: on from lockout is more complicated since there is no way to directly configure it. See `MOMENTARY_WHEN_LOCKED_DELAY` in next section.
 
 //#define DEFAULT_2C_STYLE 1  // 0: no turbo. 1: 2C always turbo. 2: 2C goes to top of ramp, or turbo if already at top
 //#define DEFAULT_2C_STYLE_SIMPLE 2  // same but for Simple UI.
@@ -296,6 +298,7 @@ Example header files:
 //Voltage       0x19    0x29    0x39
 //TODO: how is temperature set? this table works for both stock and modded AFAIK... :thonk: too much bit twiddling for one day.
 ```
+### Modded-only config
 
 Settings related to my mods, will be ignored in stock anduril:
 ```
@@ -312,10 +315,8 @@ Settings related to my mods, will be ignored in stock anduril:
 
 // default channel mix for when the light first starts up or is reset. Can be set to any value 1-254, or 0/255 for auto tint modes.
 #define DEFAULT_TINT 1
-//#define DEFAULT_TINT 128
+//#define DEFAULT_TINT 128 //default
 //#define DEFAULT_TINT 254
-
-//#define USE_OPPOSITE_TINTRAMP_KLUDGE //start in channel switching mode rather than ramping
 
 //#define USE_FIREWORK_MODE //enable fireworks mode
 
@@ -333,16 +334,14 @@ Settings related to my mods, will be ignored in stock anduril:
 //#define BLINK_NUMBERS_WITH_AUX //use aux to blink numbers instead of main emitters (9H menu, last item - 1C = use aux, 2C = use main)
 //#define BLINK_NUMBERS_WITH_AUX_COLOUR 0x14<<1 //cyan, high //set colour (TODO: make configurable at runtime). 3 == Cyan - see spaghetti-monster/anduril/aux-leds.h for definitions
 /*
-//    0b00000001, red: high 0x01<<1, low 0x01
-//    0b00000101, yellow: high 0x05<<1, low 0x05
-//    0b00000100, green: high 0x04<<1, low 0x04
-//    0b00010100, cyan: high 0x14<<1, low 0x14
-//    0b00010000, blue: high 0x10<<1, low 0x10
-//    0b00010001, purple: high 0x11<<1, low 0x11
-//    0b00010101, white: high 0x15<<1, low 0x15
+//    0b00000001, red: high `0x01<<1`, low `0x01`
+//    0b00000101, yellow: high `0x05<<1`, low `0x05`
+//    0b00000100, green: high `0x04<<1`, low` `0x04`
+//    0b00010100, cyan: high `0x14<<1`, low `0x14`
+//    0b00010000, blue: high `0x10<<1`, low `0x10`
+//    0b00010001, purple: high `0x11<<1`, low `0x11`
+//    0b00010101, white: high `0x15<<1`, low `0x15`
 */
-
-// TODO: #define MOMENTARY_TURBO_FROM_LOCK_TIME_LIMIT 30 //limit momentary turbo from lock to this many seconds as an alternative to disabling it completely
 
 //#define USE_BEACON_ON_CONFIG //in beacon mode, 2H to set on time - each blink is 100ms.
 //#define USE_BEACON_BRIGHTNESS_RAMP //in beacon mode, 3/4H to ramp brightness up/down
@@ -355,6 +354,7 @@ Settings related to my mods, will be ignored in stock anduril:
 ```
 
 # Roadmap
+* Rebase on TK/gchart's changes for 3+ channels and att1616 support, probably do a lot of refactoring of how mods are applies
 * (Configurable?) optional time limit for momentary turbo mode from lock (just in case something wedges the button held)
 * In progress: Make modifications and features user-configurable and modular
   * Modularise starryalley mods
@@ -364,7 +364,8 @@ Settings related to my mods, will be ignored in stock anduril:
 * When blinking aux red for low battery, wait for a while (blink 1-2x only? blink orange for the first 5-10 seconds then red if it remains low?) after running the light on a high setting to not trigger the warning unnecessarily due to voltage sag from putting load on the battery. Use `memorized_level`? needs memory enabled in the build but I think not actually active?
   * How often is the battery voltage read?
 * `LOCKOUT_3H_ACTION` - configurable between momentary turbo and channel ramping/switching for dual channel lights
-* Make aux colour for blinking numbers configurable at runtime
+* `MOMENTARY_TURBO_FROM_LOCK_TIME_LIMIT` - limit momentary turbo from lock to this many seconds as an alternative to disabling it completely
+* Make aux colour for blinking numbers configurable at runtime (9C menu item after which to use? No easy way to display which is being selected to the user. Adding a completely new button combination is easy but takes more MCU space. Or is just having the order be the samme as the aux colour selector for off/lock mode enough?)
 * Option to save channel mix separately to level for manual memory
 * Make beacon on time configuration faster betweeen blinks?
 * Better integrate multiple modifications to some parts of aux LED code
