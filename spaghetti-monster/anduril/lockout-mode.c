@@ -35,6 +35,12 @@ void blink_lock_reminder(){
     delay_4ms(15);
     blink_once_aux(RGB_RED);
     delay_4ms(15);
+  #elif defined(USE_INDICATOR_LED)
+    //need a separate case here as without RGB aux we don't have the colours, and in that case the arg doesn't matter.
+    blink_once_aux(1);
+    delay_4ms(15);
+    blink_once_aux(1);
+    delay_4ms(15);
   #endif
 }
 #endif
@@ -158,6 +164,8 @@ uint8_t lockout_state(Event event, uint16_t arg) {
               indicator_led_update(6, arg);
               #elif defined(USE_AUX_RGB_LEDS)
               rgb_led_update(RGB_RED|RGB_BREATH, arg);
+              #elif defined (USE_BUTTON_LED)
+                //this is deliberately a noop as the button LED will blink anyway (see indicator_led_update() in aux-leds.c), but we don't want the mmain LEDs to blink as well in that case (TODO: right? configurable?)
               #else
               if (0 == (arg & 0x1f)) blink_once();
               #endif
@@ -168,6 +176,8 @@ uint8_t lockout_state(Event event, uint16_t arg) {
               indicator_led_update(6, arg);
               #elif defined(USE_AUX_RGB_LEDS)
               rgb_led_update(RGB_YELLOW|RGB_BREATH, arg);
+              #elif defined (USE_BUTTON_LED)
+                //this is deliberately a noop as the button LED will blink anyway (see indicator_led_update() in aux-leds.c), but we don't want the mmain LEDs to blink as well in that case (TODO: right? configurable?)
               #else
               if (0 == (arg & 0x1f)) blink_once();
               #endif
