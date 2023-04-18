@@ -35,8 +35,8 @@ void indicator_led_update(uint8_t mode, uint8_t arg) {
     //#ifdef USE_INDICATOR_LOW_BAT_WARNING
     #ifndef DUAL_VOLTAGE_FLOOR // this isn't set up for dual-voltage lights like the Sofirn SP10 Pro
     // fast blink a warning when battery is low but not critical
-    else if (voltage < VOLTAGE_RED) {
-        indicator_led(mode & (((tick & 0b0010)>>1) - 3));
+    else if (voltage < VOLTAGE_LOW) {
+        indicator_led(mode & (((arg & 0b0010)>>1) - 3));
     }
     #endif
     // normal steady output, 0/1/2 = off / low / high

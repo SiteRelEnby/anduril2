@@ -90,6 +90,8 @@ uint8_t off_state(Event event, uint16_t arg) {
                 indicator_led_update(6, arg);
               #elif defined(USE_AUX_RGB_LEDS)
                 rgb_led_update(RGB_RED|RGB_BREATH, arg);
+              #elif defined (USE_BUTTON_LED)
+                //this is deliberately a noop as the button LED will blink anyway (see indicator_led_update() in aux-leds.c), but we don't want the mmain LEDs to blink as well in that case (TODO: right? configurable?)
               #else
                 if (0 == (arg & 0x1f)) blink_once();
               #endif
@@ -100,6 +102,8 @@ uint8_t off_state(Event event, uint16_t arg) {
                 indicator_led_update(6, arg);
               #elif defined(USE_AUX_RGB_LEDS)
                 rgb_led_update(RGB_YELLOW|RGB_BREATH, arg);
+              #elif defined (USE_BUTTON_LED)
+                //this is deliberately a noop as the button LED will blink anyway (see indicator_led_update() in aux-leds.c), but we don't want the mmain LEDs to blink as well in that case (TODO: right? configurable?)
               #else
                 if (0 == (arg & 0x1f)) blink_once();
               #endif
