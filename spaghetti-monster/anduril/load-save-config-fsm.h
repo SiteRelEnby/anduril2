@@ -97,6 +97,7 @@ typedef enum {
     #endif
     #ifdef USE_OUTPUT_MUX
     output_mux_e,
+    #endif
     #ifdef USE_TACTICAL_MODE
     tactical_lvl_1_e,
     tactical_lvl_2_e,

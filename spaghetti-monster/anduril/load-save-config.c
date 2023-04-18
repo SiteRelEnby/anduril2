@@ -97,6 +97,7 @@ void load_config() {
         #endif
         #ifdef USE_OUTPUT_MUX
         output_mux = eeprom[output_mux_e];
+        #endif
         #ifdef USE_TACTICAL_MODE
         tactical_levels[0] = eeprom[tactical_lvl_1_e];
         tactical_levels[1] = eeprom[tactical_lvl_2_e];
@@ -183,6 +184,7 @@ void save_config() {
     #endif
     #ifdef USE_OUTPUT_MUX
     eeprom[output_mux_e] = output_mux;
+    #endif
     #ifdef USE_TACTICAL_MODE
     eeprom[tactical_lvl_1_e] = tactical_levels[0];
     eeprom[tactical_lvl_2_e] = tactical_levels[1];
