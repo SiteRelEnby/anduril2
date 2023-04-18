@@ -149,7 +149,11 @@ static inline uint8_t calc_voltage_divider(uint16_t value) {
     uint8_t result = ((value / adc_per_volt)
                      + VOLTAGE_FUDGE_FACTOR
                      #ifdef USE_VOLTAGE_CORRECTION
+                     #ifndef VOLTAGE_PRECALIBRATION
                      + voltage_correction - 7
+                     #else
+                     + voltage_correction - VOLTAGE_PRECALIBRATION
+                     #endif
                      #endif
                      ) >> 1;
     return result;

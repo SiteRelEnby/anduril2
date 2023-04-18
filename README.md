@@ -297,6 +297,11 @@ Example header files:
 //Rainbow       0x18    0x28    0x38
 //Voltage       0x19    0x29    0x39
 //TODO: how is temperature set? this table works for both stock and modded AFAIK... :thonk: too much bit twiddling for one day.
+
+//voltage calibration
+//this is 5-7 on most lights (check your light's hwdef) and is a value added to the measured voltage (e.g. 5 is 0.5V, 7 is 0.7V) before the user's calibration
+//by changing this, if you know your light's MCU is off by a bit this will allow it to persist through builds and factory resets
+//#define VOLTAGE_FUDGE_FACTOR 5
 ```
 ### Modded-only config
 
