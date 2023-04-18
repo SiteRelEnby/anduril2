@@ -143,7 +143,7 @@ uint8_t number_entry_state(Event event, uint16_t arg) {
         else {
             pop_state();
         }
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
 
     // count clicks: click = +1, hold = +10
@@ -160,7 +160,7 @@ uint8_t number_entry_state(Event event, uint16_t arg) {
         number_entry_value ++;  // update the result
         empty_event_sequence();  // reset FSM's click count
         set_level(RAMP_SIZE/2);  // flash briefly
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
 
     // eat all other events; don't pass any through to parent
