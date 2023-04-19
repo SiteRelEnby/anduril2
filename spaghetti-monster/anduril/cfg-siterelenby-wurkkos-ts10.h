@@ -115,3 +115,6 @@
 //#define INDICATOR_LED_DEFAULT_MODE ((3<<2) + 2)
 //off high, lockout low
 #define INDICATOR_LED_DEFAULT_MODE ((1<<4) + 2)
+
+#define VOLTAGE_WARN_DELAY_TICKS 40
+#define VOLTAGE_WARN_HIGH_RAMP_LEVEL 75

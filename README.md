@@ -365,7 +365,7 @@ Settings related to my mods, will be ignored in stock anduril:
 
 //#define 2C_TURBO_ALWAYS_USE_SINGLE_CHANNEL //ignore 7H turbo config on dual channel lights and always go to single channel at 100%.
 
-//#define VOLTAGE_WARN_DELAY_TICKS 40 //for this many ticks after the light is switched off, use a soft low voltage warning (orange aux instead of red). TODO: How much time passes definitively for this var? Affected by underclocking when asleep. Implement in seconds instead?
+//#define VOLTAGE_WARN_DELAY_TICKS 40 //for this many ticks after the light is switched off, use a soft low voltage warning (orange aux instead of red) if RGB aux are available, or just blink on low only if there are no RGB aux. TODO: How much time passes definitively for this var? Affected by underclocking when asleep. Implement in seconds instead?
 //#define VOLTAGE_WARN_HIGH_RAMP_LEVEL 75 //if set, only do a soft low voltage warning for the first VOLTAGE_WARN_DELAY_TICKS if the light was last on at or above this level
 
 ```
