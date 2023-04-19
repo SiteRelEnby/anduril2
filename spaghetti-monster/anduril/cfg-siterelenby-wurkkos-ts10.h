@@ -108,3 +108,10 @@
 //voltage calibration
 #undef VOLTAGE_FUDGE_FACTOR
 #define VOLTAGE_FUDGE_FACTOR 3
+
+#undef INDICATOR_LED_DEFAULT_MODE
+// off mode: high (2)
+// lockout: blinking (1)
+//#define INDICATOR_LED_DEFAULT_MODE ((3<<2) + 2)
+//off high, lockout low
+#define INDICATOR_LED_DEFAULT_MODE ((1<<4) + 2)
