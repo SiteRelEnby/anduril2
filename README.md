@@ -13,9 +13,9 @@ Anduril2 originally by [ToyKeeper](https://code.launchpad.net/~toykeeper/flashli
 
 ## Wurkkos TS10 / Sofirn LT1S Pro support
 
-Support added from [here](https://code.launchpad.net/~gabe/flashlight-firmware/anduril2) so consider it experimental - main consideration for the TS10 is it being a light with a single colour button LED without any RGB aux, and I have no idea for the LT1S Pro until I get one as that includes some more significant code changes. Most likely LT1S Pro support will wait until TK's current changes are in the main repo so I can rebase on that.
+Support added from [here](https://code.launchpad.net/~gabe/flashlight-firmware/anduril2). Defnitely works with Wurkkos TS10; I have no idea for the LT1S Pro until I get one as that includes some more significant code changes. Most likely LT1S Pro support will wait until TK's current changes are in the main repo so I can rebase on that.
 
-Currently in the `wurkkos_ts10_sofirn_lt1s_pro` branch, currently based on main as of 2023-04-07. I now have a TS10 so may work on it before the changes are merged if I find time.
+Currently in the `wurkkos_ts10_sofirn_lt1s_pro` branch, currently based on main as of 2023-04-07.
 
 # Build utilities
 
@@ -419,7 +419,7 @@ Supported MCUs might only be the attiny1634 at the moment. By default, should bu
 
 ## attiny1616 lights (WIP)
 
-These lights should be supported, but at the moment attiny1616 support isn't working. There are multiple large changes upstream at the moment so I will probably wait for those to be merged before working on this.
+These lights should be supported. At the moment the only one I have tested with is the Wurkkos TS10. I will be getting a Sofirn LT1S Pro too, but to support that here are multiple large changes upstream at the moment so I will probably wait for those to be merged before working on this.
 
 The Wurkkos TS10 will probably be the first supported t1616 light, see [Wurkkos TS10 / Sofirn LT1S Pro support](#wurkkos-ts10--sofirn-lt1s-pro-support).
 
