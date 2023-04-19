@@ -383,6 +383,7 @@ Settings related to my mods, will be ignored in stock anduril:
 * `LOCKOUT_3H_ACTION` - configurable between momentary turbo and channel ramping/switching for dual channel lights
 * `MOMENTARY_TURBO_FROM_LOCK_TIME_LIMIT` - limit momentary turbo from lock to this many seconds as an alternative to disabling it completely
 * Make aux colour for blinking numbers configurable at runtime (9C menu item after which to use? No easy way to display which is being selected to the user. Adding a completely new button combination is easy but takes more MCU space. Or is just having the order be the samme as the aux colour selector for off/lock mode enough?)
+* Using `memorized_level` for the low battery warning isn't ideal as some stuff doesn't write to that and is still high enough to cause voltage drop (e.g. momentary turbo mode)
 * Option to save channel mix separately to level for manual memory
 * Make beacon on time configuration faster betweeen blinks?
 * Better integrate multiple modifications to some parts of aux LED code
