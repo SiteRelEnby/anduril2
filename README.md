@@ -299,9 +299,21 @@ Example header files:
 //TODO: how is temperature set? this table works for both stock and modded AFAIK... :thonk: too much bit twiddling for one day.
 
 //voltage calibration
-//this is 5-7 on most lights (check your light's hwdef) and is a value added to the measured voltage (e.g. 5 is 0.5V, 7 is 0.7V) before the user's calibration
-//by changing this, if you know your light's MCU is off by a bit this will allow it to persist through builds and factory resets
+//this is 5-7 on most lights (check your light's hwdef) and is a value added to the measured voltage (e.g. 5 is 0.25V, 6 is 0.3V, 7 is 0.35V) before the
+//user's calibration setting from 7H from battcheck if any. By changing this, if you know your light's MCU is off by a bit this will allow it to persist
+//through reflashes and factory resets
 //#define VOLTAGE_FUDGE_FACTOR 5
+
+//sets indicator LED mode, for non-RGB aux
+//unmodded:
+//1: low, 2: high, 3: blinking
+//((lockout_mode <<2) + off_mode))
+//modded:
+//0: off 1: low 2: high
+//if TICK_DURING_STANDBY is set, 3: blinking 4: blinking low, 5: blinking high 6: breathing
+//((lockout_mode <<4) + off_mode)
+//e.g. for lockout low, off high:
+//#define INDICATOR_LED_DEFAULT_MODE ((1<<4) + 2)
 ```
 ### Modded-only config
 
