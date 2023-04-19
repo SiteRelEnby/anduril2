@@ -246,12 +246,39 @@ bool gradual_tick_white_blend(uint8_t gt) {
 
 
 // same as white blend, but tint is calculated from the ramp level
-bool gradual_tick_auto_2ch_blend(uint8_t gt) {
+void gradual_tick_auto_2ch_blend() {
+    uint8_t gt = gradual_target;
+    if (gt < actual_level) gt = actual_level - 1;
+    else if (gt > actual_level) gt = actual_level + 1;
+    gt --;
+
     // figure out what exact PWM levels we're aiming for
     PWM_DATATYPE warm_PWM, cool_PWM;
     PWM_DATATYPE brightness = PWM_GET(pwm1_levels, gt);
     PWM_DATATYPE top        = PWM_GET(pwm_tops, gt);
     uint8_t blend           = 255 * (uint16_t)gt / RAMP_SIZE;
+
+    calc_2ch_blend(&warm_PWM, &cool_PWM, brightness, top, blend);
+
+    // move up/down if necessary
+    GRADUAL_ADJUST_SIMPLE(warm_PWM, WARM_PWM_LVL);
+    GRADUAL_ADJUST_SIMPLE(cool_PWM, COOL_PWM_LVL);
+
+    // check for completion
+    if (   (WARM_PWM_LVL == warm_PWM)
+        && (COOL_PWM_LVL == cool_PWM)
+       )
+    {
+        GRADUAL_IS_ACTUAL();
+    }
+}
+
+
+void gradual_tick_auto_3ch_blend() {
+    uint8_t gt = gradual_target;
+    if (gt < actual_level) gt = actual_level - 1;
+    else if (gt > actual_level) gt = actual_level + 1;
+    gt --;
 
     calc_2ch_blend(&warm_PWM, &cool_PWM, brightness, top, blend);
 
