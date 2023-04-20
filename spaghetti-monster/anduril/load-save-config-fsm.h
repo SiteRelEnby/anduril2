@@ -103,6 +103,9 @@ typedef enum {
     tactical_lvl_2_e,
     tactical_lvl_3_e,
     #endif
+    #ifdef BLINK_NUMBERS_WITH_AUX
+    blink_digit_type_e,
+    #endif
     eeprom_indexes_e_END
 } eeprom_indexes_e;
 #define EEPROM_BYTES eeprom_indexes_e_END

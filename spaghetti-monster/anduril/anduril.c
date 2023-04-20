@@ -62,6 +62,8 @@
 
 /********* Include headers which need to be before FSM *********/
 
+#define ANDURIL_SITERELENBY_MOD //this is the modded version, which causes some configuration in the default build targets to differ (e.g. more aux modes) so some bitwise operations will also differ, set a flag to the correct operation is used
+
 // enable FSM features needed by basic ramping functions
 #include "ramp-mode-fsm.h"
 

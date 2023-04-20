@@ -147,7 +147,7 @@ Note that the build does not (TODO: currently?) check for conflicts, which may c
     * Channel cycle - continues to switch channels when held. Somewhat of a placeholder for future support of >2 channels but also works fine with two.
     * Blink RGB aux (if present) red when locked on 1/2C (`BLINK_LOCK_REMINDER`)
     * Optionally use aux instead of main emitters to blink numbers (`BLINK_NUMBERS_WITH_AUX`)
-      * Configure in the 9H menu as the last item (3 on dual channel, 2 on single channel). 1C = use aux. 2C+ = use main emitters - number of clicks is the brightness level to use (e.g. 25C, 50C, 150C...).
+      * Configure in the 9H menu as the last item (after channel ramp/switch selection and jumpstart config, if present). 1C = low aux. 2C = high aux. 3+C: Use main emitters; number of clicks is the brightness level to use (e.g. 25C, 50C, 150C...).
       * Set the colour with `BLINK_NUMBERS_WITH_AUX_COLOUR` - e.g. `#define BLINK_NUMBERS_WITH_AUX_COLOUR 0x14<<1 //cyan, high` (see configuration section for other values)
 * Additional options in beacon mode
   * 2H to set the time the light is on (1 blink = 100ms) (`USE_BEACON_ON_CONFIG`). Each blink while held is 100ms of time on.
@@ -308,9 +308,11 @@ Example header files:
 //#define VOLTAGE_FUDGE_FACTOR 5
 
 //sets indicator LED mode, for non-RGB aux
+//
 //unmodded:
-//1: low, 2: high, 3: blinking
-//((lockout_mode <<2) + off_mode))
+//1: low, 2: high, 3: blinking (if TICK_DURING_STANDBY is set)
+//Format: ((lockout_mode <<2) + off_mode))
+//
 //modded:
 //0: off 1: low 2: high
 //if TICK_DURING_STANDBY is set, 3: blinking 4: blinking low, 5: blinking high 6: breathing

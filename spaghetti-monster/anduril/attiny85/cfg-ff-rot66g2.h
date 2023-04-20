@@ -12,7 +12,11 @@
 #ifdef INDICATOR_LED_DEFAULT_MODE
 #undef INDICATOR_LED_DEFAULT_MODE
 #endif
+#ifdef ANDURIL_SITERELENBY_MOD
+#define INDICATOR_LED_DEFAULT_MODE ((3<<4) + 1) //more modes; shift 4 bits left instead of 2
+#else
 #define INDICATOR_LED_DEFAULT_MODE ((3<<2) + 1)
+#endif
 
 // ramp shape is different than original ROT66
 // 1x7135: 150 lm

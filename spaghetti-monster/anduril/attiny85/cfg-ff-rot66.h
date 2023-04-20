@@ -9,7 +9,11 @@
 
 // off mode: high (2)
 // lockout: blinking (3)
+#ifdef ANDURIL_SITERELENBY_MOD
+#define INDICATOR_LED_DEFAULT_MODE ((3<<4) + 2) //more modes; shift 4 bits left instead of 2
+#else
 #define INDICATOR_LED_DEFAULT_MODE ((3<<2) + 2)
+#endif
 
 
 // driver is a FET+N+1,

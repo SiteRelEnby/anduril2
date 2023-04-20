@@ -9,7 +9,11 @@
 #define USE_INDICATOR_LED_WHILE_RAMPING
 // off mode: high (2)
 // lockout: blinking (3)
+#ifdef ANDURIL_SITERELENBY_MOD
+#define INDICATOR_LED_DEFAULT_MODE ((3<<4) + 2) //more modes; shift 4 bits left instead of 2
+#else
 #define INDICATOR_LED_DEFAULT_MODE ((3<<2) + 2)
+#endif
 
 // the lantern has two PWM channels, but they drive different sets of emitters
 // (one channel for warm emitters, one channel for cold)

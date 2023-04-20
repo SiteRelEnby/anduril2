@@ -27,10 +27,13 @@ void auto_clock_speed();
 #if defined(USE_BLINK_NUM) || defined(USE_BLINK_DIGIT)
 
 #ifdef BLINK_NUMBERS_WITH_AUX
-uint8_t blink_digit_type = 1;
-#ifndef BLINK_NUMBERS_WITH_AUX_COLOUR
-#define BLINK_NUMBERS_WITH_AUX_COLOUR 0x14<<1 //cyan, high
-#endif
+  #ifndef BLINK_NUMBERS_WITH_AUX_COLOUR
+    #define BLINK_NUMBERS_WITH_AUX_COLOUR 0x14 //cyan
+  #endif
+  #ifndef BLINK_NUMBERS_WITH_AUX_DEFAULT_SETTING
+    #define BLINK_NUMBERS_WITH_AUX_DEFAULT_SETTING 2 //high aux
+  #endif
+uint8_t blink_digit_type = BLINK_NUMBERS_WITH_AUX_DEFAULT_SETTING;
 #endif
 
 #ifndef BLINK_BRIGHTNESS
