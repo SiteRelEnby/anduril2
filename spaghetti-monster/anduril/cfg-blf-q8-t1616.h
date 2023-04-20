@@ -9,7 +9,11 @@
 #define USE_INDICATOR_LED_WHILE_RAMPING
 // off mode: low (1)
 // lockout: blinking (3)
+#ifdef ANDURIL_SITERELENBY_MOD
+#define INDICATOR_LED_DEFAULT_MODE ((3<<4) + 1) //more modes; shift 4 bits left instead of 2
+#else
 #define INDICATOR_LED_DEFAULT_MODE ((3<<2) + 1)
+#endif
 
 // copied from Emisar D4 ramp
 // ../../bin/level_calc.py 1 65 7135 1 0.8 150

@@ -13,7 +13,11 @@
 // the high button LED mode on this light uses too much power, default to low
 // off mode: low (1)
 // lockout: blinking (3)
+#ifdef ANDURIL_SITERELENBY_MOD
+#define INDICATOR_LED_DEFAULT_MODE ((3<<4) + 1) //more modes; shift 4 bits left instead of 2
+#else
 #define INDICATOR_LED_DEFAULT_MODE ((3<<2) + 1)
+#endif
 
 // voltage readings were a little high with the Q8 value
 #undef VOLTAGE_FUDGE_FACTOR
@@ -93,6 +97,8 @@
 #undef DISABLE_MANUAL_MEMORY_ENTRY_VALUE
 #define DISABLE_MANUAL_MEMORY_ENTRY_VALUE 3
 #define BLINK_NUMBERS_WITH_AUX
+#define BLINK_NUMBERS_WITH_AUX_DEFAULT_SETTING 2 //1: aux low, 2: aux high, 3+ main emitter ramp level
+
 
 #define USE_LOW_VOLTAGE_WARNING    //enable feature
 #define VOLTAGE_WARN_DELAY_TICKS 40    //(makes sense if it's 50% in awake and 50% in asleep state). 40 = ~5s
@@ -110,10 +116,8 @@
 #define VOLTAGE_FUDGE_FACTOR 3
 
 #undef INDICATOR_LED_DEFAULT_MODE
-// off mode: high (2)
-// lockout: blinking (1)
-//#define INDICATOR_LED_DEFAULT_MODE ((3<<2) + 2)
-//off high, lockout low
+//off high (2), lockout low (1)
+//left shift 4 bits instead of 2 because there are more aux modes than default
 #define INDICATOR_LED_DEFAULT_MODE ((1<<4) + 2)
 
 #define VOLTAGE_WARN_DELAY_TICKS 40

@@ -103,6 +103,9 @@ void load_config() {
         tactical_levels[1] = eeprom[tactical_lvl_2_e];
         tactical_levels[2] = eeprom[tactical_lvl_3_e];
         #endif
+        #ifdef BLINK_NUMBERS_WITH_AUX
+        blink_digit_type = eeprom[blink_digit_type_e];
+        #endif
     }
     #ifdef START_AT_MEMORIZED_LEVEL
     if (load_eeprom_wl()) {
@@ -190,7 +193,9 @@ void save_config() {
     eeprom[tactical_lvl_2_e] = tactical_levels[1];
     eeprom[tactical_lvl_3_e] = tactical_levels[2];
     #endif
-
+    #ifdef BLINK_NUMBERS_WITH_AUX
+    eeprom[blink_digit_type_e] = blink_digit_type;
+    #endif
     save_eeprom();
 }
 
