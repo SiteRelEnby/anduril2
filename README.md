@@ -25,11 +25,9 @@ A fork of [anduril-buildenv-docker](https://github.com/SiteRelEnby/anduril-build
 
 Included as a submodule, to use it, run `git submodule update --init`. Note that to build the builder you will need a working [buildkit](https://docs.docker.com/build/buildkit) as well as base Docker.
 
-Also on Docker Hub: https://hub.docker.com/r/siterelenby/anduril-builder
+Also on Docker Hub: https://hub.docker.com/r/siterelenby/anduril-builder. Supported architectures are amd64, armv7, and arm64.
 
 `docker pull siterelenby/anduril-builder:latest`
-
-Note that my automated docker builds of my own projects and tools are multiarch but I have only personally tested on amd64, I can't think of any specific reason it wouldn't work on ARM though.
 
 ### Changes
 * Fix bug (full path creation causes issues on some of my boxen when trying to mount a filesystem with subdirs, and is in general useless)
@@ -38,6 +36,11 @@ Note that my automated docker builds of my own projects and tools are multiarch 
   * Return non-zero on build failure (useful for CI/CD pipelines etc.)
 
 ## Scripts
+
+* `build.sh`: Build anduril. With no args, will build all possible targets (equivalent to running `build-all.sh` but handles running the docker image transparently. For Linux/MacOS/WSL2
+* `build_windows.sh`: `build.sh` with a fix for Cygwin Windows environments. Will still work on unixes as well for automation/convenience purposes.
+* `build-docker-image.sh`: build a local copy of the `anduril-buildenv-docker` image
+* `buildscripts/` individual scripts to build a hex for a specific light, mostly for my own automation
 
 Example build scripts and header files for my lights (`build-siterelenby-*` and `spaghetti-monster/anduril/cfg-siterelenby*.h`) including a few extra default settings vs the default model header files.
 
@@ -311,7 +314,7 @@ Example header files:
 //modded:
 //0: off 1: low 2: high
 //if TICK_DURING_STANDBY is set, 3: blinking 4: blinking low, 5: blinking high 6: breathing
-//((lockout_mode <<4) + off_mode)
+//Format: ((lockout_mode <<4) + off_mode)
 //e.g. for lockout low, off high:
 //#define INDICATOR_LED_DEFAULT_MODE ((1<<4) + 2)
 ```
