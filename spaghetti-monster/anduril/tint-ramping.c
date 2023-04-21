@@ -34,7 +34,9 @@ uint8_t tint_ramping_state(Event event, uint16_t arg) {
     // don't look like they were meant to be here
     static uint8_t active = 0;
     //static uint8_t momentary_opposite_active = 0;
+    #if (defined(CHANNEL_1_TURBO_HOLD_EVENT) || defined(CHANNEL_2_TURBO_HOLD_EVENT))
     static uint8_t prev_level = 0;
+    #endif
     #ifdef CHANNEL_SWITCH_CONFIGURABLE_HOLD_EVENT
     static uint8_t channel_switch = 0;
     #endif
