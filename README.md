@@ -370,6 +370,7 @@ Settings related to my mods, will be ignored in stock anduril:
 
 //#define 2C_TURBO_ALWAYS_USE_SINGLE_CHANNEL //ignore 7H turbo config on dual channel lights and always go to single channel at 100%.
 
+//#define USE_LOW_VOLTAGE_WARNING //enable feature
 //#define VOLTAGE_WARN_DELAY_TICKS 40 //for this many ticks after the light is switched off, use a soft low voltage warning (orange aux instead of red) if RGB aux are available, or just blink on low only if there are no RGB aux. TODO: How much time passes definitively for this var? Affected by underclocking when asleep. Implement in seconds instead?
 //#define VOLTAGE_WARN_HIGH_RAMP_LEVEL 75 //if set, only do a soft low voltage warning for the first VOLTAGE_WARN_DELAY_TICKS if the light was last on at or above this level
 
@@ -387,12 +388,10 @@ Settings related to my mods, will be ignored in stock anduril:
   * How often is the battery voltage read?
 * `LOCKOUT_3H_ACTION` - configurable between momentary turbo and channel ramping/switching for dual channel lights
 * `MOMENTARY_TURBO_FROM_LOCK_TIME_LIMIT` - limit momentary turbo from lock to this many seconds as an alternative to disabling it completely
-* Make aux colour for blinking numbers configurable at runtime (9C menu item after which to use? No easy way to display which is being selected to the user. Adding a completely new button combination is easy but takes more MCU space. Or is just having the order be the samme as the aux colour selector for off/lock mode enough?)
 * Using `memorized_level` for the low battery warning isn't ideal as some stuff doesn't write to that and is still high enough to cause voltage drop (e.g. momentary turbo mode)
 * Option to save channel mix separately to level for manual memory
 * Make beacon on time configuration faster betweeen blinks?
 * Better integrate multiple modifications to some parts of aux LED code
-* Find something useful for 3C on single channel (jump to 50%? or user-definable level? back to memory?)
 * New aux modes
 * Additional configuration options
 * Fix a few kludges
@@ -406,7 +405,7 @@ I am not responsible if you brick or otherwise break your light for any reason (
 
 ## attiny85 lights (unsupported)
 
-Supported MCUs might only be the attiny1634 at the moment. By default, should build successfully for attiny85 MCUs but does not fit in the available space even with no new features added. Best bet for making those work with something from here is probably to just take the code and apply it to upstream anduril. I will not provide support for these lights. Maybe if you pay me to ;)
+Supported MCUs might only be the attiny1634/1616 at the moment. By default, should build successfully for attiny85 MCUs but does not fit in the available space even with no new features added. Best bet for making those work with something from here is to disable more extra/default-on features, or to just take the code and apply it to upstream anduril. I will not provide support for these lights. Maybe if you pay me to ;)
 
 <details>
   <summary>attiny85 lights:</summary>
@@ -442,9 +441,7 @@ Supported MCUs might only be the attiny1634 at the moment. By default, should bu
 
 ## attiny1616 lights (WIP)
 
-These lights should be supported. At the moment the only one I have tested with is the Wurkkos TS10. I will be getting a Sofirn LT1S Pro too, but to support that here are multiple large changes upstream at the moment so I will probably wait for those to be merged before working on this.
-
-The Wurkkos TS10 will probably be the first supported t1616 light, see [Wurkkos TS10 / Sofirn LT1S Pro support](#wurkkos-ts10--sofirn-lt1s-pro-support).
+These lights should be supported. At the moment the only one I have tested with is the Wurkkos TS10, which works fine. Other t1616 lights build successfully but I can't test. I will be getting a Sofirn LT1S Pro too, but to support that here are multiple large changes upstream at the moment so I will probably wait for those to be merged before working on this.
 
 <details>
   <summary>attiny1616 lights:</summary>
