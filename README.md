@@ -317,7 +317,6 @@ Example header files:
 //Format: ((lockout_mode <<4) + off_mode)
 //e.g. for lockout low, off high:
 //#define INDICATOR_LED_DEFAULT_MODE ((1<<4) + 2)
->>>>>>> wurkkos_ts10_sofirn_lt1s_pro
 ```
 ### Modded-only config
 
