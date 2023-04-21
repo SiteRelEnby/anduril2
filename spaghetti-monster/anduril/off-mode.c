@@ -90,6 +90,8 @@ uint8_t off_state(Event event, uint16_t arg) {
                 indicator_led_update(6, arg);
               #elif defined(USE_AUX_RGB_LEDS)
                 rgb_led_update(RGB_RED|RGB_BREATH, arg);
+              #elif defined (USE_BUTTON_LED)
+                //this is deliberately a noop as the button LED will blink anyway (see indicator_led_update() in aux-leds.c), but we don't want the mmain LEDs to blink as well in that case (TODO: right? configurable?)
               #else
                 if (0 == (arg & 0x1f)) blink_once();
               #endif
@@ -97,9 +99,11 @@ uint8_t off_state(Event event, uint16_t arg) {
             else {
               //light was (likely) on at a lower setting if we have a threshold ramp level, or we haven't waited long enough for voltage drop to resolve yet
               #ifdef USE_INDICATOR_LED
-                indicator_led_update(6, arg);
+                indicator_led_update(4, arg);
               #elif defined(USE_AUX_RGB_LEDS)
                 rgb_led_update(RGB_YELLOW|RGB_BREATH, arg);
+              #elif defined (USE_BUTTON_LED)
+                //this is deliberately a noop as the button LED will blink anyway (see indicator_led_update() in aux-leds.c), but we don't want the mmain LEDs to blink as well in that case (TODO: right? configurable?)
               #else
                 if (0 == (arg & 0x1f)) blink_once();
               #endif
@@ -280,7 +284,9 @@ uint8_t off_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
 
-    ////////// Every action below here is blocked in the simple UI //////////
+    // Extended Simple UI adds Aux Config and Strobe Modes, so do this code later
+    #ifndef USE_EXTENDED_SIMPLE_UI
+    ////////// Every action below here is blocked in the (non-Extended) Simple UI //////////
     if (simple_ui_active) {
         return EVENT_NOT_HANDLED;
     }
@@ -291,6 +297,7 @@ uint8_t off_state(Event event, uint16_t arg) {
         save_config();
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
+    #endif // USE_EXTENDED_SIMPLE_UI
     #endif
 
     // click, click, long-click: strobe mode
@@ -400,4 +407,3 @@ uint8_t off_state(Event event, uint16_t arg) {
 
 
 #endif
-

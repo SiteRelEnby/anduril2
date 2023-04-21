@@ -49,35 +49,51 @@ uint8_t blink_digit(uint8_t num) {
     uint8_t ontime = BLINK_SPEED * 2 / 12;
     if (!num) { ontime = 8; num ++; }
     for (; num>0; num--) {
-        #if (defined(BLINK_NUMBERS_WITH_AUX) && (defined(USE_BUTTON_LED) || defined(USE_AUX_RGB_LEDS)))
-          if (blink_digit_type >= 2){
+        #if (defined(BLINK_NUMBERS_WITH_AUX) && ((defined(USE_BUTTON_LED)) || (defined(USE_AUX_RGB_LEDS)) || (defined (USE_INDICATOR_LED))))
+          if (blink_digit_type >= 3){ //configured to use main emitters instead of aux
           set_level(blink_digit_type);
         #else
-          set_level(BLINK_BRIGHTNESS);
+          set_level(BLINK_BRIGHTNESS); //default behaviour
         #endif
           nice_delay_ms(ontime);
           set_level(0);
-        #if (defined(BLINK_NUMBERS_WITH_AUX) && (defined(USE_BUTTON_LED) || defined(USE_AUX_RGB_LEDS)))
+        #if (defined(BLINK_NUMBERS_WITH_AUX) && ((defined(USE_BUTTON_LED)) || (defined(USE_AUX_RGB_LEDS)) || (defined (USE_INDICATOR_LED))))
         }
         else {
           #ifdef USE_AUX_RGB_LEDS
-          //rgb_led_set(BLINK_NUMBERS_WITH_AUX_COLOUR << 1); //left shift is for high brightness, can be removed for low
-          //the above is equivalent to rgb_led_update(BLINK_NUMBERS_WITH_AUX_COLOUR|RGB_HIGH, 0) but using lower level FSM functions before that stuff is defined
-          rgb_led_set(BLINK_NUMBERS_WITH_AUX_COLOUR); //left shift is for high brightness, can be removed for low
-          #endif //ifdef USE_AUX_RGB_LEDS
-          #ifdef USE_BUTTON_LED
-          button_led_set(2); //use 1 for low
-          #endif //ifdef USE_BUTTON_LED
-          nice_delay_ms(ontime);
-          //rgb_led_update(RGB_OFF, 0);
-          #ifdef USE_AUX_RGB_LEDS
-          rgb_led_set(0); //off
-          #endif //ifdef USE_AUX_RGB_LEDS
-          #ifdef USE_BUTTON_LED
-          button_led_set(0); //off
-          #endif //ifdef USE_BUTTON_LED
+            #ifndef BLINK_NUMBERS_WITH_AUX_COLOUR
+              #define BLINK_NUMBERS_WITH_AUX_COLOUR 0x15
+            #endif
+            //rgb_led_set(BLINK_NUMBERS_WITH_AUX_COLOUR << 1); //left shift is for high brightness, can be removed for low
+            //the above is equivalent to rgb_led_update(BLINK_NUMBERS_WITH_AUX_COLOUR|RGB_HIGH, 0) but using lower level FSM functions before that stuff is defined
+            if (blink_digit_type == 1){
+                //low brightness
+                rgb_led_set(BLINK_NUMBERS_WITH_AUX_COLOUR);
+            }
+            else {
+                //high brightness
+                rgb_led_set(BLINK_NUMBERS_WITH_AUX_COLOUR<<1);
+            }
+            #endif //ifdef USE_AUX_RGB_LEDS
+            #ifdef USE_BUTTON_LED
+            button_led_set(blink_digit_type); //1 low, 2 high
+            #endif //ifdef USE_BUTTON_LED
+            #ifdef USE_INDICATOR_LED
+            indicator_led(blink_digit_type); //1 low, 2 high
+            #endif
+            nice_delay_ms(ontime);
+            //rgb_led_update(RGB_OFF, 0);
+            #ifdef USE_AUX_RGB_LEDS
+            rgb_led_set(0); //off
+            #endif //ifdef USE_AUX_RGB_LEDS
+            #ifdef USE_BUTTON_LED
+            button_led_set(0); //off
+            #endif //ifdef USE_BUTTON_LED
+            #ifdef USE_INDICATOR_LED
+            indicator_led(0);
+            #endif
         }
-        #endif //if (defined BLINK_NUMBERS_WITH_AUX) && (defined(USE_BUTTON_LED) || defined(USE_AUX_RGB_LEDS)))
+        #endif //if (defined(BLINK_NUMBERS_WITH_AUX) && ((defined(USE_BUTTON_LED)) || (defined(USE_AUX_RGB_LEDS)) || (defined (USE_INDICATOR_LED))))
         nice_delay_ms(BLINK_SPEED * 3 / 12);
     }
     return nice_delay_ms(BLINK_SPEED * 8 / 12);

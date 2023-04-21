@@ -22,7 +22,6 @@
 
 #include "aux-leds.h"
 
-
 #if defined(USE_INDICATOR_LED) && defined(TICK_DURING_STANDBY)
 void indicator_led_update(uint8_t mode, uint8_t arg) {
     // turn off aux LEDs when battery is empty
@@ -32,6 +31,18 @@ void indicator_led_update(uint8_t mode, uint8_t arg) {
     if (voltage < VOLTAGE_LOW) {
     #endif
         indicator_led(0);
+        return;
+    }
+    //#ifdef USE_INDICATOR_LOW_BAT_WARNING
+    #ifndef DUAL_VOLTAGE_FLOOR // this isn't set up for dual-voltage lights like the Sofirn SP10 Pro
+    // fast blink a warning when battery is low but not critical
+    else if (voltage < VOLTAGE_LOW) {
+        indicator_led(mode & (((arg & 0b0010)>>1) - 3));
+    }
+    #endif
+    // normal steady output, 0/1/2 = off / low / high
+    else if ((mode & 0b00001111) < 3) {
+        indicator_led(mode);
         return;
     }
 

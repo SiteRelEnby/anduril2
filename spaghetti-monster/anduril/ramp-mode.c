@@ -154,6 +154,17 @@ uint8_t steady_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
 
+    #if defined(USE_OUTPUT_MUX) // output channel switching - override the 4C function
+    else if (event == EV_4clicks) {
+        output_mux++;
+        if(output_mux >= NUM_OUTPUT_MUXES) {
+            output_mux = 0;
+        }
+        set_level(actual_level); // we don't need to change the level, but needed for output muxing
+        save_config();
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    #else
     #ifdef USE_LOCKOUT_MODE
     #ifdef LOCK_FROM_ON_EVENT
     // 4 clicks: shortcut to lockout mode
@@ -164,6 +175,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
     }
     #endif //ifdef LOCK_FROM_ON_EVENT
     #endif //ifdef USE_LOCKOUT_MODE
+    #endif
 
     // hold: change brightness (brighter, dimmer)
     // click, hold: change brightness (dimmer)
@@ -437,6 +449,22 @@ uint8_t steady_state(Event event, uint16_t arg) {
     //}
     //#endif
 
+    #if defined(USE_TINT_RAMPING) && defined(DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL)
+    //2C: single channel ceiling, and exit to previous if already there
+    else if (event == EV_2clicks){
+        if (target_level == ramp_ceil) { //if we're already at 200%
+            set_level_and_therm_target(memorized_level); //go back to previous level if we set it (TODO: does this work right if ramped manually to ceiling?)
+        }
+        else {
+            memorized_level = nearest_level(actual_level); //save previous level
+            set_level_and_therm_target(ramp_ceil); //go to ceiling
+        }
+        #ifdef USE_SUNSET_TIMER
+        timer_orig_level = actual_level;
+        #endif
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    #endif //if defined(USE_TINT_RAMPING) && defined(DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL)
 
     #ifdef USE_RAMP_CONFIG
     // 7H: configure this ramp mode
@@ -627,7 +655,7 @@ void globals_config_save(uint8_t step, uint8_t value) {
     #endif
     #ifdef BLINK_NUMBERS_WITH_AUX
       else if (step == 1+blink_numbers_config_step) {
-        if ((value) && (value <= MAX_LEVEL)) { blink_digit_type = value; } //ignore (keep previous) if 0. 1 = aux, 2+ = main LEDs
+        if ((value) && (value <= (MAX_LEVEL+2))) { blink_digit_type = value; } //ignore (keep previous) if 0. 1 = aux low, 2 = aux high, 3+ = main LEDs (setting the ramp level to use)
       }
     #endif
  }

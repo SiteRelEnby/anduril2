@@ -62,6 +62,8 @@
 
 /********* Include headers which need to be before FSM *********/
 
+#define ANDURIL_SITERELENBY_MOD //this is the modded version, which causes some configuration in the default build targets to differ (e.g. more aux modes) so some bitwise operations will also differ, set a flag to the correct operation is used
+
 // enable FSM features needed by basic ramping functions
 #include "ramp-mode-fsm.h"
 
@@ -249,6 +251,22 @@ void setup() {
         push_state(off_state, 1);
 
     #else  // if START_AT_MEMORIZED_LEVEL
+
+        #ifdef USE_SOFT_FACTORY_RESET
+        #if (ATTINY == 25) || (ATTINY == 45) || (ATTINY == 85) || (ATTINY == 1634)
+        uint8_t was_wdt_reset = MCUSR & (1<<WDRF);  // get the Watchdog Reset Flag
+        #elif defined(AVRXMEGA3)  // ATTINY816, 817, etc
+        uint8_t was_wdt_reset = RSTCTRL.RSTFR & RSTCTRL_WDRF_bm;  // get the Watchdog Reset Flag
+        #else
+            #error Unrecognized MCU type
+        #endif
+        
+        // if the power-on was because of a WDT Reset, do a factory reset
+        // (note: this implies that the button is currently held down, 
+        // because a 13H is the only way to get to WDT Reset for dual-switch)
+        if(was_wdt_reset)
+            factory_reset();
+        #endif // USE_SOFT_FACTORY_RESET
 
         // dual switch: e-switch + power clicky
         // power clicky acts as a momentary mode
