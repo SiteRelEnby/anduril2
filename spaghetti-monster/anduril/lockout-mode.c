@@ -47,9 +47,6 @@ void blink_lock_reminder(){
 
 uint8_t lockout_state(Event event, uint16_t arg) {
     //var for momentary channel-specific turbo
-    #ifdef USE_TINT_RAMPING
-    static uint8_t prev_tint;
-    #endif
 
     if (0) {} //placeholder
 
