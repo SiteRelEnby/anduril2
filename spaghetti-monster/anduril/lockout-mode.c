@@ -29,18 +29,18 @@ void blink_lock_reminder(){
   #else
   blink_once_aux(1); //if there are no RGB aux, aux-leds.h doesn't get imported so we don't have colour definitions. In this case the arg doesn't matter.
   #endif
-  delay_4ms(15);
+  delay_4ms(12);
   #ifdef USE_AUX_RGB_LEDS //one blink is enough with main emitters
     blink_once_aux(RGB_RED);
-    delay_4ms(15);
+    delay_4ms(12);
     blink_once_aux(RGB_RED);
-    delay_4ms(15);
+    delay_4ms(12);
   #elif defined(USE_INDICATOR_LED)
     //need a separate case here as without RGB aux we don't have the colours, and in that case the arg doesn't matter.
     blink_once_aux(1);
-    delay_4ms(15);
+    delay_4ms(12);
     blink_once_aux(1);
-    delay_4ms(15);
+    delay_4ms(12);
   #endif
 }
 #endif
