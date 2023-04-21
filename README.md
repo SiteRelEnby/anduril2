@@ -146,7 +146,8 @@ Note that the build does not (TODO: currently?) check for conflicts, which may c
     * Blink RGB aux (if present) red when locked on 1/2C (`BLINK_LOCK_REMINDER`)
     * Optionally use aux instead of main emitters to blink numbers (`BLINK_NUMBERS_WITH_AUX`)
       * Configure in the 9H menu as the last item (after channel ramp/switch selection and jumpstart config, if present). 1C = low aux. 2C = high aux. 3+C: Use main emitters; number of clicks is the brightness level to use (e.g. 25C, 50C, 150C...).
-      * Set the colour with `BLINK_NUMBERS_WITH_AUX_COLOUR` - e.g. `#define BLINK_NUMBERS_WITH_AUX_COLOUR 0x14<<1 //cyan, high` (see configuration section for other values)
+      * Set the colour with `BLINK_NUMBERS_WITH_AUX_COLOUR` - e.g. `#define BLINK_NUMBERS_WITH_AUX_COLOUR 0x14 //cyan` (see configuration section for other values)
+      * Set the default config with `BLINK_NUMBERS_WITH_AUX_DEFAULT_SETTING` (1: low aux, 2: high aux, 3+: main LEDs (sets ramp level to use)
 * Additional options in beacon mode
   * 2H to set the time the light is on (1 blink = 100ms) (`USE_BEACON_ON_CONFIG`). Each blink while held is 100ms of time on.
   * 3/4H to increase/decrease brightness without exiting. This is not strictly a *new* feature as beacon mode normally uses the last ramped level, it just allows on the fly adjustment. Enabled with `USE_BEACON_BRIGHTNESS_RAMP`.
@@ -351,16 +352,17 @@ Settings related to my mods, will be ignored in stock anduril:
 
 //#define BLINK_LOCK_REMINDER //blink aux (or main emitters if no aux) on 1c from locked
 
-//#define BLINK_NUMBERS_WITH_AUX //use aux to blink numbers instead of main emitters (9H menu, last item - 1C = use aux, 2C = use main)
-//#define BLINK_NUMBERS_WITH_AUX_COLOUR 0x14<<1 //cyan, high //set colour (TODO: make configurable at runtime). 3 == Cyan - see spaghetti-monster/anduril/aux-leds.h for definitions
+//#define BLINK_NUMBERS_WITH_AUX //use aux to blink numbers instead of main emitters (enable entire feature)
+#define BLINK_NUMBERS_WITH_AUX_DEFAULT_SETTING 2 //1: aux low, 2: aux high, 3+ main emitter ramp level (9H menu, last item - 1C = use aux, 2C = use main)
+//#define BLINK_NUMBERS_WITH_AUX_COLOUR 0x14 //cyan, high //set colour (TODO: make configurable at runtime). 3 == Cyan - see spaghetti-monster/anduril/aux-leds.h for definitions
 /*
-//    0b00000001, red: high `0x01<<1`, low `0x01`
-//    0b00000101, yellow: high `0x05<<1`, low `0x05`
-//    0b00000100, green: high `0x04<<1`, low` `0x04`
-//    0b00010100, cyan: high `0x14<<1`, low `0x14`
-//    0b00010000, blue: high `0x10<<1`, low `0x10`
-//    0b00010001, purple: high `0x11<<1`, low `0x11`
-//    0b00010101, white: high `0x15<<1`, low `0x15`
+//    0b00000001, red: `0x01`
+//    0b00000101, yellow: `0x05`
+//    0b00000100, green: `0x04`
+//    0b00010100, cyan: `0x14`
+//    0b00010000, blue: `0x10`
+//    0b00010001, purple: `0x11`
+//    0b00010101, white: `0x15`
 */
 
 //#define USE_BEACON_ON_CONFIG //in beacon mode, 2H to set on time - each blink is 100ms.
