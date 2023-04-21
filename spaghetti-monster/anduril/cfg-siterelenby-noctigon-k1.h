@@ -147,8 +147,8 @@
 #define DEFAULT_2C_STYLE 1  // 0: no turbo. 1: 2C always turbo. 2: 2C goes to top of ramp, or turbo if already at top
 #define DEFAULT_2C_STYLE_SIMPLE 2  // same but for Simple UI.
 
-#define USE_BEACON_ON_CONFIG
 #define USE_BEACON_BRIGHTNESS_RAMP
+#define USE_BEACON_ON_CONFIG
 
 #define RAMP_CONFIG_HOLD_EVENT EV_click9_hold
 #define MANUAL_MEMORY_SAVE_CLICK_EVENT EV_10clicks
@@ -167,16 +167,17 @@
 #undef DISABLE_MANUAL_MEMORY_ENTRY_VALUE
 #define DISABLE_MANUAL_MEMORY_ENTRY_VALUE 3
 
-#define BLINK_NUMBERS_WITH_AUX
-#define BLINK_NUMBERS_WITH_AUX_COLOUR 0x14<<1 //cyan, high. see table below.
+#define BLINK_NUMBERS_WITH_AUX //enables entire feature
+#define BLINK_NUMBERS_WITH_AUX_DEFAULT_SETTING 2 //1: aux low, 2: aux high, 3+ main emitter ramp level
+#define BLINK_NUMBERS_WITH_AUX_COLOUR 0x14 //cyan
 /*
-    0b00000001,  // 0: red: high 0x01<<1, low 0x01
-    0b00000101,  // 1: yellow: 0x05<<1, low 0x05
-    0b00000100,  // 2: green: 0x04<<1, low 0x04
-    0b00010100,  // 3: cyan: 0x14<<1, low 0x14
-    0b00010000,  // 4: blue: 0x10<<1, low 0x10
-    0b00010001,  // 5: purple: 0x11<<1, low 0x11
-    0b00010101,  // 6: white: 0x15<<1, low 0x15
+    0b00000001,  // 0: red: high 0x01
+    0b00000101,  // 1: yellow: 0x05
+    0b00000100,  // 2: green: 0x04
+    0b00010100,  // 3: cyan: 0x14
+    0b00010000,  // 4: blue: 0x10
+    0b00010001,  // 5: purple: 0x11
+    0b00010101,  // 6: white: 0x15
 */
 
 #define USE_LOW_VOLTAGE_WARNING    //enable feature

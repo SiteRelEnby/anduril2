@@ -12,7 +12,11 @@
 
 // off mode: high (2)
 // lockout: blinking (3)
+#ifdef ANDURIL_SITERELENBY_MOD
+#define INDICATOR_LED_DEFAULT_MODE ((3<<4) + 2) //more modes; shift 4 bits left instead of 2
+#else
 #define INDICATOR_LED_DEFAULT_MODE ((3<<2) + 2)
+#endif
 
 // the "low" mode doesn't work on this light's aux LEDs
 // (but it does work on the switch LEDs)

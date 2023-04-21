@@ -35,6 +35,12 @@ void blink_lock_reminder(){
     delay_4ms(15);
     blink_once_aux(RGB_RED);
     delay_4ms(15);
+  #elif defined(USE_INDICATOR_LED)
+    //need a separate case here as without RGB aux we don't have the colours, and in that case the arg doesn't matter.
+    blink_once_aux(1);
+    delay_4ms(15);
+    blink_once_aux(1);
+    delay_4ms(15);
   #endif
 }
 #endif
@@ -158,6 +164,8 @@ uint8_t lockout_state(Event event, uint16_t arg) {
               indicator_led_update(6, arg);
               #elif defined(USE_AUX_RGB_LEDS)
               rgb_led_update(RGB_RED|RGB_BREATH, arg);
+              #elif defined (USE_BUTTON_LED)
+                //this is deliberately a noop as the button LED will blink anyway (see indicator_led_update() in aux-leds.c), but we don't want the mmain LEDs to blink as well in that case (TODO: right? configurable?)
               #else
               if (0 == (arg & 0x1f)) blink_once();
               #endif
@@ -168,6 +176,8 @@ uint8_t lockout_state(Event event, uint16_t arg) {
               indicator_led_update(6, arg);
               #elif defined(USE_AUX_RGB_LEDS)
               rgb_led_update(RGB_YELLOW|RGB_BREATH, arg);
+              #elif defined (USE_BUTTON_LED)
+                //this is deliberately a noop as the button LED will blink anyway (see indicator_led_update() in aux-leds.c), but we don't want the mmain LEDs to blink as well in that case (TODO: right? configurable?)
               #else
               if (0 == (arg & 0x1f)) blink_once();
               #endif
@@ -235,8 +245,9 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     #endif //ifndef DISABLE_UNLOCK_TO_TURBO
     #endif //ifndef USE_TINT_RAMPING
 
-    ////////// Every action below here is blocked in the simple UI //////////
-    #ifdef USE_SIMPLE_UI
+    // Extended Simple UI adds Aux Config, so do this code later
+    ////////// Every action below here is blocked in the (non-Extended) Simple UI //////////
+    #if defined(USE_SIMPLE_UI) && !defined(USE_EXTENDED_SIMPLE_UI)
     if (simple_ui_active) {
         return EVENT_NOT_HANDLED;
     }
@@ -314,6 +325,21 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     #endif
         setting_rgb_mode_now = 0;
         save_config();
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    #endif
+
+    #if defined(USE_EXTENDED_SIMPLE_UI) && defined(USE_SIMPLE_UI)
+    ////////// Every action below here is blocked in the Extended Simple UI //////////
+    if (simple_ui_active) {
+        return EVENT_NOT_HANDLED;
+    }
+    #endif // USE_EXTENDED_SIMPLE_UI
+
+    #ifdef USE_AUTOLOCK
+    // 10H: configure the autolock option
+    else if (event == EV_click10_hold) {
+        push_state(autolock_config_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif

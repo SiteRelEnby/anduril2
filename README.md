@@ -15,8 +15,6 @@ Anduril2 originally by [ToyKeeper](https://code.launchpad.net/~toykeeper/flashli
 
 Support added from [here](https://code.launchpad.net/~gabe/flashlight-firmware/anduril2). Defnitely works with Wurkkos TS10; I have no idea for the LT1S Pro until I get one as that includes some more significant code changes. Most likely LT1S Pro support will wait until TK's current changes are in the main repo so I can rebase on that.
 
-Currently in the `wurkkos_ts10_sofirn_lt1s_pro` branch, currently based on main as of 2023-04-07.
-
 # Build utilities
 
 ## anduril-buildenv-docker
@@ -25,11 +23,9 @@ A fork of [anduril-buildenv-docker](https://github.com/SiteRelEnby/anduril-build
 
 Included as a submodule, to use it, run `git submodule update --init`. Note that to build the builder you will need a working [buildkit](https://docs.docker.com/build/buildkit) as well as base Docker.
 
-Also on Docker Hub: https://hub.docker.com/r/siterelenby/anduril-builder
+Also on Docker Hub: https://hub.docker.com/r/siterelenby/anduril-builder. Supported architectures are amd64, armv7, and arm64.
 
 `docker pull siterelenby/anduril-builder:latest`
-
-Note that my automated docker builds of my own projects and tools are multiarch but I have only personally tested on amd64, I can't think of any specific reason it wouldn't work on ARM though.
 
 ### Changes
 * Fix bug (full path creation causes issues on some of my boxen when trying to mount a filesystem with subdirs, and is in general useless)
@@ -38,6 +34,11 @@ Note that my automated docker builds of my own projects and tools are multiarch 
   * Return non-zero on build failure (useful for CI/CD pipelines etc.)
 
 ## Scripts
+
+* `build.sh`: Build anduril. With no args, will build all possible targets (equivalent to running `build-all.sh` but handles running the docker image transparently. For Linux/MacOS/WSL2
+* `build_windows.sh`: `build.sh` with a fix for Cygwin Windows environments. Will still work on unixes as well for automation/convenience purposes.
+* `build-docker-image.sh`: build a local copy of the `anduril-buildenv-docker` image
+* `buildscripts/` individual scripts to build a hex for a specific light, mostly for my own automation
 
 Example build scripts and header files for my lights (`build-siterelenby-*` and `spaghetti-monster/anduril/cfg-siterelenby*.h`) including a few extra default settings vs the default model header files.
 
@@ -144,7 +145,7 @@ Note that the build does not (TODO: currently?) check for conflicts, which may c
     * Channel cycle - continues to switch channels when held. Somewhat of a placeholder for future support of >2 channels but also works fine with two.
     * Blink RGB aux (if present) red when locked on 1/2C (`BLINK_LOCK_REMINDER`)
     * Optionally use aux instead of main emitters to blink numbers (`BLINK_NUMBERS_WITH_AUX`)
-      * Configure in the 9H menu as the last item (3 on dual channel, 2 on single channel). 1C = use aux. 2C+ = use main emitters - number of clicks is the brightness level to use (e.g. 25C, 50C, 150C...).
+      * Configure in the 9H menu as the last item (after channel ramp/switch selection and jumpstart config, if present). 1C = low aux. 2C = high aux. 3+C: Use main emitters; number of clicks is the brightness level to use (e.g. 25C, 50C, 150C...).
       * Set the colour with `BLINK_NUMBERS_WITH_AUX_COLOUR` - e.g. `#define BLINK_NUMBERS_WITH_AUX_COLOUR 0x14<<1 //cyan, high` (see configuration section for other values)
 * Additional options in beacon mode
   * 2H to set the time the light is on (1 blink = 100ms) (`USE_BEACON_ON_CONFIG`). Each blink while held is 100ms of time on.
@@ -297,6 +298,26 @@ Example header files:
 //Rainbow       0x18    0x28    0x38
 //Voltage       0x19    0x29    0x39
 //TODO: how is temperature set? this table works for both stock and modded AFAIK... :thonk: too much bit twiddling for one day.
+
+//voltage calibration
+//this is 5-7 on most lights (check your light's hwdef) and is a value added to the measured voltage (e.g. 5 is 0.25V, 6 is 0.3V, 7 is 0.35V) before the
+//user's calibration setting from 7H from battcheck if any. By changing this, if you know your light's MCU is off by a bit this will allow it to persist
+//through reflashes and factory resets
+//#define VOLTAGE_FUDGE_FACTOR 5
+
+//sets indicator LED mode, for non-RGB aux
+//
+//unmodded:
+//1: low, 2: high, 3: blinking (if TICK_DURING_STANDBY is set)
+//Format: ((lockout_mode <<2) + off_mode))
+//
+//modded:
+//0: off 1: low 2: high
+//if TICK_DURING_STANDBY is set, 3: blinking 4: blinking low, 5: blinking high 6: breathing
+//Format: ((lockout_mode <<4) + off_mode)
+//e.g. for lockout low, off high:
+//#define INDICATOR_LED_DEFAULT_MODE ((1<<4) + 2)
+>>>>>>> wurkkos_ts10_sofirn_lt1s_pro
 ```
 ### Modded-only config
 
@@ -348,7 +369,7 @@ Settings related to my mods, will be ignored in stock anduril:
 
 //#define 2C_TURBO_ALWAYS_USE_SINGLE_CHANNEL //ignore 7H turbo config on dual channel lights and always go to single channel at 100%.
 
-//#define VOLTAGE_WARN_DELAY_TICKS 40 //for this many ticks after the light is switched off, use a soft low voltage warning (orange aux instead of red). TODO: How much time passes definitively for this var? Affected by underclocking when asleep. Implement in seconds instead?
+//#define VOLTAGE_WARN_DELAY_TICKS 40 //for this many ticks after the light is switched off, use a soft low voltage warning (orange aux instead of red) if RGB aux are available, or just blink on low only if there are no RGB aux. TODO: How much time passes definitively for this var? Affected by underclocking when asleep. Implement in seconds instead?
 //#define VOLTAGE_WARN_HIGH_RAMP_LEVEL 75 //if set, only do a soft low voltage warning for the first VOLTAGE_WARN_DELAY_TICKS if the light was last on at or above this level
 
 ```
@@ -366,6 +387,7 @@ Settings related to my mods, will be ignored in stock anduril:
 * `LOCKOUT_3H_ACTION` - configurable between momentary turbo and channel ramping/switching for dual channel lights
 * `MOMENTARY_TURBO_FROM_LOCK_TIME_LIMIT` - limit momentary turbo from lock to this many seconds as an alternative to disabling it completely
 * Make aux colour for blinking numbers configurable at runtime (9C menu item after which to use? No easy way to display which is being selected to the user. Adding a completely new button combination is easy but takes more MCU space. Or is just having the order be the samme as the aux colour selector for off/lock mode enough?)
+* Using `memorized_level` for the low battery warning isn't ideal as some stuff doesn't write to that and is still high enough to cause voltage drop (e.g. momentary turbo mode)
 * Option to save channel mix separately to level for manual memory
 * Make beacon on time configuration faster betweeen blinks?
 * Better integrate multiple modifications to some parts of aux LED code

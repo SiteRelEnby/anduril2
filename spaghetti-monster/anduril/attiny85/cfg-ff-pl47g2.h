@@ -11,7 +11,11 @@
 
 // off mode: low (1)
 // lockout: blinking (3)
+#ifdef ANDURIL_SITERELENBY_MOD
+#define INDICATOR_LED_DEFAULT_MODE ((3<<4) + 1) //more modes; shift 4 bits left instead of 2
+#else
 #define INDICATOR_LED_DEFAULT_MODE ((3<<2) + 1)
+#endif
 
 
 #define RAMP_LENGTH 150

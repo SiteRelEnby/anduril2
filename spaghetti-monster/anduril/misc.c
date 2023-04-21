@@ -58,24 +58,33 @@ void blink_once_aux(uint8_t blink_once_aux_colour) {
     #ifdef USE_MAIN_LEDS_FOR_ALL_BLINKS //feature flag to retain old behaviour
       blink_once();
     #endif
+
     #ifndef USE_MAIN_LEDS_FOR_ALL_BLINKS
       #if defined(USE_AUX_RGB_LEDS) && !defined(NO_AUX)
         rgb_led_update(blink_once_aux_colour|RGB_HIGH, 0);
         delay_4ms(BLINK_ONCE_AUX_TIME_4MS);
         rgb_led_update(RGB_OFF, 0);
-      #elif defined(USE_INDICATOR_LED) && !defined(NO_AUX) //if defined(USE_AUX_RGB_LEDS) && !defined(NO_AUX)
+      #endif //if defined(USE_AUX_RGB_LEDS) && !defined(NO_AUX)
+      #if defined(USE_INDICATOR_LED) && !defined(NO_AUX) //indicator LED only
         indicator_led(2);
         delay_4ms(BLINK_ONCE_AUX_TIME_4MS);
         indicator_led(0);
-      #else
+      #endif
+      #if defined (USE_BUTT0N_LED) && !defined(NO_AUX)
+        button_led_set(2);
+        delay_4ms(BLINK_ONCE_AUX_TIME_4MS);
+        button_led_set(0);
+      #endif
+      #if ((!defined(USE_INDICATOR_LED)) && ((!defined(USE_BUTT0N_LED)) && (!defined(USE_AUX_RGB_LEDS))) || (defined(NO_AUX)))
         // or fall back to main emitter if we have no AUX LED and no indicator LED
         blink_once();
-      #endif //if defined(USE_AUX_RGB_LEDS) && !defined(NO_AUX)
-    #else
-      // or fall back to main emitter if we have no AUX LED and no indicator LED
+      #endif
+    #endif //ifndef USE_MAIN_LEDS_FOR_ALL_BLINKS
+    #if ((defined(NO_AUX)) || (defined(USE_MAIN_LEDS_FOR_ALL_BLINKS)))
+      // use main emitter if USE_MAIN_LEDS_FOR_ALL_BLINKS
       blink_once();
-    #endif //ifdef USE_MAIN_LEDS_FOR_ALL_BLINKS
-    delay_4ms(2); //short delay so the blink doesn't get lost if the aux then go to any high mode
+    #endif //ifndef USE_MAIN_LEDS_FOR_ALL_BLINKS
+    delay_4ms(6); //short delay so the blink doesn't get lost if the aux then go to any high mode
 }
 
 void blink_some(uint8_t times) {

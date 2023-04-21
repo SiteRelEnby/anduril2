@@ -27,7 +27,7 @@ inline void beacon_mode_iter() {
     if (! button_last_state) {
         set_level(beacon_brightness); //TODO: set brightness?
         #ifdef USE_BEACON_ON_CONFIG
-	nice_delay_ms(beacon_on_ms);
+        nice_delay_ms(beacon_on_ms);
         #else
         nice_delay_ms(100);
         #endif
@@ -81,12 +81,13 @@ uint8_t beacon_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #ifdef USE_BEACON_ON_CONFIG
+    // 2C: configure time spent on
     else if (event == EV_click2_hold_release) {
         beacon_on_ms = 100 * (arg / TICKS_PER_SECOND);
         if (beacon_on_ms < 100){
             beacon_on_ms = 100;
-            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
         }
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif //ifdef USE_BEACON_ON_CONFIG
 
@@ -108,6 +109,7 @@ uint8_t beacon_state(Event event, uint16_t arg) {
             beacon_brightness --;
             set_level(beacon_brightness);
         }
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
     return EVENT_NOT_HANDLED;
