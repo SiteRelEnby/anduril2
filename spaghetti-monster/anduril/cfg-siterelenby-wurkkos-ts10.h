@@ -20,8 +20,8 @@
 #endif
 
 // voltage readings were a little high with the Q8 value
-#undef VOLTAGE_FUDGE_FACTOR
-#define VOLTAGE_FUDGE_FACTOR 5  // add 0.25V, not 0.35V
+#undef VOLTAGE_PRECALIBRATION
+#define VOLTAGE_PRECALIBRATION 5  // add 0.25V, not 0.35V
 
 /*
 // copied from Emisar D4 ramp

@@ -300,10 +300,10 @@ Example header files:
 //TODO: how is temperature set? this table works for both stock and modded AFAIK... :thonk: too much bit twiddling for one day.
 
 //voltage calibration
-//this is 5-7 on most lights (check your light's hwdef) and is a value added to the measured voltage (e.g. 5 is 0.25V, 6 is 0.3V, 7 is 0.35V) before the
-//user's calibration setting from 7H from battcheck if any. By changing this, if you know your light's MCU is off by a bit this will allow it to persist
-//through reflashes and factory resets
-//#define VOLTAGE_FUDGE_FACTOR 5
+//this 7 by default, value added to the measured voltage (e.g. 5 is 0.25V, 6 is 0.3V, 7 is 0.35V) before the
+//user's calibration setting from 7H from battcheck if any. By changing this, if you know your light's MCU is off by a bit this will allow calibration
+//to persist through reflashes and factory resets
+//#define VOLTAGE_PRECALIBRATION 7
 
 //sets indicator LED mode, for non-RGB aux
 //
