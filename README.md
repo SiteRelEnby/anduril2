@@ -2,47 +2,18 @@
 
 Anduril2 originally by [ToyKeeper](https://code.launchpad.net/~toykeeper/flashlight-firmware/anduril2), mods by @SiteRelEnby.
 
-# Other stuff
-## Git repo scripts
+This is my own modded version of anduril2. Definitely an ongoing project, the idea eventually is to make configurable custom builds simple, so allowing anduril to exceep the limits of its MCU by adding new features and making it easy to modify by enabling, disabling, or moving features. It's somewhat of a perpetual work in progress (after a hard day writing code, I write code to relax...).
 
-* `make-git-repo.sh`: script to create a clean version of the upstream anduril2 repo (for merging purposes or your own hacking). Dependencies are git, bzr, and normal shell utilities
-* `update-upstream-branch.sh`: script to create a branch with a clean version of the upstream code. Mostly for my own use in building and modding but included in case they prove useful to someone else. Takes environment vars (TODO: args as well):
-  * `NO_PUSH`: set to `1` will not push the created branch.
-  * `UPSTREAM_BRANCH`: name of the branch to create for upstream code. Defaults to `upstream` if unset.
-  * `REMOTE`: name of the remote to push to; if not specified, defaults to `origin`.
+# The quick info
 
-## Wurkkos TS10 / Sofirn LT1S Pro support
+* I generally keep the underlying codebase reasonably up to date with ToyKeeper's releases. Sometimes I will merge in patches early (e.g. Sofirn LT1S Pro support).
+* Lots of new features. The section outlining them all probably needs rewriting.
+* I mmake releases semi-arbitrarily when I feel there have been enough changes to justify one. I will usuually build custom builds for all of my lights, as well as each configuration listed in [example configurations](#example-configurations). These are intended to be relatively general purpose, and should be built for all lights they make sense for. If you have a good idea for one, open an issue or otherwise let me know.
+* The eventual goal is to make it reasonably simple to build your own configuration via some kind of interactive script/UI... If you're interested (especially if you can make UIs, I hate doing that), let me know.
 
-Support added from [here](https://code.launchpad.net/~gabe/flashlight-firmware/anduril2). Defnitely works with Wurkkos TS10; I have no idea for the LT1S Pro until I get one as that includes some more significant code changes. Most likely LT1S Pro support will wait until TK's current changes are in the main repo so I can rebase on that.
+## Sofirn LT1S Pro support
 
-# Build utilities
-
-## anduril-buildenv-docker
-
-A fork of [anduril-buildenv-docker](https://github.com/SiteRelEnby/anduril-buildenv-docker)
-
-Included as a submodule, to use it, run `git submodule update --init`. Note that to build the builder you will need a working [buildkit](https://docs.docker.com/build/buildkit) as well as base Docker.
-
-Also on Docker Hub: https://hub.docker.com/r/siterelenby/anduril-builder. Supported architectures are amd64, armv7, and arm64.
-
-`docker pull siterelenby/anduril-builder:latest`
-
-### Changes
-* Fix bug (full path creation causes issues on some of my boxen when trying to mount a filesystem with subdirs, and is in general useless)
-* Added a proper entrypoint script
-  * Checks for the source directory being mounted at different paths under `/src`
-  * Return non-zero on build failure (useful for CI/CD pipelines etc.)
-
-## Scripts
-
-* `build.sh`: Build anduril. With no args, will build all possible targets (equivalent to running `build-all.sh` but handles running the docker image transparently. For Linux/MacOS/WSL2
-* `build_windows.sh`: `build.sh` with a fix for Cygwin Windows environments. Will still work on unixes as well for automation/convenience purposes.
-* `build-docker-image.sh`: build a local copy of the `anduril-buildenv-docker` image
-* `buildscripts/` individual scripts to build a hex for a specific light, mostly for my own automation
-
-Example build scripts and header files for my lights (`build-siterelenby-*` and `spaghetti-monster/anduril/cfg-siterelenby*.h`) including a few extra default settings vs the default model header files.
-
-Build scripts and image should work fine with the default codebase as well (in the future these may move to a submodule)
+Support added from [here](https://code.launchpad.net/~gabe/flashlight-firmware/anduril2). Not tested until mine arrives...
 
 # Current upstream version this mod is based on
 
@@ -232,8 +203,24 @@ These are lights that I own. Currently all of them are running this fork. Not ev
 
 Get your light's default firmware and locate the correct header file, as this contains important hardware-specific config. Make a copy of it, and modify the following variables to your preference. These settings will persist across a factory reset (making it much more convenient to build an image once, then if your settings ever get messed up, you can factory reset to go back to *your* settings. Most of these are fairly self-explanatory. Note that the first half *SHOULD* work in stock unmodified anduril too, but this has not been tested by me personally. See above for build-time settings added by mods.
 
+### Example configurations
+
 Example header files:
-* [Nonintrusive new features enabled, stock mappings](spaghetti-monster/anduril/config-example-stock-mappings.h): `spaghetti-monster/anduril/config-example-stock-mappings.h`
+* `basic-new-features-only`: [Nonintrusive new features enabled, all button mappings are the same as stock](spaghetti-monster/anduril/config-example-basic-new-features-only.h): `spaghetti-monster/anduril/config-example-basic-new-features-only.h`
+* `dual-channel-features`: [Dual channel lights with 200%](spaghetti-monster/config-example-dual-channel.h)
+  * Sunset mode moved to 10H
+  * Ramp toggle moved to 9C
+  * Ramp config moved to 8H
+  * Momentary mode moved to 11C
+  * Lock from ramp mode disabled
+  * Aux config moved to 8C/H (to make it harder to accidentally hit)
+  * `BLINK_NUMBERS_WITH_AUX` available, configurable in 9H menu
+  * Tactical mode enabled, moved to 9C
+  * 3C to switch channels
+  * 3H to ramp channels
+  * 2C for single channel turbo
+  * 4C for 200% turbo
+  * 4H for momentary 200%
 
 ## Complete configuration reference
 
@@ -459,3 +446,47 @@ These lights should be supported. At the moment the only one I have tested with 
 Release schedule is "whenever I feel it justifies one". I will build images for my lights for each release. These should be reasonably stable and tested as they are the lights I am thinking of when I hack on this.
 
 In addition, all the supported (currently only attiny1634) default build targets will be built. These *should* use default anduril mappings with the features defined in `config-default.h`. Do not assume these builds are stable or bug-free, they are mostly provided for people to try it out. In the future I may make a repo for other people's configs to automate new firmware builds for to lower the knowledge demand of building this fork.
+
+
+
+
+# Other stuff
+
+Stuff that doesn't fit anywhere else
+
+## Git repo scripts
+
+* `make-git-repo.sh`: script to create a clean version of the upstream anduril2 repo (for merging purposes or your own hacking). Dependencies are git, bzr, and normal shell utilities
+* `update-upstream-branch.sh`: script to create a branch with a clean version of the upstream code. Mostly for my own use in building and modding but included in case they prove useful to someone else. Takes environment vars (TODO: args as well):
+  * `NO_PUSH`: set to `1` will not push the created branch.
+  * `UPSTREAM_BRANCH`: name of the branch to create for upstream code. Defaults to `upstream` if unset.
+  * `REMOTE`: name of the remote to push to; if not specified, defaults to `origin`.
+
+# Build utilities
+
+## anduril-buildenv-docker
+
+A fork of [anduril-buildenv-docker](https://github.com/SiteRelEnby/anduril-buildenv-docker)
+
+Included as a submodule, to use it, run `git submodule update --init`. Note that to build the builder you will need a working [buildkit](https://docs.docker.com/build/buildkit) as well as base Docker.
+
+Also on Docker Hub: https://hub.docker.com/r/siterelenby/anduril-builder. Supported architectures are amd64, armv7, and arm64.
+
+`docker pull siterelenby/anduril-builder:latest`
+
+### Changes
+* Fix bug (full path creation causes issues on some of my boxen when trying to mount a filesystem with subdirs, and is in general useless)
+* Added a proper entrypoint script
+  * Checks for the source directory being mounted at different paths under `/src`
+  * Return non-zero on build failure (useful for CI/CD pipelines etc.)
+
+## Scripts
+
+* `build.sh`: Build anduril. With no args, will build all possible targets (equivalent to running `build-all.sh` but handles running the docker image transparently. For Linux/MacOS/WSL2
+* `build_windows.sh`: `build.sh` with a fix for Cygwin Windows environments. Will still work on unixes as well for automation/convenience purposes.
+* `build-docker-image.sh`: build a local copy of the `anduril-buildenv-docker` image
+* `buildscripts/` individual scripts to build a hex for a specific light, mostly for my own automation
+
+Example build scripts and header files for my lights (`build-siterelenby-*` and `spaghetti-monster/anduril/cfg-siterelenby*.h`) including a few extra default settings vs the default model header files.
+
+Build scripts and image should work fine with the default codebase as well (in the future these may move to a submodule)
