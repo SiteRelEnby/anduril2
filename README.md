@@ -2,7 +2,7 @@
 
 Anduril2 originally by [ToyKeeper](https://code.launchpad.net/~toykeeper/flashlight-firmware/anduril2), mods by @SiteRelEnby.
 
-This is my own modded version of anduril2. Definitely an ongoing project, the idea eventually is to make configurable custom builds simple, so allowing anduril to exceep the limits of its MCU by adding new features and making it easy to modify by enabling, disabling, or moving features. It's somewhat of a perpetual work in progress (after a hard day writing code, I write code to relax...).
+This is my own modded version of anduril2. Definitely an ongoing project, the idea eventually is to make configurable custom builds simple, so allowing anduril to exceed the limits of its MCU size by adding new features and making it easy to modify by enabling, disabling, or moving features. It's somewhat of a perpetual work in progress (after a hard day writing code, I write code to relax...).
 
 # The quick info
 
@@ -484,6 +484,7 @@ Also on Docker Hub: https://hub.docker.com/r/siterelenby/anduril-builder. Suppor
 
 * `build.sh`: Build anduril. With no args, will build all possible targets (equivalent to running `build-all.sh` but handles running the docker image transparently. For Linux/MacOS/WSL2
 * `build_windows.sh`: `build.sh` with a fix for Cygwin Windows environments. Will still work on unixes as well for automation/convenience purposes.
+* `preprocess_debug.sh` - runs gcc's preprocessor, creating the actual source file (with includes, ifdefs, etc. all handled) that is actually fed to the compiler. Useful for debugging ifdefs and similar. Usage example: `TARGET=cfg-wurkkos-ts10.h MCU=attiny1616 bash -x preprocess_debug.sh`
 * `build-docker-image.sh`: build a local copy of the `anduril-buildenv-docker` image
 * `buildscripts/` individual scripts to build a hex for a specific light, mostly for my own automation
 
