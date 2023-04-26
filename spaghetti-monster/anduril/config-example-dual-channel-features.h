@@ -172,7 +172,6 @@
 
 #endif
 
-//#define VOLTAGE_WARN_DELAY_TICKS 375 //when awake, a tick is 16ms. When sleeping, a tick is 0.5s. TODO: Seems to use both? A value of 375 here means a delay of ~49s which doesn't fit either (~6s or ~187s respectively, comes out to ~7.6 ticks per second?)
 #define USE_LOW_VOLTAGE_WARNING    //enable feature
 #define VOLTAGE_WARN_DELAY_TICKS 40    //(makes sense if it's 50% in awake and 50% in asleep state). 40 = ~5s
 #define VOLTAGE_WARN_HIGH_RAMP_LEVEL 75 //level above which we expect some voltage drop that could make battery appear low for a while when switched off
