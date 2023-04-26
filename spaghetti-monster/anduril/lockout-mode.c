@@ -148,47 +148,69 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         #else
         if (voltage < VOLTAGE_LOW_SAFE) {
         #endif
-            //warn on low battery
-            #ifdef USE_LOW_VOLTAGE_WARNING
-            #if (defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL) && defined (VOLTAGE_WARN_DELAY_TICKS))
-              if (memorized_level <= VOLTAGE_WARN_HIGH_RAMP_LEVEL) { //trigger a soft warning first if this is potentially caused by voltage drop from running on high, otherwise go straight to red (likely an actually low battery)
-              //light was (likely) not last used on high
-            #elif defined (VOLTAGE_WARN_DELAY_TICKS)
-               if (arg > VOLTAGE_WARN_DELAY_TICKS) {
-            #endif //(defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL)  && defined (VOLTAGE_WARN_DELAY_TICKS))
-              //after the time period for soft warning has elapsed where we have a delay set but no threshold high ramp level, or if there's no delay, do the main warning
-              #ifdef USE_INDICATOR_LED
-              indicator_led_update(6, arg);
-              #elif defined(USE_AUX_RGB_LEDS)
-              rgb_led_update(RGB_RED|RGB_BREATH, arg);
-              #elif defined (USE_BUTTON_LED)
-                //this is deliberately a noop as the button LED will blink anyway (see indicator_led_update() in aux-leds.c), but we don't want the mmain LEDs to blink as well in that case (TODO: right? configurable?)
-              #else
-              if (0 == (arg & 0x1f)) blink_once();
-              #endif
-            }
-            else {
-              //light was (likely) on at a lower setting if we have a threshold ramp level, or we haven't waited long enough for voltage drop to resolve yet
-              #ifdef USE_INDICATOR_LED
-              indicator_led_update(6, arg);
-              #elif defined(USE_AUX_RGB_LEDS)
-              rgb_led_update(RGB_YELLOW|RGB_BREATH, arg);
-              #elif defined (USE_BUTTON_LED)
-                //this is deliberately a noop as the button LED will blink anyway (see indicator_led_update() in aux-leds.c), but we don't want the mmain LEDs to blink as well in that case (TODO: right? configurable?)
-              #else
-              if (0 == (arg & 0x1f)) blink_once();
-              #endif
-            }
 
-        }
-        else { //voltage isn't low, continue
-        #endif //ifdef USE_LOW_VOLTAGE_WARNING
+
+
+
+
+
+
+        //warn on low battery
+        #ifdef USE_LOW_VOLTAGE_WARNING //flag for entire feature on/off
+          #ifdef DUAL_VOLTAGE_FLOOR
+            if (((voltage < VOLTAGE_LOW_SAFE) && (voltage > DUAL_VOLTAGE_FLOOR)) || (voltage < DUAL_VOLTAGE_LOW_LOW_SAFE)) {
+          #else
+            if (voltage < VOLTAGE_LOW_SAFE) {
+          #endif //ifdef DUAL_VOLTAGE_FLOOR
+          #if (defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL) && defined (VOLTAGE_WARN_DELAY_TICKS))            //(fixed?): BUG: stays on yellow when it did drop to red level, past timeout... only if above ramp threshold, otherwise it's fine...
+            if (memorized_level >= VOLTAGE_WARN_HIGH_RAMP_LEVEL) { //trigger a soft warning first if this is potentially caused by voltage drop from running on high, otherwise go straight to red (likely an actually low battery)
+            //light was (likely) not last used on high
+            #if defined (VOLTAGE_WARN_DELAY_TICKS)
+              if (arg > VOLTAGE_WARN_DELAY_TICKS) {
+            #endif
+            //after the time period for soft warning has elapsed where we have a delay set but no threshold high ramp level, or if there's no delay, do the main warning
             #ifdef USE_INDICATOR_LED
-            indicator_led_update(indicator_led_mode >> 4, arg);
+              indicator_led_update(6, arg);
+            #elif defined(USE_AUX_RGB_LEDS)
+              rgb_led_update(RGB_RED|RGB_BREATH, arg);
+            #elif defined (USE_BUTTON_LED)
+              //this is deliberately a noop as the button LED will blink anyway (see indicator_led_update() in aux-leds.c), but we don't want the main LEDs to blink as well in that case (TODO: right? configurable?)
+            #else
+              if (0 == (arg & 0x1f)) blink_once();
+            #endif //ifdef USE_INDICATOR_LED
+            #if defined (VOLTAGE_WARN_DELAY_TICKS)
+              }
+            #endif
+            #if (defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL) && defined (VOLTAGE_WARN_DELAY_TICKS))
+              }
+              else {
+            #endif
+            //light was (likely) on at a lower setting if we have a threshold ramp level, or we haven't waited long enough for voltage drop to resolve yet
+            #ifdef USE_INDICATOR_LED
+              indicator_led_update(4, arg);
+            #elif defined(USE_AUX_RGB_LEDS)
+              rgb_led_update(RGB_YELLOW|RGB_BREATH, arg);  //FIXME: TODO: Set to blink low. TODO: have a way to do both off/lock with one block of code? check how aux leds ae updatged when the pattern is iterated? but what about single colour?
+            #elif defined (USE_BUTTON_LED)
+              //this is deliberately a noop as the button LED will blink anyway (see indicator_led_update() in aux-leds.c), but we don't want the main LEDs to blink as well in that case (TODO: right? configurable?)
+            #else
+              if (0 == (arg & 0x1f)) blink_once();
+            #endif
+            #if (defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL) && defined (VOLTAGE_WARN_DELAY_TICKS))
+              }
+            #endif
+          }
+          else { //voltage isn't low, continue
+        #endif //ifdef DUAL_VOLTAGE_FLOOR
+      #endif  //ifdef USE_LOW_VOLTAGE_WARNING
+            #ifdef USE_INDICATOR_LED
+            indicator_led_update(indicator_led_mode & 0xf, arg);
             #elif defined(USE_AUX_RGB_LEDS)
             rgb_led_update(rgb_led_lockout_mode, arg);
             #endif
+        #ifdef USE_LOW_VOLTAGE_WARNING
         }
+        #endif
+
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif //defined(TICK_DURING_STANDBY)
