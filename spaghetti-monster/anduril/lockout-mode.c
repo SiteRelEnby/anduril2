@@ -142,19 +142,6 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     }
     #if defined(TICK_DURING_STANDBY)
     else if (event == EV_sleep_tick) {
-
-        #ifdef DUAL_VOLTAGE_FLOOR
-        if (((voltage < VOLTAGE_LOW_SAFE) && (voltage > DUAL_VOLTAGE_FLOOR)) || (voltage < DUAL_VOLTAGE_LOW_LOW_SAFE)) {
-        #else
-        if (voltage < VOLTAGE_LOW_SAFE) {
-        #endif
-
-
-
-
-
-
-
         //warn on low battery
         #ifdef USE_LOW_VOLTAGE_WARNING //flag for entire feature on/off
           #ifdef DUAL_VOLTAGE_FLOOR
@@ -181,10 +168,9 @@ uint8_t lockout_state(Event event, uint16_t arg) {
             #if defined (VOLTAGE_WARN_DELAY_TICKS)
               }
             #endif
-            #if (defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL) && defined (VOLTAGE_WARN_DELAY_TICKS))
               }
               else {
-            #endif
+          #endif
             //light was (likely) on at a lower setting if we have a threshold ramp level, or we haven't waited long enough for voltage drop to resolve yet
             #ifdef USE_INDICATOR_LED
               indicator_led_update(4, arg);
@@ -198,19 +184,18 @@ uint8_t lockout_state(Event event, uint16_t arg) {
             #if (defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL) && defined (VOLTAGE_WARN_DELAY_TICKS))
               }
             #endif
-          }
-          else { //voltage isn't low, continue
-        #endif //ifdef DUAL_VOLTAGE_FLOOR
-      #endif  //ifdef USE_LOW_VOLTAGE_WARNING
+            }
+            else { //voltage isn't low, continue
+        #endif //ifdef USE_LOW_VOLTAGE_WARNING
             #ifdef USE_INDICATOR_LED
             indicator_led_update(indicator_led_mode & 0xf, arg);
+
             #elif defined(USE_AUX_RGB_LEDS)
             rgb_led_update(rgb_led_lockout_mode, arg);
             #endif
         #ifdef USE_LOW_VOLTAGE_WARNING
         }
         #endif
-
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif //defined(TICK_DURING_STANDBY)
