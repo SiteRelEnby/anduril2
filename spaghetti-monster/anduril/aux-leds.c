@@ -143,7 +143,7 @@ void rgb_led_update(uint8_t mode, uint8_t arg) {
               #endif //(defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL) && defined (VOLTAGE_WARN_DELAY_TICKS))
                     //soft warning
                     #ifdef USE_INDICATOR_LED
-                      indicator_led_update(6, arg) //no way to show the difference reliably with just indicator_led
+                      indicator_led_update(6, arg); //no way to show the difference reliably with just indicator_led
                     #endif
                     #ifdef USE_AUX_RGB_LEDS
                       rgb_led_update(RGB_YELLOW|RGB_BREATH, arg);
@@ -152,7 +152,7 @@ void rgb_led_update(uint8_t mode, uint8_t arg) {
                 else {
             #endif //ifdef VOLTAGE_WARN_DELAY_TICKS
                   #ifdef USE_INDICATOR_LED
-                   indicator_led_update(6, arg) //no way to show the difference reliably with just indicator_led
+                   indicator_led_update(6, arg); //no way to show the difference reliably with just indicator_led
                   #endif
                   #ifdef USE_AUX_RGB_LEDS
                     rgb_led_update(RGB_RED|RGB_BREATH, arg);

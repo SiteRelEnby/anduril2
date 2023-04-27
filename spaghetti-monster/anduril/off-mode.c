@@ -88,7 +88,7 @@ uint8_t off_state(Event event, uint16_t arg) {
               #endif //(defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL) && defined (VOLTAGE_WARN_DELAY_TICKS))
                     //soft warning
                     #ifdef USE_INDICATOR_LED
-                      indicator_led_update(6, arg) //no way to show the difference reliably with just indicator_led
+                      indicator_led_update(6, arg); //no way to show the difference reliably with just indicator_led
                     #endif
                     #ifdef USE_AUX_RGB_LEDS
                       rgb_led_update(RGB_YELLOW|RGB_BREATH, arg);
@@ -97,7 +97,7 @@ uint8_t off_state(Event event, uint16_t arg) {
                 #ifdef VOLTAGE_WARN_MAX_TICKS
                   else if (arg < VOLTAGE_WARN_MAX_TICKS){
                     #ifdef USE_INDICATOR_LED
-                     indicator_led_update(6, arg) //no way to show the difference reliably with just indicator_led
+                     indicator_led_update(6, arg); //no way to show the difference reliably with just indicator_led
                     #endif
                     #ifdef USE_AUX_RGB_LEDS
                       rgb_led_update(RGB_RED|RGB_BREATH, arg);
@@ -113,7 +113,7 @@ uint8_t off_state(Event event, uint16_t arg) {
                 #else
                   else {
                     #ifdef USE_INDICATOR_LED
-                     indicator_led_update(6, arg) //no way to show the difference reliably with just indicator_led
+                     indicator_led_update(6, arg); //no way to show the difference reliably with just indicator_led
                     #endif
                     #ifdef USE_AUX_RGB_LEDS
                       rgb_led_update(RGB_RED|RGB_BREATH, arg);
