@@ -374,8 +374,11 @@ Settings related to my mods, will be ignored in stock anduril:
     * Integrate [6H aux control](https://github.com/starryalley/Anduril2#allow-the-use-of-auxindicator-led-in-lower-levels--default_level-level-6c6h-while-light-is-on) and voltage aux while on (as a mode under 6H functionality? would need to allow aux use at any ramp level. Need to wait for that fork to implement voltage mode there first or it's going to become a massive pain to merge and rebase on changes)
     * Incorporate more changes from [SammysHP](https://github.com/SammysHP/flashlight-firmware/wiki/Modifications-Overview)
 * When blinking aux red for low battery, wait for a while (blink 1-2x only? blink orange for the first 5-10 seconds then red if it remains low?) after running the light on a high setting to not trigger the warning unnecessarily due to voltage sag from putting load on the battery. Use `memorized_level`? needs memory enabled in the build but I think not actually active?
-  * How often is the battery voltage read?
-* `LOCKOUT_3H_ACTION` - configurable between momentary turbo and channel ramping/switching for dual channel lights
+  * voltage currently read every ~6-7s? will be 1s in future upstream update
+ * `LOCKOUT_3H_ACTION` - configurable between momentary turbo and channel ramping/switching for dual channel lights
+ * Make aux colour for blinking numbers configurable at runtime (9C menu item after which to use? No easy way to display which is being selected to the user. Adding a completely new button combination is easy but takes more MCU space. Or is just having the order be the s
+amme as the aux colour selector for off/lock mode enough?)
+ * Find something useful for 3C on single channel (jump to 50%? or user-definable level? back to memory?)
 * `MOMENTARY_TURBO_FROM_LOCK_TIME_LIMIT` - limit momentary turbo from lock to this many seconds as an alternative to disabling it completely
 * Using `memorized_level` for the low battery warning isn't ideal as some stuff doesn't write to that and is still high enough to cause voltage drop (e.g. momentary turbo mode)
 * Option to save channel mix separately to level for manual memory
