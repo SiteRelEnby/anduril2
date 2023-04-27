@@ -99,9 +99,9 @@
 #define BLINK_NUMBERS_WITH_AUX
 #define BLINK_NUMBERS_WITH_AUX_DEFAULT_SETTING 2 //1: aux low, 2: aux high, 3+ main emitter ramp level
 
-
 #define USE_LOW_VOLTAGE_WARNING    //enable feature
-#define VOLTAGE_WARN_DELAY_TICKS 40    //(makes sense if it's 50% in awake and 50% in asleep state). 40 = ~5s
+#define VOLTAGE_WARN_DELAY_TICKS 40     //TODO: figure this out properly. (makes sense if it's 50% in awake and 50% in asleep state). 40 = ~5s
+#define VOLTAGE_WARN_MAX_TICKS 500      //stop warning after this many ticks
 #define VOLTAGE_WARN_HIGH_RAMP_LEVEL 75 //level above which we expect some voltage drop that could make battery appear low for a while when switched off
 
 #define USE_3H_TURBO_FROM_LOCK

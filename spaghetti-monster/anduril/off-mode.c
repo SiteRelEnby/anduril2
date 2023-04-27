@@ -30,16 +30,16 @@ uint8_t off_state(Event event, uint16_t arg) {
     // turn emitter off when entering state
     if (event == EV_enter_state) {
         #if defined(USE_AUX_RGB_LEDS) || defined(USE_INDICATOR_LED)
-        aux_led_reset = 1;
+          aux_led_reset = 1;
         #endif
         set_level(0);
         #ifdef USE_INDICATOR_LED
-        indicator_led_update(indicator_led_mode & 0xf, 0);
+          indicator_led_update(indicator_led_mode & 0xf, 0);
         #elif defined(USE_AUX_RGB_LEDS)
-        rgb_led_update(rgb_led_off_mode, 0);
+          rgb_led_update(rgb_led_off_mode, 0);
         #endif
         #ifdef USE_SUNSET_TIMER
-        sunset_timer = 0;  // needs a reset in case previous timer was aborted
+          sunset_timer = 0;  // needs a reset in case previous timer was aborted
         #endif
         // sleep while off  (lower power use)
         // (unless delay requested; give the ADC some time to catch up)
@@ -51,93 +51,103 @@ uint8_t off_state(Event event, uint16_t arg) {
         if (arg > HOLD_TIMEOUT) {
             go_to_standby = 1;
             #ifdef USE_INDICATOR_LED
-            indicator_led_update(indicator_led_mode & 0xf, 0);
+              indicator_led_update(indicator_led_mode & 0xf, 0);
             #elif defined(USE_AUX_RGB_LEDS)
-            rgb_led_update(rgb_led_off_mode, arg);
+              rgb_led_update(rgb_led_off_mode, arg);
             #endif
         }
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #if defined(TICK_DURING_STANDBY)
-    // blink the indicator LED, maybe
-    else if (event == EV_sleep_tick) {
-        #ifdef USE_MANUAL_MEMORY_TIMER
-        // reset to manual memory level when timer expires
-        if (manual_memory &&
+      // blink the indicator LED, maybe
+      else if (event == EV_sleep_tick) {
+          #ifdef USE_MANUAL_MEMORY_TIMER
+            // reset to manual memory level when timer expires
+            if (manual_memory &&
                 (arg >= (manual_memory_timer * SLEEP_TICKS_PER_MINUTE))) {
-            memorized_level = manual_memory;
-            #ifdef USE_TINT_RAMPING
-            tint = manual_memory_tint;
-            #endif
-        }
-        #endif
-
-        //warn on low battery
-        #ifdef USE_LOW_VOLTAGE_WARNING //flag for entire feature on/off
-          #ifdef DUAL_VOLTAGE_FLOOR
-            if (((voltage < VOLTAGE_LOW_SAFE) && (voltage > DUAL_VOLTAGE_FLOOR)) || (voltage < DUAL_VOLTAGE_LOW_LOW_SAFE)) {
-          #else
-            if (voltage < VOLTAGE_LOW_SAFE) {
-          #endif //ifdef DUAL_VOLTAGE_FLOOR
-          #if (defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL) && defined (VOLTAGE_WARN_DELAY_TICKS))            //(fixed?): BUG: stays on yellow when it did drop to red level, past timeout... only if above ramp threshold, otherwise it's fine...
-            if (memorized_level >= VOLTAGE_WARN_HIGH_RAMP_LEVEL) { //trigger a soft warning first if this is potentially caused by voltage drop from running on high, otherwise go straight to red (likely an actually low battery)
-            //light was (likely) not last used on high
-            #if defined (VOLTAGE_WARN_DELAY_TICKS)
-              if (arg > VOLTAGE_WARN_DELAY_TICKS) {
-            #endif
-            //after the time period for soft warning has elapsed where we have a delay set but no threshold high ramp level, or if there's no delay, do the main warning
-            #ifdef USE_INDICATOR_LED
-              indicator_led_update(6, arg);
-            #elif defined(USE_AUX_RGB_LEDS)
-              rgb_led_update(RGB_RED|RGB_BREATH, arg);
-            #elif defined (USE_BUTTON_LED)
-              //this is deliberately a noop as the button LED will blink anyway (see indicator_led_update() in aux-leds.c), but we don't want the main LEDs to blink as well in that case (TODO: right? configurable?)
-            #else
-              if (0 == (arg & 0x1f)) blink_once();
-            #endif //ifdef USE_INDICATOR_LED
-            #if defined (VOLTAGE_WARN_DELAY_TICKS)
-              }
-            #endif
-            #if (defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL) && defined (VOLTAGE_WARN_DELAY_TICKS))
-              }
-              else {
-            #endif
-            //light was (likely) on at a lower setting if we have a threshold ramp level, or we haven't waited long enough for voltage drop to resolve yet
-            #ifdef USE_INDICATOR_LED
-              indicator_led_update(4, arg);
-            #elif defined(USE_AUX_RGB_LEDS)
-              rgb_led_update(RGB_YELLOW|RGB_BREATH, arg);  //FIXME: TODO: Set to blink low. TODO: have a way to do both off/lock with one block of code? check how aux leds ae updatged when the pattern is iterated? but what about single colour?
-            #elif defined (USE_BUTTON_LED)
-              //this is deliberately a noop as the button LED will blink anyway (see indicator_led_update() in aux-leds.c), but we don't want the main LEDs to blink as well in that case (TODO: right? configurable?)
-            #else
-              if (0 == (arg & 0x1f)) blink_once();
-            #endif
-            #if (defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL) && defined (VOLTAGE_WARN_DELAY_TICKS))
-              }
-            #endif
+              memorized_level = manual_memory;
+              #ifdef USE_TINT_RAMPING
+                tint = manual_memory_tint;
+              #endif
           }
-          else { //voltage isn't low, continue
-        #endif //ifdef DUAL_VOLTAGE_FLOOR
-      #endif  //ifdef USE_LOW_VOLTAGE_WARNING
-            #ifdef USE_INDICATOR_LED
-            indicator_led_update(indicator_led_mode & 0xf, arg);
-            #elif defined(USE_AUX_RGB_LEDS)
-            rgb_led_update(rgb_led_off_mode, arg);
-            #endif
-        #ifdef USE_LOW_VOLTAGE_WARNING
-        }
-        #endif
+          #endif //ifdef USE_MANUAL_MEMORY_TIMER
 
-        #ifdef USE_AUTOLOCK
-            // lock the light after being off for N minutes
-            uint16_t ticks = autolock_time * SLEEP_TICKS_PER_MINUTE;
-            if ((autolock_time > 0)  && (arg > ticks)) {
-                set_state(lockout_state, 0);
-            }
-        #endif  // ifdef USE_AUTOLOCK
+    //TODO: move this code to aux-leds.c so it can work in lockout mode too? Need to fix fucking weird bug (see aux-leds.c). Do we actaually want this to happen when locked? maybe not, or configurable?
+    //warn on low battery
+    #ifdef USE_LOW_VOLTAGE_WARNING //flag for entire feature on/off
+      #ifdef DUAL_VOLTAGE_FLOOR
+        if (((voltage < VOLTAGE_LOW_SAFE) && (voltage > DUAL_VOLTAGE_FLOOR)) || (voltage < DUAL_VOLTAGE_LOW_LOW_SAFE)) {
+      #else
+        if ((voltage > 0) && (voltage < VOLTAGE_LOW_SAFE)) {
+      #endif //ifdef DUAL_VOLTAGE_FLOOR
+            #ifdef VOLTAGE_WARN_DELAY_TICKS
+              #if (defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL)) //TODO: this isn't perfect (turbo mode, strobe modes, probably other ways I'm not thinking of right now could have significant voltage drop that memorized_level won't cover)
+                if ((memorized_level >= VOLTAGE_WARN_HIGH_RAMP_LEVEL) && (arg < VOLTAGE_WARN_DELAY_TICKS)) { //trigger a soft warning first if this is potentially caused by voltage drop from running on high, otherwise go straight to red (likely an actually low battery)
+              #else
+                if ((arg) && (arg < VOLTAGE_WARN_DELAY_TICKS)) { //always soft warn first
+              #endif //(defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL) && defined (VOLTAGE_WARN_DELAY_TICKS))
+                    //soft warning
+                    #ifdef USE_INDICATOR_LED
+                      indicator_led_update(6, arg) //no way to show the difference reliably with just indicator_led
+                    #endif
+                    #ifdef USE_AUX_RGB_LEDS
+                      rgb_led_update(RGB_YELLOW|RGB_BREATH, arg);
+                    #endif
+                }
+                #ifdef VOLTAGE_WARN_MAX_TICKS
+                  else if (arg < VOLTAGE_WARN_MAX_TICKS){
+                    #ifdef USE_INDICATOR_LED
+                     indicator_led_update(6, arg) //no way to show the difference reliably with just indicator_led
+                    #endif
+                    #ifdef USE_AUX_RGB_LEDS
+                      rgb_led_update(RGB_RED|RGB_BREATH, arg);
+                    #endif
+                  } else {
+                      #ifdef USE_INDICATOR_LED
+                        indicator_led_update(indicator_led_mode & 0xf, arg);
+                      #endif
+                      #if defined(USE_AUX_RGB_LEDS)
+                        rgb_led_update(rgb_led_off_mode, arg); //return to normal aux mode (or go off if battery is critical, via usual sleep_tick)
+                      #endif
+                  }
+                #else
+                  else {
+                    #ifdef USE_INDICATOR_LED
+                     indicator_led_update(6, arg) //no way to show the difference reliably with just indicator_led
+                    #endif
+                    #ifdef USE_AUX_RGB_LEDS
+                      rgb_led_update(RGB_RED|RGB_BREATH, arg);
+                    #endif
+                  }
+                #endif
+            #endif //ifdef VOLTAGE_WARN_DELAY_TICKS
+       } //(((voltage < VOLTAGE_LOW_SAFE) && (voltage > DUAL_VOLTAGE_FLOOR)) || (voltage < DUAL_VOLTAGE_LOW_LOW_SAFE)) *OR* (defined(VOLTAGE_WARN_DELAY_TICKS))
+       else { //voltage not within warning range:
+    #endif //ifdef USE_LOW_VOLTAGE_WARNING
+
+
+          #ifdef USE_INDICATOR_LED
+            indicator_led_update(indicator_led_mode & 0xf, arg);
+          #endif
+          #if defined(USE_AUX_RGB_LEDS)
+            rgb_led_update(rgb_led_off_mode, arg);
+          #endif
+
+          #ifdef USE_AUTOLOCK
+              // lock the light after being off for N minutes
+              uint16_t ticks = autolock_time * SLEEP_TICKS_PER_MINUTE;
+              if ((autolock_time > 0)  && (arg > ticks)) {
+                  set_state(lockout_state, 0);
+              }
+          #endif  // ifdef USE_AUTOLOCK
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+
+    #ifdef USE_LOW_VOLTAGE_WARNING
+       }
+    #endif //ifdef USE_LOW_VOLTAGE_WARNING
+
     }
-    #endif
+    #endif //defined(TICK_DURING_STANDBY)
     #if (B_TIMING_ON == B_PRESS_T)
     // hold (initially): go to lowest level (floor), but allow abort for regular click
     else if (event == EV_click1_press) {

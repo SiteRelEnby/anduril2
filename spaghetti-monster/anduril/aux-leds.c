@@ -26,9 +26,9 @@
 void indicator_led_update(uint8_t mode, uint8_t arg) {
     // turn off aux LEDs when battery is empty
     #ifdef DUAL_VOLTAGE_FLOOR
-    if (((voltage < VOLTAGE_LOW) && (voltage > DUAL_VOLTAGE_FLOOR)) || (voltage < DUAL_VOLTAGE_LOW_LOW)) {
+      if (((voltage < VOLTAGE_LOW) && (voltage > DUAL_VOLTAGE_FLOOR)) || (voltage < DUAL_VOLTAGE_LOW_LOW)) {
     #else
-    if (voltage < VOLTAGE_LOW) {
+      if (voltage < VOLTAGE_LOW) {
     #endif
         indicator_led(0);
         return;
@@ -53,8 +53,8 @@ void indicator_led_update(uint8_t mode, uint8_t arg) {
 
     static const uint8_t seq[] = {0, 1, 2, 1,  0, 0, 0, 0,
                                   0, 0, 1, 0,  0, 0, 0, 0};
-    static const uint8_t seq_breath[] = {0, 1, 1, 1,  2, 2, 2, 2,
-                                         1, 1, 1, 0,  0, 0, 0, 0,  0, 0, 0, 0};
+    static const uint8_t seq_breath[] = {1, 1, 1, 1,  2, 2, 2, 2,
+                                         1, 1, 1, 1,  0, 0, 1, 2,  2, 1, 0, 0};
 
     uint8_t level = mode;
     switch (mode) {
@@ -125,12 +125,49 @@ uint8_t temperature_to_rgb() {
 void rgb_led_update(uint8_t mode, uint8_t arg) {
     static uint8_t rainbow = 0;  // track state of rainbow mode
     static uint8_t frame = 0;  // track state of animation mode
+    uint8_t volts = voltage;  // save a few bytes by caching volatile value
+
+//TODO: WTF: works fine with one channel, causes the entire light to crash with the other channel. Same code works fine in off-mode.c
+/*    //warn on low battery
+    #ifdef USE_LOW_VOLTAGE_WARNING //flag for entire feature on/off
+      #ifdef DUAL_VOLTAGE_FLOOR
+        if (((volts < VOLTAGE_LOW_SAFE) && (voltage > DUAL_VOLTAGE_FLOOR)) || (voltage < DUAL_VOLTAGE_LOW_LOW_SAFE)) {
+      #else
+        if ((volts > 0) && (volts < VOLTAGE_LOW_SAFE)) {
+      #endif //ifdef DUAL_VOLTAGE_FLOOR
+            #ifdef VOLTAGE_WARN_DELAY_TICKS
+              #if (defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL)) //TODO: this isn't perfect (turbo mode, strobe modes, probably other ways I'm not thinking of right now could have significant voltage drop that memorized_level won't cover)
+                if ((memorized_level >= VOLTAGE_WARN_HIGH_RAMP_LEVEL) && (arg < VOLTAGE_WARN_DELAY_TICKS)) { //trigger a soft warning first if this is potentially caused by voltage drop from running on high, otherwise go straight to red (likely an actually low battery)
+              #else
+                if ((arg) && (arg < VOLTAGE_WARN_DELAY_TICKS)) { //always soft warn first
+              #endif //(defined(VOLTAGE_WARN_HIGH_RAMP_LEVEL) && defined (VOLTAGE_WARN_DELAY_TICKS))
+                    //soft warning
+                    #ifdef USE_INDICATOR_LED
+                      indicator_led_update(6, arg) //no way to show the difference reliably with just indicator_led
+                    #endif
+                    #ifdef USE_AUX_RGB_LEDS
+                      rgb_led_update(RGB_YELLOW|RGB_BREATH, arg);
+                    #endif
+                }
+                else {
+            #endif //ifdef VOLTAGE_WARN_DELAY_TICKS
+                  #ifdef USE_INDICATOR_LED
+                   indicator_led_update(6, arg) //no way to show the difference reliably with just indicator_led
+                  #endif
+                  #ifdef USE_AUX_RGB_LEDS
+                    rgb_led_update(RGB_RED|RGB_BREATH, arg);
+                  #endif
+            #if (defined(VOLTAGE_WARN_DELAY_TICKS))
+              }
+            #endif
+       } //(((voltage < VOLTAGE_LOW_SAFE) && (voltage > DUAL_VOLTAGE_FLOOR)) || (voltage < DUAL_VOLTAGE_LOW_LOW_SAFE)) *OR* (defined(VOLTAGE_WARN_DELAY_TICKS))
+       else {
+    #endif //ifdef USE_LOW_VOLTAGE_WARNING*/
 
     // turn off aux LEDs when battery is empty
     // (but if voltage==0, that means we just booted and don't know yet)
-    uint8_t volts = voltage;  // save a few bytes by caching volatile value
     #ifdef DUAL_VOLTAGE_FLOOR
-    if ((volts) && (((voltage < VOLTAGE_LOW) && (voltage > DUAL_VOLTAGE_FLOOR)) || (voltage < DUAL_VOLTAGE_LOW_LOW))) {
+    if ((volts) && (((volts < VOLTAGE_LOW) && (volts > DUAL_VOLTAGE_FLOOR)) || (volts < DUAL_VOLTAGE_LOW_LOW))) {
     #else
     if ((volts) && (volts < VOLTAGE_LOW)) {
     #endif
@@ -263,6 +300,11 @@ void rgb_led_update(uint8_t mode, uint8_t arg) {
     if (aux_led_reset)
         button_led_set((button_pattern > 1) ? 2 : button_pattern);
     #endif
+
+/*    #ifdef USE_LOW_VOLTAGE_WARNING
+       }
+    #endif //ifdef USE_LOW_VOLTAGE_WARNING
+*/
 }
 
 void rgb_led_voltage_readout(uint8_t bright) {
