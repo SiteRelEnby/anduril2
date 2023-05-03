@@ -133,14 +133,14 @@ uint8_t steady_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
 
-    #ifdef USE_LOCKOUT_MODE
-    // 4 clicks: shortcut to lockout mode
-    else if (event == EV_4clicks) {
-        set_level(0);
-        set_state(lockout_state, 0);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    }
-    #endif
+//    #ifdef USE_LOCKOUT_MODE
+//    // 4 clicks: shortcut to lockout mode
+//    else if (event == EV_4clicks) {
+//        set_level(0);
+//        set_state(lockout_state, 0);
+//        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+//    }
+//    #endif
 
     // hold: change brightness (brighter, dimmer)
     // click, hold: change brightness (dimmer)
@@ -414,12 +414,22 @@ uint8_t steady_state(Event event, uint16_t arg) {
             || (event == EV_click4_hold)
             #endif
         ) {
-        #ifdef USE_CHANNEL_MODE_ARGS
             // ramp tint if tint exists in this mode
-            if ((event == EV_click3_hold)
-                && (channel_has_args(cfg.channel_mode)))
-                return EVENT_NOT_HANDLED;
+            if (event == EV_click3_hold){
+                if(channel_has_args(cfg.channel_mode)) {
+                  return EVENT_NOT_HANDLED;
+                }
+        #if defined(USE_CHANNEL_MODE_ARGS) && !defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)
+        //don't turbo on 3h
+                else {
+                  if ((arg % 32 == 0)){
+                    blip();
+                  }
+                }
+            }
+            else {
         #endif
+
         if (! arg) {  // first frame only, to allow thermal regulation to work
             #ifdef USE_2C_STYLE_CONFIG
             uint8_t tl = style_2c ? MAX_LEVEL : turbo_level;
@@ -429,6 +439,9 @@ uint8_t steady_state(Event event, uint16_t arg) {
             #endif
         }
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        #if defined(USE_CHANNEL_MODE_ARGS) && !defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)
+        }
+        #endif
     }
     else if ((event == EV_click3_hold_release)
             #ifdef USE_CHANNEL_MODE_ARGS
@@ -447,7 +460,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
 
     #ifdef USE_MOMENTARY_MODE
     // 5 clicks: shortcut to momentary mode
-    else if (event == EV_5clicks) {
+    else if (event == EVENT_MOMENTARY) {
         set_level(0);
         set_state(momentary_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;

@@ -43,7 +43,7 @@
 
 #include "tk.h"
 #include incfile(CFG_H)
-
+#include button-mapping-defaults.h  //set up any defaults if the user didn't override them
 
 /********* Include headers which need to be before FSM *********/
 

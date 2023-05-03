@@ -320,7 +320,7 @@ uint8_t off_state(Event event, uint16_t arg) {
 
     #ifdef USE_MOMENTARY_MODE
     // 5 clicks: momentary mode
-    else if (event == EV_5clicks) {
+    else if (event == EVENT_MOMENTARY) {
         blink_once();
         set_state(momentary_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;

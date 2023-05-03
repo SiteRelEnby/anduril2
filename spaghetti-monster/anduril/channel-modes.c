@@ -24,7 +24,13 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     // so try to detect if 3C is needed
     #if NUM_CHANNEL_MODES > 1
     // 3 clicks: next channel mode
-    if (event == EV_3clicks) {
+    if ((event == EV_3clicks)
+    #ifdef DEFAULT_BLINK_CHANNEL
+      )
+    #else
+      && (current_state != battcheck_state))
+    #endif
+    {
         uint8_t next = cfg.channel_mode;
         // go to next channel mode until we find one which is enabled
         // (and don't do any infinite loops if the user disabled them all)
@@ -48,6 +54,35 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
         save_config();
         return EVENT_HANDLED;
     } else
+
+    if (event == EV_4clicks){
+        //same as above but go backwards
+        uint8_t next = cfg.channel_mode;
+        uint8_t count = 0;
+        do {
+            count ++;
+
+            //e.g. modes=6, current=2
+            // --> next should be 1, 0, 5
+            if (next > 0){ next--; }
+            else if (next == 0) { next = (NUM_CHANNEL_MODES - 1); }
+        } while ((! channel_mode_enabled(next)) && count < NUM_CHANNEL_MODES);
+        //} while ((! channel_modes_enabled[next]) && count < NUM_CHANNEL_MODES);
+
+        // undo change if infinite loop detected (redundant?)
+        //if (NUM_CHANNEL_MODES == count) next = cfg.channel_mode;
+
+        // if mode hasn't changed, abort
+        if (cfg.channel_mode == next)
+            return EVENT_NOT_HANDLED;
+
+        set_channel_mode(next);
+
+        // remember after battery changes
+        save_config();
+        return EVENT_HANDLED;
+    }
+
     #endif  // if NUM_CHANNEL_MODES > 1
 
     #ifdef USE_CUSTOM_CHANNEL_3H_MODES
