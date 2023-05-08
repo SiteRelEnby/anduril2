@@ -24,7 +24,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     // so try to detect if 3C is needed
     #if NUM_CHANNEL_MODES > 1
     // 3 clicks: next channel mode
-    if ((event == EV_3clicks)
+    if ((event == NEXT_CHANNEL_MODE_EVENT)
     #ifdef DEFAULT_BLINK_CHANNEL
       )
     #else
@@ -50,12 +50,15 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
 
         set_channel_mode(next);
 
+        #ifndef USE_MANUAL_EEPROM_SAVE
         // remember after battery changes
         save_config();
+        #endif
         return EVENT_HANDLED;
     } else
 
-    if (event == EV_4clicks){
+    #ifdef PREV_CHANNEL_MODE_EVENT
+    if (event == PREV_CHANNEL_MODE_EVENT){
         //same as above but go backwards
         uint8_t next = cfg.channel_mode;
         uint8_t count = 0;
@@ -77,11 +80,13 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
             return EVENT_NOT_HANDLED;
 
         set_channel_mode(next);
-
+        #ifndef USE_MANUAL_EEPROM_SAVE
         // remember after battery changes
         save_config();
+        #endif
         return EVENT_HANDLED;
     }
+    #endif
 
     #endif  // if NUM_CHANNEL_MODES > 1
 

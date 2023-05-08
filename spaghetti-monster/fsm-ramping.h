@@ -54,7 +54,7 @@ StatePtr channel_3H_modes[NUM_CHANNEL_MODES];
     #define channel_mode_enable(n)  cfg.channel_modes_enabled |= (1 << n)
     #define channel_mode_disable(n) cfg.channel_modes_enabled &= ((1 << n) ^ 0xff)
 #else
-    uint8_t channel_modes_enabled = CHANNEL_MODES_ENABLED;
+    uint16_t channel_modes_enabled = CHANNEL_MODES_ENABLED;
     #define channel_mode_enabled(n) ((channel_modes_enabled >> n) & 1)
     #define channel_mode_enable(n)  channel_modes_enabled |= (1 << n)
     #define channel_mode_disable(n) channel_modes_enabled &= ((1 << n) ^ 0xff)

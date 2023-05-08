@@ -133,14 +133,14 @@ uint8_t steady_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
 
-//    #ifdef USE_LOCKOUT_MODE
-//    // 4 clicks: shortcut to lockout mode
-//    else if (event == EV_4clicks) {
-//        set_level(0);
-//        set_state(lockout_state, 0);
-//        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-//    }
-//    #endif
+    #if defined(USE_LOCKOUT_MODE) && defined(LOCK_FROM_ON_EVENT)
+    // 4 clicks: shortcut to lockout mode
+    else if (event == LOCK_FROM_ON_EVENT) {
+        set_level(0);
+        set_state(lockout_state, 0);
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    #endif
 
     // hold: change brightness (brighter, dimmer)
     // click, hold: change brightness (dimmer)
@@ -184,7 +184,11 @@ uint8_t steady_state(Event event, uint16_t arg) {
                     * ramp_speed
                     #endif
                     ) && (actual_level <= mode_min)) {
+            #ifdef LOCK_BLINK_CHANNEL
+            blink_once_channel(LOCK_BLINK_CHANNEL);
+            #else
             blink_once();
+            #endif
             set_state(lockout_state, 0);
         }
         #endif
@@ -469,7 +473,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
 
     #ifdef USE_RAMP_CONFIG
     // 7H: configure this ramp mode
-    else if (event == EV_click7_hold) {
+    else if (event == EVENT_RAMP_CONFIG) {
         push_state(ramp_config_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
@@ -480,7 +484,11 @@ uint8_t steady_state(Event event, uint16_t arg) {
         // turn on manual memory and save current brightness
         manual_memory_save();
         save_config();
+        #ifdef SAVE_MEMORY_BLINK_CHANNEL
+        blink_once_channel(SAVE_MEMORY_BLINK_CHANNEL);
+        #else
         blink_once();
+        #endif
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     else if (event == EV_click10_hold) {
@@ -492,7 +500,11 @@ uint8_t steady_state(Event event, uint16_t arg) {
         if (0 == arg) {
             cfg.manual_memory = 0;
             save_config();
+            #ifdef SAVE_MEMORY_BLINK_CHANNEL
+            blink_once_channel(SAVE_MEMORY_BLINK_CHANNEL);
+            #else
             blink_once();
+            #endif
         }
         #endif
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;

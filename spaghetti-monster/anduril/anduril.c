@@ -43,7 +43,7 @@
 
 #include "tk.h"
 #include incfile(CFG_H)
-#include button-mapping-defaults.h  //set up any defaults if the user didn't override them
+#include "button-mapping-defaults.h"  //set up any defaults if the user didn't override them
 
 /********* Include headers which need to be before FSM *********/
 
@@ -214,7 +214,14 @@ void setup() {
         // regular e-switch light, no hard clicky power button
 
         // blink at power-on to let user know power is connected
-        blink_once();
+
+        #ifdef POWERON_BLINK_CHANNEL
+          blink_once_channel(POWERON_BLINK_CHANNEL);
+        //#elif defined(CM_AUXBLU)
+        //  blink_once(CM_AUXBLU);
+        #else
+          blink_once();
+        #endif
 
         #ifdef USE_FACTORY_RESET
         if (button_is_pressed())
@@ -268,7 +275,17 @@ void loop() {
     #ifdef USE_AUX_RGB_LEDS_WHILE_ON
     // display battery charge on RGB button during use
     if (! setting_rgb_mode_now)
-        rgb_led_voltage_readout(actual_level > USE_AUX_RGB_LEDS_WHILE_ON);
+        #ifndef USE_AUX_RGB_LEDS_LOW_WHILE_ON
+          rgb_led_voltage_readout(actual_level > USE_AUX_RGB_LEDS_WHILE_ON); //default: bright if above value of USE_AUX_RGB_LEDS_WHILE_ON
+        #else
+          if (actual_level > USE_AUX_RGB_LEDS_WHILE_ON){
+              rgb_led_voltage_readout(1);
+          }
+          else{
+               rgb_led_voltage_readout(actual_level > USE_AUX_RGB_LEDS_LOW_WHILE_ON);
+          }
+          rgb_led_voltage_readout
+        #endif
     #endif
 
     if (0) {}  // placeholder

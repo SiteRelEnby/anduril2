@@ -14,6 +14,56 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     // don't turn on during RGB aux LED configuration
     if (event == EV_click7_hold) { set_level(0); } else
     #endif
+
+    #ifdef BLINK_LOCK_REMINDER
+    if (((event == EV_1click) || (event == EV_2clicks)) && (current_state != tactical_state)){
+        //remind user light is locked
+            uint8_t foo = 0;
+            #if NUM_CHANNEL_MODES > 1
+            uint8_t orig_channel = cfg.channel_mode;
+            #endif
+              #ifdef BLINK_LOCK_REMINDER_CHANNEL
+                set_channel_mode(BLINK_LOCK_REMINDER_CHANNEL);
+              #endif
+              while ( foo < 3 ) {
+                foo++;
+                #ifndef BLINK_LOCK_REMINDER_CHANNEL
+                  #ifdef USE_AUX_RGB_LEDS
+                    set_level_auxred(1);
+                  #endif
+                  #ifdef USE_INDICATOR_LED
+                    indicator_led_set(1);
+                  #endif
+                  #ifdef USE_BUTTON_LED
+                    button_led_set(1);
+                  #endif
+                #else
+                  set_level(BLINK_BRIGHTNESS);
+                #endif
+                delay_4ms(20);
+                #ifndef BLINK_LOCK_REMINDER_CHANNEL
+                  #ifdef USE_AUX_RGB_LEDS
+                    set_level_auxred(0);
+                  #endif
+                  #ifdef USE_INDICATOR_LED
+                    indicator_led_set(0);
+                  #endif
+                  #ifdef USE_BUTTON_LED
+                    button_led_set(0);
+                  #endif
+                #else
+                  set_level(0);
+                #endif
+                delay_4ms(20);
+            }
+        #if (NUM_CHANNEL_MODES > 1) || (defined(BLINK_LOCK_REMINDER_CHANNEL))
+          set_channel_mode(orig_channel);
+        #endif
+        current_event = 0;
+        return EVENT_HANDLED;
+    } else
+    #endif
+
     if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
         // hold: lowest floor
         // click, hold: highest floor (or manual mem level)
@@ -83,7 +133,11 @@ uint8_t lockout_state(Event event, uint16_t arg) {
 
     // 3 clicks: exit and turn off
     else if (event == EV_3clicks) {
+        #ifdef LOCKOUT_EXIT_BLINK_CHANNEL
+        blink_once_channel(LOCKOUT_EXIT_BLINK_CHANNEL);
+        #else
         blink_once();
+        #endif
         set_state(off_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
@@ -165,7 +219,11 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         cfg.rgb_led_lockout_mode = (mode << 4) | (cfg.rgb_led_lockout_mode & 0x0f);
         rgb_led_update(cfg.rgb_led_lockout_mode, 0);
         save_config();
+        #ifdef AUX_CONFIG_BLINK_CHANNEL
+        blink_once_channel(AUX_CONFIG_BLINK_CHANNEL);
+        #else
         blink_once();
+        #endif
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 7H: change RGB aux LED color

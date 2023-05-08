@@ -59,16 +59,16 @@
 #define HALFSPEED_LEVEL 10
 #define QUARTERSPEED_LEVEL 2
 
-#define RAMP_SMOOTH_FLOOR 10  // level 1 is unreliable (?)
-#define RAMP_SMOOTH_CEIL  130
+#define RAMP_SMOOTH_FLOOR 2  // level 1 is unreliable (?)
+#define RAMP_SMOOTH_CEIL  150
 // 10, 30, 50, [70], 90, 110, [130]
 #define RAMP_DISCRETE_FLOOR 10
 #define RAMP_DISCRETE_CEIL  RAMP_SMOOTH_CEIL
-#define RAMP_DISCRETE_STEPS 7
+#define RAMP_DISCRETE_STEPS 11
 
 // safe limit highest regulated power (no FET or turbo)
 #define SIMPLE_UI_FLOOR RAMP_DISCRETE_FLOOR
-#define SIMPLE_UI_CEIL RAMP_DISCRETE_CEIL
+#define SIMPLE_UI_CEIL 120
 #define SIMPLE_UI_STEPS 5
 
 // stop panicking at ~1500 lm
@@ -76,8 +76,10 @@
 #define MIN_THERM_STEPDOWN 65  // should be above highest dyn_pwm level
 
 #define USE_POLICE_COLOR_STROBE_MODE
+#define POLICE_COLOR_STROBE_CH1 CM_AUXBLU
+#define POLICE_COLOR_STROBE_CH2 CM_AUXRED
 #undef  TACTICAL_LEVELS
-#define TACTICAL_LEVELS 120,30,(RAMP_SIZE+3)  // high, low, police strobe
+#define TACTICAL_LEVELS 150,(RAMP_SIZE+2),(RAMP_SIZE+3)
 
 // use the brightest setting for strobe
 #define STROBE_BRIGHTNESS MAX_LEVEL
@@ -106,4 +108,12 @@
 
 #define DEFAULT_BLINK_CHANNEL CM_AUXCYN
 
-#define EVENT_MOMENTARY EV_12clicks
+// need to fix voltage aux when channel mode is aux
+//#define USE_AUX_RGB_LEDS_WHILE_ON  50
+//#define USE_AUX_RGB_LEDS_LOW_WHILE_ON 30
+#define BLINK_LOCK_REMINDER
+//#define BLINK_LOCK_REMINDER_CHANNEL
+
+#undef LOCK_FROM_ON_EVENT
+
+#include "button-mapping-siterelenby.h"

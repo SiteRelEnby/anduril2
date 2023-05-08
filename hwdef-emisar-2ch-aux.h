@@ -61,28 +61,12 @@ enum CHANNEL_MODES {
 
 #define DEFAULT_CHANNEL_MODE CM_CH1
 
-#define CHANNEL_MODES_ENABLED 0b0000111111111111
-#define CHANNEL_HAS_ARGS      0b0000000000011000*/
-#define NUM_CHANNEL_MODES 8
-enum CHANNEL_MODES {
-    CM_CH1 = 0,
-    CM_CH2,
-    CM_BLEND,
-    CM_AUTO,
-    CM_AUXRED,
-    CM_AUXGRN,
-    CM_AUXCYN,
-    CM_AUXBLU
-};
-
-#define DEFAULT_CHANNEL_MODE CM_CH1
-
-#define CHANNEL_MODES_ENABLED 0b11111111
-#define CHANNEL_HAS_ARGS      0b00001100
-
 #define USE_CHANNEL_MODE_ARGS
 // _, _, _, 128=middle CCT, 0=warm-to-cool
 #define CHANNEL_MODE_ARGS     0,0,0,128,0
+
+#define CHANNEL_MODES_ENABLED 0b0000111111111111
+#define CHANNEL_HAS_ARGS      0b0000000000011000*/
 
 /*#define SET_LEVEL_MODES      set_level_ch1, \
                              set_level_ch2, \
@@ -110,14 +94,54 @@ enum CHANNEL_MODES {
                              gradual_tick_null, \
                              gradual_tick_null, \
                              gradual_tick_null*/
+
+#define NUM_CHANNEL_MODES 8
+//#define CM_CH1      0
+//#define CM_CH2      1
+//#define CM_BOTH     2
+//#define CM_BLEND    3
+//#define CM_AUTO     4
+//#define CM_AUXRED   5
+//#define CM_AUXCYN   6
+//#define CM_AUXBLU   7
+//#define CM_AUXWHT   8
+
+enum CHANNEL_MODES {
+    CM_CH1 = 0,
+    CM_CH2,
+    CM_BLEND,
+    CM_AUTO,
+    CM_AUXRED,
+//    CM_AUXYEL,
+//    CM_AUXGRN,
+    CM_AUXCYN,
+    CM_AUXBLU,
+//    CM_AUXPRP,
+    CM_AUXWHT
+};
+
+#define CM_AUXRED 4
+#define CM_AUXCYN 5
+#define CM_AUXBLU 6
+#define CM_AUXWHT 7
+
+#define DEFAULT_CHANNEL_MODE CM_CH1
+
+#define CHANNEL_MODES_ENABLED 0b00001111
+#define CHANNEL_HAS_ARGS      0b00001100
+
+#define USE_CHANNEL_MODE_ARGS
+// _, _, _, 128=middle CCT, 0=warm-to-cool
+#define CHANNEL_MODE_ARGS     0,0,0,0,0,0,128,0
+
 #define SET_LEVEL_MODES      set_level_ch1, \
                              set_level_ch2, \
                              set_level_blend, \
                              set_level_auto, \
                              set_level_auxred, \
-                             set_level_auxgrn, \
                              set_level_auxcyn, \
-                             set_level_auxblu
+                             set_level_auxblu, \
+                             set_level_auxwht
 
 // gradual ticking for thermal regulation
 #define GRADUAL_TICK_MODES   gradual_tick_ch1, \

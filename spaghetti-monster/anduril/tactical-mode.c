@@ -64,8 +64,12 @@ uint8_t tactical_state(Event event, uint16_t arg) {
     }
 
     // 6 clicks: exit and turn off
-    else if (event == EV_6clicks) {
+    else if (event == TACTICAL_MODE_EVENT) {
+        #ifdef TACTICAL_BLINK_CHANNEL
+        blink_once_channel(TACTICAL_BLINK_CHANNEL);
+        #else
         blink_once();
+        #endif
         set_state(off_state, 0);
         return EVENT_HANDLED;
     }
