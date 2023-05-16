@@ -13,6 +13,7 @@
     #endif
     #ifndef POST_OFF_VOLTAGE_BRIGHTNESS
         // level at which to switch from low to high aux brightness
-        #define POST_OFF_VOLTAGE_BRIGHTNESS (RAMP_SIZE/10)
+        //#define POST_OFF_VOLTAGE_BRIGHTNESS (RAMP_SIZE/10)
+        #define POST_OFF_VOLTAGE_BRIGHTNESS cfg.post_off_voltage_brightness
     #endif
 #endif

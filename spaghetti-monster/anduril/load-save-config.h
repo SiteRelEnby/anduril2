@@ -156,5 +156,8 @@ Config cfg = {
         .jump_start_level = DEFAULT_JUMP_START_LEVEL,
     #endif
 
+    #if defined(USE_POST_OFF_VOLTAGE) && defined(USE_POST_OFF_VOLTAGE_BRIGHTNESS_CONFIG)
+      .post_off_voltage_brightness = (RAMP_SIZE/10),
+    #endif
 };
 

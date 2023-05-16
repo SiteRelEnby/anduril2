@@ -115,6 +115,10 @@ typedef struct Config {
         uint8_t jump_start_level;
     #endif
 
+    #if defined(USE_POST_OFF_VOLTAGE) && defined(USE_POST_OFF_VOLTAGE_BRIGHTNESS_CONFIG)
+      uint8_t post_off_voltage_brightness;
+    #endif
+
 } Config;
 
 // auto-detect how many eeprom bytes

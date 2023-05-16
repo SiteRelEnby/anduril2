@@ -64,15 +64,20 @@ void voltage_config_save(uint8_t step, uint8_t value) {
     #ifdef USE_POST_OFF_VOLTAGE
         if (2 == step) cfg.post_off_voltage = value;
         else
+      #if defined(USE_POST_OFF_VOLTAGE) && defined(USE_POST_OFF_VOLTAGE_BRIGHTNESS_CONFIG)
+        if (3 == step) cfg.post_off_voltage_brightness = (value - 1);
+      #endif
     #endif
     if (value) cfg.voltage_correction = value;
 }
 
 uint8_t voltage_config_state(Event event, uint16_t arg) {
-    #ifdef USE_POST_OFF_VOLTAGE
-        #define VOLTAGE_CONFIG_STEPS  2
+    #if defined(USE_POST_OFF_VOLTAGE) && defined(USE_POST_OFF_VOLTAGE_BRIGHTNESS_CONFIG)
+      #define VOLTAGE_CONFIG_STEPS 3
+    #elif defined(USE_POST_OFF_VOLTAGE)
+      #define VOLTAGE_CONFIG_STEPS 2
     #else
-        #define VOLTAGE_CONFIG_STEPS  1
+      #define VOLTAGE_CONFIG_STEPS 1
     #endif
     return config_state_base(event, arg,
                              VOLTAGE_CONFIG_STEPS,
