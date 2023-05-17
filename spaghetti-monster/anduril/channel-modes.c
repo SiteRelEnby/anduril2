@@ -50,6 +50,37 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     } else
     #endif  // if NUM_CHANNEL_MODES > 1
 
+    #if NUM_CHANNEL_MODES > 1
+    if (event == EV_4clicks){
+        //same as above but go backwards
+        uint8_t next = cfg.channel_mode;
+        uint8_t count = 0;
+        do {
+            count ++;
+
+            //e.g. modes=6, current=2
+            // --> next should be 1, 0, 5
+            if (next > 0){ next--; }
+            else if (next == 0) { next = (NUM_CHANNEL_MODES - 1); }
+        } while ((! channel_mode_enabled(next)) && count < NUM_CHANNEL_MODES);
+        //} while ((! channel_modes_enabled[next]) && count < NUM_CHANNEL_MODES);
+
+        // undo change if infinite loop detected (redundant?)
+        //if (NUM_CHANNEL_MODES == count) next = cfg.channel_mode;
+
+        // if mode hasn't changed, abort
+        if (cfg.channel_mode == next)
+            return EVENT_NOT_HANDLED;
+
+        set_channel_mode(next);
+        #ifndef USE_MANUAL_EEPROM_SAVE
+        // remember after battery changes
+        save_config();
+        #endif
+        return EVENT_HANDLED;
+    }
+    #endif
+
     #ifdef USE_CUSTOM_CHANNEL_3H_MODES
     // defer to mode-specific function if defined
     if (tint_ramp_modes[cfg.channel_mode]) {

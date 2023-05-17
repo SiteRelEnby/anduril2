@@ -133,6 +133,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
 
+    #if !defined(NUM_CHANNEL_MODES) || (NUM_CHANNEL_MODES < 2)
     #ifdef USE_LOCKOUT_MODE
     // 4 clicks: shortcut to lockout mode
     else if (event == EV_4clicks) {
@@ -140,6 +141,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
         set_state(lockout_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
+    #endif
     #endif
 
     // hold: change brightness (brighter, dimmer)
