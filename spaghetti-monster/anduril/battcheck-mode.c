@@ -65,7 +65,7 @@ void voltage_config_save(uint8_t step, uint8_t value) {
         if (2 == step) cfg.post_off_voltage = value;
         else
       #if defined(USE_POST_OFF_VOLTAGE) && defined(USE_POST_OFF_VOLTAGE_BRIGHTNESS_CONFIG)
-        if (3 == step) cfg.post_off_voltage_brightness = (value - 1);
+        if ((3 == step) && (value)) { cfg.post_off_voltage_brightness = (value - 1); } else
       #endif
     #endif
     if (value) cfg.voltage_correction = value;
