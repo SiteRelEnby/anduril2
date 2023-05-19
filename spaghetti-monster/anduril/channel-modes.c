@@ -229,3 +229,35 @@ uint8_t nearest_tint_value(const int16_t target) {
 }
 #endif
 
+#if defined(EVENT_TURBO_SHORTCUT_1) && (NUM_CHANNELS > 1)
+  #ifndef TURBO_SHORTCUT_1_CHANNEL
+    #define TURBO_SHORTCUT_1_CHANNEL 0
+  #endif
+  else if ((event == EVENT_TURBO_SHORTCUT_1) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){ //TODO: can this just be the event, or are there other states that need to be handled?
+    //prev_channel = CH_MODE;
+    set_channel_mode(EVENT_TURBO_SHORTCUT_1_CHANNEL);
+    set_state(steady_state, MAX_LEVEL);
+    return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+  }
+#endif
+#if defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) && (NUM_CHANNELS > 1)
+  #ifndef EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE
+    #error "EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE not defined"
+  #endif
+  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
+        if (!arg) {
+            prev_tint = tint;
+            prev_level = actual_level;
+            tint = 254;
+            if (current_state == lockout_state){ momentary_from_lock = 1 ; set_state(steady_state, arg); } //necessary to get it to stay on from lock? using push_state() doesn't seem to work.
+            set_level_and_therm_target(130);
+        }
+        return EVENT_HANDLED;
+  }
+  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
+    if (momentary_from_lock == 1){ set_state(lockout_state, arg); momentary_from_lock = 0; }
+    tint = prev_tint;
+    set_level_and_therm_target(prev_level);
+    return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+  }
+#endif

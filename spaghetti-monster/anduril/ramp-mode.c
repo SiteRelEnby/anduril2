@@ -185,7 +185,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
                     #endif
                     ) && (actual_level <= mode_min)) {
             #ifdef LOCK_BLINK_CHANNEL
-            blink_once_channel(LOCK_BLINK_CHANNEL);
+            blink_once();
             #else
             blink_once();
             #endif
@@ -371,7 +371,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
 
     // 3 clicks: toggle smooth vs discrete ramping
     // (and/or 6 clicks when there are multiple channel modes)
-    // (handle 3C here anyway, when all but 1 mode is disabled)
+    // (handle 3C here anyway, when all but 1 mode is disabled)            //TODO: is this necessary? make optional?
     else if ((event == EV_3clicks)
         #if NUM_CHANNEL_MODES > 1
              || (event == EV_6clicks)
@@ -485,7 +485,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
         manual_memory_save();
         save_config();
         #ifdef SAVE_MEMORY_BLINK_CHANNEL
-        blink_once_channel(SAVE_MEMORY_BLINK_CHANNEL);
+        blink_once();
         #else
         blink_once();
         #endif
@@ -501,7 +501,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
             cfg.manual_memory = 0;
             save_config();
             #ifdef SAVE_MEMORY_BLINK_CHANNEL
-            blink_once_channel(SAVE_MEMORY_BLINK_CHANNEL);
+            blink_once();
             #else
             blink_once();
             #endif

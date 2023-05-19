@@ -6,6 +6,10 @@
 
 #include "lockout-mode.h"
 
+#ifdef BLINK_LOCK_REMINDER
+uint8_t remind_lock = 0;
+#endif
+
 uint8_t lockout_state(Event event, uint16_t arg) {
     #ifdef USE_MOON_DURING_LOCKOUT_MODE
     // momentary(ish) moon mode during lockout
@@ -18,50 +22,9 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     #ifdef BLINK_LOCK_REMINDER
     if (((event == EV_1click) || (event == EV_2clicks)) && (current_state != tactical_state)){
         //remind user light is locked
-            uint8_t foo = 0;
-            #if NUM_CHANNEL_MODES > 1
-            uint8_t orig_channel = cfg.channel_mode;
-            #endif
-              #ifdef BLINK_LOCK_REMINDER_CHANNEL
-                set_channel_mode(BLINK_LOCK_REMINDER_CHANNEL);
-              #endif
-              while ( foo < 3 ) {
-                foo++;
-                #ifndef BLINK_LOCK_REMINDER_CHANNEL
-                  #ifdef USE_AUX_RGB_LEDS
-                    set_level_auxred(1);
-                  #endif
-                  #ifdef USE_INDICATOR_LED
-                    indicator_led_set(1);
-                  #endif
-                  #ifdef USE_BUTTON_LED
-                    button_led_set(1);
-                  #endif
-                #else
-                  set_level(BLINK_BRIGHTNESS);
-                #endif
-                delay_4ms(20);
-                #ifndef BLINK_LOCK_REMINDER_CHANNEL
-                  #ifdef USE_AUX_RGB_LEDS
-                    set_level_auxred(0);
-                  #endif
-                  #ifdef USE_INDICATOR_LED
-                    indicator_led_set(0);
-                  #endif
-                  #ifdef USE_BUTTON_LED
-                    button_led_set(0);
-                  #endif
-                #else
-                  set_level(0);
-                #endif
-                delay_4ms(20);
-            }
-        #if (NUM_CHANNEL_MODES > 1) || (defined(BLINK_LOCK_REMINDER_CHANNEL))
-          set_channel_mode(orig_channel);
-        #endif
-        current_event = 0;
+        remind_lock = 3;
         return EVENT_HANDLED;
-    } else
+    }
     #endif
 
     if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
@@ -106,6 +69,7 @@ uint8_t lockout_state(Event event, uint16_t arg) {
             // redundant, sleep tick does the same thing
             //indicator_led_update(cfg.indicator_led_mode >> 2, arg);
             #elif defined(USE_AUX_RGB_LEDS)
+
             rgb_led_update(cfg.rgb_led_lockout_mode, arg);
             #endif
         }
@@ -134,7 +98,7 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     // 3 clicks: exit and turn off
     else if (event == EV_3clicks) {
         #ifdef LOCKOUT_EXIT_BLINK_CHANNEL
-        blink_once_channel(LOCKOUT_EXIT_BLINK_CHANNEL);
+        blink_once();
         #else
         blink_once();
         #endif
@@ -155,8 +119,9 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
 
+    #ifdef EVENT_UNLOCK_TO_FLOOR
     // 4 clicks, but hold last: exit and start at floor
-    else if (event == EV_click4_hold) {
+    else if (event == EVENT_UNLOCK_TO_FLOOR) {
         //blink_once();
         blip();
         // reset button sequence to avoid activating anything in ramp mode
@@ -165,6 +130,7 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         set_state(steady_state, 1);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
+    #endif
 
     // 5 clicks: exit and turn on at ceiling level
     else if (event == EV_5clicks) {
@@ -220,7 +186,7 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         rgb_led_update(cfg.rgb_led_lockout_mode, 0);
         save_config();
         #ifdef AUX_CONFIG_BLINK_CHANNEL
-        blink_once_channel(AUX_CONFIG_BLINK_CHANNEL);
+        blink_once();
         #else
         blink_once();
         #endif

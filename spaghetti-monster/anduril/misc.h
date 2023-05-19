@@ -5,7 +5,7 @@
 #pragma once
 
 //void blink_confirm(uint8_t num);  // no longer used
-void blink_once_channel(uint8_t channel);
+void blink_once();
 void blink_once();
 void blip();
 

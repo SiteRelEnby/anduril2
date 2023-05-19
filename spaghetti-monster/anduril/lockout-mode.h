@@ -4,6 +4,10 @@
 
 #pragma once
 
+#ifdef BLINK_L0CK_REMINDER
+uint8_t remind_lock = 0;
+#endif
+
 // soft lockout
 uint8_t lockout_state(Event event, uint16_t arg);
 
@@ -13,4 +17,3 @@ uint8_t lockout_state(Event event, uint16_t arg);
 #endif
 uint8_t autolock_config_state(Event event, uint16_t arg);
 #endif
-

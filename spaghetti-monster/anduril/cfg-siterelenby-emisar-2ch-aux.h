@@ -59,7 +59,7 @@
 #define HALFSPEED_LEVEL 10
 #define QUARTERSPEED_LEVEL 2
 
-#define RAMP_SMOOTH_FLOOR 2  // level 1 is unreliable (?)
+#define RAMP_SMOOTH_FLOOR 4  // level 1 is unreliable (?)
 #define RAMP_SMOOTH_CEIL  150
 // 10, 30, 50, [70], 90, 110, [130]
 #define RAMP_DISCRETE_FLOOR 10
@@ -115,5 +115,13 @@
 //#define BLINK_LOCK_REMINDER_CHANNEL
 
 #undef LOCK_FROM_ON_EVENT
+
+// button timing for turning light on/off:
+// B_PRESS_T:   activate as soon as button is pressed
+// B_RELEASE_T: activate when user lets go of button
+// B_TIMEOUT_T: activate when we're sure the user won't double-click
+// defaults are release on, timeout off
+#define B_TIMING_ON B_TIMEOUT_T
+#define B_TIMING_OFF B_TIMEOUT_T
 
 #include "button-mapping-siterelenby.h"
