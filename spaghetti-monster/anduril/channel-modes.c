@@ -17,6 +17,9 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
         static uint8_t momentary_from_lock = 0; //temporary variable to store if we are in a momentary mode from lockout_state for channel-specific turbo modes
       #endif
     #endif
+    #if ((NUM_CHANNEL_MODES > 1) && (defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) || (defined(EVENT_CHANNEL_CYCLE_ON_HOLD))))
+      uint8_t reset_level = 0;
+    #endif
     // don't activate auto-tint modes unless the user hits the edge
     // and keeps pressing for a while
     static uint8_t past_edge_counter = 0;
@@ -180,7 +183,82 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     }
     #endif
 
-    return EVENT_NOT_HANDLED;
+#if defined(EVENT_TURBO_SHORTCUT_1) && (NUM_CHANNELS > 1)
+  #ifndef TURBO_SHORTCUT_1_CHANNEL
+    #define TURBO_SHORTCUT_1_CHANNEL 0
+  #endif
+  else if ((event == EVENT_TURBO_SHORTCUT_1) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){ //TODO: can this just be the event, or are there other states that need to be handled?
+    //prev_channel = CH_MODE;
+    set_channel_mode(TURBO_SHORTCUT_1_CHANNEL);
+    set_state(steady_state, MAX_LEVEL);
+    return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+  }
+#endif
+#if defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) && (NUM_CHANNELS > 1)
+  #ifndef EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE
+    #error "EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE not defined"
+  #endif
+  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
+        if (!arg) {
+            prev_channel = CH_MODE;
+            prev_level = actual_level;
+            set_channel_mode(TURBO_SHORTCUT_1_CHANNEL);
+            if (current_state == lockout_state){ momentary_from_lock = 1 ; set_state(steady_state, arg); } //necessary to get it to stay on from lock? using push_state() doesn't seem to work.
+            set_level_and_therm_target(MAX_LEVEL);
+        }
+        return EVENT_HANDLED;
+  }
+  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
+    if (momentary_from_lock == 1){ momentary_from_lock = 0; set_state(lockout_state, arg); }
+    set_level_and_therm_target(prev_level);
+    set_channel_mode(prev_channel);
+    return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+  }
+#endif
+
+//#if ((NUM_CHANNEL_MODES > 1) && (defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) || defined(EVENT_CHANNEL_CYCLE_ON_HOLD))) //if we only want this to happen for lockout mode, no need to handle here
+#if ((NUM_CHANNEL_MODES > 1) && (defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) || (defined(EVENT_CHANNEL_CYCLE_ON_HOLD))))
+  else if (
+  #if defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) && defined(EVENT_CHANNEL_CYCLE_ON_HOLD)
+      (((event == EVENT_CHANNEL_CYCLE_OFF_HOLD) && (current_state == off_state)) || ((event == EVENT_CHANNEL_CYCLE_ON_HOLD) && (current_state == steady_state))  ) // || ((event == EVENT_CHANNEL_CYCLE_LOCK_HOLD) && (current_state == lockout_state)))
+  #elif (defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) && !defined(EVENT_CHANNEL_CYCLE_ON_HOLD))
+      ((event == EVENT_CHANNEL_CYCLE_OFF_HOLD) && (current_state == off_state))
+  #else
+      ((event == EVENT_CHANNEL_CYCLE_ON_HOLD) && (current_state == steady_state))
+  #endif
+  ){
+    if (0 == (arg % TICKS_PER_SECOND)) { //from lockout-mode.c
+      if (actual_level == 0){
+        reset_level = memorized_level;
+        set_level(memorized_level); //TODO: use another level?
+      }
+      else {
+        reset_level = 0;
+      }
+      // pretend the user clicked 3 times to change channels
+      return channel_mode_state(EV_3clicks, 0);
+    }
+  }
+
+  #if defined(EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) //only need release event for off mode, since lockout uses moon from holding anyway
+  else if (
+//  #if defined(EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && defined(EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE)
+//      (((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (current_state == off_state)) || ((event == EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE) && (current_state == steady_state))  ) // || ((event == EVENT_CHANNEL_CYCLE_LOCK_HOLD) && (current_state == lockout_state)))
+      ((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (current_state == off_state))
+//  #else
+//      ((event == EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE) && (current_state == steady_state))
+//  #endif
+  ){
+    if (reset_level){
+      set_level(0);
+      reset_level = 0;
+    }
+    return EVENT_HANDLED;
+  }
+#endif
+#endif
+
+  return EVENT_NOT_HANDLED;
 }
 
 
@@ -234,56 +312,5 @@ uint8_t nearest_tint_value(const int16_t target) {
     }
     return tint_result;
 }
-#endif
-
-#if defined(EVENT_TURBO_SHORTCUT_1) && (NUM_CHANNELS > 1)
-  #ifndef TURBO_SHORTCUT_1_CHANNEL
-    #define TURBO_SHORTCUT_1_CHANNEL 0
-  #endif
-  else if ((event == EVENT_TURBO_SHORTCUT_1) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){ //TODO: can this just be the event, or are there other states that need to be handled?
-    //prev_channel = CH_MODE;
-    set_channel_mode(EVENT_TURBO_SHORTCUT_1_CHANNEL);
-    set_state(steady_state, MAX_LEVEL);
-    return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-  }
-#endif
-#if defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) && (NUM_CHANNELS > 1)
-  #ifndef EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE
-    #error "EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE not defined"
-  #endif
-  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
-        if (!arg) {
-            prev_channel = CH_MODE;
-            prev_level = actual_level;
-            set_channel_mode(TURBO_SHORTCUT_1_CHANNEL);
-            if (current_state == lockout_state){ momentary_from_lock = 1 ; set_state(steady_state, arg); } //necessary to get it to stay on from lock? using push_state() doesn't seem to work.
-            set_level_and_therm_target(MAX_LEVEL);
-        }
-        return EVENT_HANDLED;
-  }
-  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
-    if (momentary_from_lock == 1){ momentary_from_lock = 0; set_state(lockout_state, arg); }
-    set_level_and_therm_target(prev_level);
-    set_channel_mode(prev_channel);
-    return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-  }
-#endif
-
-#if ((NUM_CHANNEL_MODES > 1) && (defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) || (defined(EVENT_CHANNEL_CYCLE_ON_HOLD))))
-  if (
-  #if (EVENT_CHANNEL_CYCLE_OFF_HOLD == EVENT_CHANNEL_CYCLE_ON_HOLD)
-      ((event == EVENT_CHANNEL_CYCLE_OFF_HOLD) || (event == EVENT_CHANNEL_CYCLE_ON_HOLD)) && ((current_state == steady_state) || (current_state == off_state))
-  #elif (defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) && (!defined(EVENT_CHANNEL_CYCLE_ON_HOLD))
-      (event == EVENT_CHANNEL_CYCLE_OFF_HOLD) && (current_state == off_state)
-  #else
-      (event == EVENT_CHANNEL_CYCLE_ON_HOLD) && (current_state == steady_state)
-  #endif
-  ){
-    if (0 == (arg % TICKS_PER_SECOND)) { //from lockout-mode.c
-      // pretend the user clicked 3 times to change channels
-      return channel_mode_state(EV_3clicks, 0);
-    }
-  }
-  #endif
 #endif
 

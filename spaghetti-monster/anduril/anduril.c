@@ -273,20 +273,20 @@ void loop() {
     StatePtr state = current_state;
 
 
-//    #ifdef BLINK_LOCK_REMINDER
-//    //remind user light is locked, if the flag was set when locked
-//    if (remind_lock > 0){
-//        uint8_t foo = remind_lock;
-//        remind_lock = 0; //reset first because it doesn't matter if it gets interrupted
-//        rgb_led_set(0); //no need to reset, EV_sleep_tick handles it in lockout or we're entering off mode anyway
-//        #ifdef USE_BUTTON_LED
-//        button_led_set(0);
-//        #endif
-//        //setting_rgb_mode_now = 1;
-//        blink_digit(foo);
-//        //setting_rgb_mode_now = 0;
-//    }
-//    #endif
+    #ifdef BLINK_LOCK_REMINDER
+    //remind user light is locked, if the flag was set when locked
+    if (remind_lock > 0){
+       uint8_t foo = remind_lock;
+        remind_lock = 0; //reset first because it doesn't matter if it gets interrupted
+        rgb_led_set(0); //no need to reset, EV_sleep_tick handles it in lockout (although needs to skip it with setting_rgb_mode_now = 1 or that interferes with aux blinking) or we're entering off/ramp mode anyway if the user does anything else that removes the lock state
+        #ifdef USE_BUTTON_LED
+        button_led_set(0);
+        #endif
+        setting_rgb_mode_now = 1;
+        blink_digit(foo);
+        setting_rgb_mode_now = 0;
+    }
+    #endif
 
 /*
 //      setting_rgb_mode_now = 1;

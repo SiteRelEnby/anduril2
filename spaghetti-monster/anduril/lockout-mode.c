@@ -89,7 +89,9 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         #if defined(USE_INDICATOR_LED)
         indicator_led_update(cfg.indicator_led_mode >> 2, arg);
         #elif defined(USE_AUX_RGB_LEDS)
+          if (! setting_rgb_mode_now){ //skip this if setting_rgb_mode_now = 1 (not needed when changing aux mode, but is if we're overriding aux to blink or similar as blink_digit() seems to cause ev_sleep_tick() to fire when using nice_delay_ms()? or how else are aux getting reset to the lock default mode?)
         rgb_led_update(cfg.rgb_led_lockout_mode, arg);
+          }
         #endif
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
@@ -140,7 +142,7 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     }
     #endif
 
-    #if NUM_CHANNEL_MODES > 1
+    //#if ((NUM_CHANNEL_MODES > 1) && ((!defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) || (!defined(EVENT_CHANNEL_CYCLE_ON_HOLD)))))
     // 3H: next channel mode
     else if (event == EV_click3_hold) {
         if (0 == (arg % TICKS_PER_SECOND)) {
@@ -148,7 +150,7 @@ uint8_t lockout_state(Event event, uint16_t arg) {
             return channel_mode_state(EV_3clicks, 0);
         }
     }
-    #endif
+    //#endif
 
     ////////// Every action below here is blocked in the (non-Extended) Simple UI //////////
 
