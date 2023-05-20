@@ -46,7 +46,7 @@
 #define EVENT_UNLOCK_TO_FLOOR EV_click4_hold
 //#define EVENT_UNLOCK_TO_CEILING EV_click5_hold
 
-
+#define EVENT_SUNSET_TIMER_HOLD EV_click5_hold
 
 #define EVENT_CHANNEL_CYCLE_OFF_HOLD EV_click4_hold
 #define EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE EV_click4_hold_release

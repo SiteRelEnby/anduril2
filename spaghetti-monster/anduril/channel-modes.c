@@ -204,14 +204,14 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
             prev_channel = CH_MODE;
             prev_level = actual_level;
             set_channel_mode(TURBO_SHORTCUT_1_CHANNEL);
-            if (current_state == lockout_state){ momentary_from_lock = 1 ; set_state(steady_state, arg); } //necessary to get it to stay on from lock? using push_state() doesn't seem to work.
+            //if (current_state == lockout_state){ momentary_from_lock = 1 ; set_state(steady_state, arg); } //necessary to get it to stay on from lock? using push_state() doesn't seem to work.
             set_level_and_therm_target(MAX_LEVEL);
+            return EVENT_HANDLED;
         }
-        return EVENT_HANDLED;
   }
-  //else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
-  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && (current_state == lockout_state)) {
-    if (momentary_from_lock == 1){ momentary_from_lock = 0; set_state(lockout_state, arg); }
+  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
+//  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && (current_state == lockout_state)) {
+//    if (momentary_from_lock == 1){ momentary_from_lock = 0; set_state(lockout_state, arg); }
     set_level_and_therm_target(prev_level);
     set_channel_mode(prev_channel);
     return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
