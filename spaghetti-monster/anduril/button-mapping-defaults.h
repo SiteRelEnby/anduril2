@@ -35,6 +35,9 @@
 #define EVENT_UNLOCK_TO_FLOOR EV_click4_hold
 #endif
 
+#ifndef EVENT_UNLOCK_TO_CEILING
+#define EVENT_UNLOCK_TO_CEILING EV_click5_hold
+#endif
 //#ifndef MOMENTARY_TURBO_FROM_LOCK_EVENT
 //  #define MOMENTARY_TURBO_FROM_LOCK_EVENT EV_click4_hold
 //#endif

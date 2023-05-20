@@ -132,11 +132,13 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     }
     #endif
 
+    #ifdef EVENT_UNLOCK_TO_CEILING
     // 5 clicks: exit and turn on at ceiling level
-    else if (event == EV_5clicks) {
+    else if (event == EVENT_UNLOCK_TO_CEILING) {
         set_state(steady_state, MAX_LEVEL);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
+    #endif
 
     #if NUM_CHANNEL_MODES > 1
     // 3H: next channel mode

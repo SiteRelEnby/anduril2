@@ -10,6 +10,13 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     #ifdef USE_CHANNEL_MODE_ARGS
     static int8_t tint_ramp_direction = 1;
     static uint8_t prev_tint = 0;
+    #if (defined(EVENT_TURBO_SHORTCUT_1) || defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY))
+      static uint8_t prev_channel = 0;
+      static uint8_t prev_level = 0;
+      #if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY))
+        static uint8_t momentary_from_lock = 0; //temporary variable to store if we are in a momentary mode from lockout_state for channel-specific turbo modes
+      #endif
+    #endif
     // don't activate auto-tint modes unless the user hits the edge
     // and keeps pressing for a while
     static uint8_t past_edge_counter = 0;
@@ -246,18 +253,37 @@ uint8_t nearest_tint_value(const int16_t target) {
   #endif
   else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
         if (!arg) {
-            prev_tint = tint;
+            prev_channel = CH_MODE;
             prev_level = actual_level;
-            tint = 254;
+            set_channel_mode(TURBO_SHORTCUT_1_CHANNEL);
             if (current_state == lockout_state){ momentary_from_lock = 1 ; set_state(steady_state, arg); } //necessary to get it to stay on from lock? using push_state() doesn't seem to work.
-            set_level_and_therm_target(130);
+            set_level_and_therm_target(MAX_LEVEL);
         }
         return EVENT_HANDLED;
   }
   else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
-    if (momentary_from_lock == 1){ set_state(lockout_state, arg); momentary_from_lock = 0; }
-    tint = prev_tint;
+    if (momentary_from_lock == 1){ momentary_from_lock = 0; set_state(lockout_state, arg); }
     set_level_and_therm_target(prev_level);
+    set_channel_mode(prev_channel);
     return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
   }
 #endif
+
+#if ((NUM_CHANNEL_MODES > 1) && (defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) || (defined(EVENT_CHANNEL_CYCLE_ON_HOLD))))
+  if (
+  #if (EVENT_CHANNEL_CYCLE_OFF_HOLD == EVENT_CHANNEL_CYCLE_ON_HOLD)
+      ((event == EVENT_CHANNEL_CYCLE_OFF_HOLD) || (event == EVENT_CHANNEL_CYCLE_ON_HOLD)) && ((current_state == steady_state) || (current_state == off_state))
+  #elif (defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) && (!defined(EVENT_CHANNEL_CYCLE_ON_HOLD))
+      (event == EVENT_CHANNEL_CYCLE_OFF_HOLD) && (current_state == off_state)
+  #else
+      (event == EVENT_CHANNEL_CYCLE_ON_HOLD) && (current_state == steady_state)
+  #endif
+  ){
+    if (0 == (arg % TICKS_PER_SECOND)) { //from lockout-mode.c
+      // pretend the user clicked 3 times to change channels
+      return channel_mode_state(EV_3clicks, 0);
+    }
+  }
+  #endif
+#endif
+
