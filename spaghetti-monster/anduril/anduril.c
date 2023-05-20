@@ -278,87 +278,16 @@ void loop() {
     if (remind_lock > 0){
        uint8_t foo = remind_lock;
         remind_lock = 0; //reset first because it doesn't matter if it gets interrupted
-        rgb_led_set(0); //no need to reset, EV_sleep_tick handles it in lockout (although needs to skip it with setting_rgb_mode_now = 1 or that interferes with aux blinking) or we're entering off/ramp mode anyway if the user does anything else that removes the lock state
+        rgb_led_set(0); //no need to reset, EV_sleep_tick handles it in lockout or we're entering off/ramp mode anyway if the user does anything else that removes the lock state
         #ifdef USE_BUTTON_LED
         button_led_set(0);
         #endif
-        setting_rgb_mode_now = 1;
+        //setting_rgb_mode_now = 1;
         blink_digit(foo);
-        setting_rgb_mode_now = 0;
+        //setting_rgb_mode_now = 0;
     }
     #endif
 
-/*
-//      setting_rgb_mode_now = 1;
-//      nice_delay_ms(500);
-//      blink_digit(remind_lock);
-//      nice_delay_ms(500);
-//      setting_rgb_mode_now = 0;
-
-      uint8_t foo = remind_lock;
-      #if NUM_CHANNEL_MODES > 1
-        uint8_t orig_channel = cfg.channel_mode;
-      #endif
-      while ( foo > 0 ) {
-        //set the channel before the blink only, in case interrupted
-        #ifdef BLINK_LOCK_REMINDER_CHANNEL
-          set_channel_mode(BLINK_LOCK_REMINDER_CHANNEL);
-        #endif
-        //foo++;
-        #ifndef BLINK_LOCK_REMINDER_CHANNEL
-          #ifdef USE_AUX_RGB_LEDS
-
-            //override rgb mode
-            setting_rgb_mode_now = 1;
-            if (nice_delay_ms(1)) { remind_lock = 0 ; setting_rgb_mode_now = 0 ; break; } //0 == state changed, 1 == completed normally
-
-            set_level_auxred(1);
-          #endif
-          #ifdef USE_INDICATOR_LED
-            indicator_led_set(1);
-          #endif
-          #ifdef USE_BUTTON_LED
-            button_led_set(1);
-          #endif
-          #else
-            //fallback to main emitters (?)
-            set_level(BLINK_BRIGHTNESS);
-          #endif
-          //delay_4ms(20);
-          //nice_delay_ms(100);
-          if (nice_delay_ms(100)) { remind_lock = 0 ; setting_rgb_mode_now = 0 ; break; } //0 == state changed, 1 == completed normally
-          //if (! nice_delay_ms(20)) return EVENT_NOT_HANDLED;
-          #ifndef BLINK_LOCK_REMINDER_CHANNEL
-            #ifdef USE_AUX_RGB_LEDS
-              set_level_auxred(0);
-            #endif
-            #ifdef USE_INDICATOR_LED
-              indicator_led_set(0);
-            #endif
-            #ifdef USE_BUTTON_LED
-              button_led_set(0);
-            #endif
-          #else
-            set_level(0);
-          #endif
-          //set the channel back at the end of each blink, in case interrupted
-          #if NUM_CHANNEL_MODES > 1
-            set_channel_mode(orig_channel);
-          #endif
-          //delay_4ms(20);
-          if (nice_delay_ms(100)) { remind_lock = 0 ; setting_rgb_mode_now = 0 ; break; } //0 == state changed, 1 == completed normally
-          //if (! nice_delay_ms(20)) return EVENT_NOT_HANDLED;
-          //}
-          //#if (NUM_CHANNEL_MODES > 1) || (defined(BLINK_LOCK_REMINDER_CHANNEL))
-          //  set_channel_mode(orig_channel);
-          //#endif
-          foo --;
-          //foo = 0;
-          if (foo == 0 ){ remind_lock = 0 ; setting_rgb_mode_now = 0; }
-        //current_event = 0;
-        }
-    }// else // { //don't update aux if reminding lock
-    #endif */
 
     #ifdef USE_AUX_RGB_LEDS_WHILE_ON
     // display battery charge on RGB button during use

@@ -129,6 +129,7 @@ enum CHANNEL_MODES {
 
 #define CHANNEL_MODES_ENABLED 0b00001111
 #define CHANNEL_HAS_ARGS      0b00001100
+#define CHANNEL_AUX_OVERRIDE  0b11110000 //channel uses aux - stops USE_AUX_RGB_LEDS_WHILE_ON messing up the mix/brightness
 
 #define USE_CHANNEL_MODE_ARGS
 // _, _, _, 128=middle CCT, 0=warm-to-cool

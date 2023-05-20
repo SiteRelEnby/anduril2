@@ -28,10 +28,6 @@ void auto_clock_speed() {
 uint8_t blink_digit(uint8_t num) {
     //StatePtr old_state = current_state;
 
-    #ifdef USE_AUX_RGB_LEDS
-      rgb_led_reset = 1;
-    #endif
-
     // "zero" digit gets a single short blink
     uint8_t ontime = BLINK_SPEED * 2 / 12;
     if (!num) { ontime = 8; num ++; }
@@ -43,10 +39,6 @@ uint8_t blink_digit(uint8_t num) {
     #endif
 
     for (; num>0; num--) {
-        #ifdef USE_AUX_RGB_LEDS
-        rgb_led_reset = 1;
-        #endif
-
         // TODO: allow setting a blink channel mode per build target
         #ifdef BLINK_CHANNEL
             set_channel_mode(BLINK_CHANNEL);
@@ -55,12 +47,7 @@ uint8_t blink_digit(uint8_t num) {
         #ifdef BLINK_CHANNEL
             CH_MODE = old_channel;
         #endif
-
-        #ifdef USE_AUX_RGB_LEDS
-        if (nice_delay_ms(ontime)){ rgb_led_reset = 0; }; //need to check if the event was interrupted to reset aux if so. set for each blink to not leave it in the wrong state if e.g. battcheck mode is exited
-        #else
         nice_delay_ms(ontime);
-        #endif
 
         #ifdef BLINK_CHANNEL
             set_channel_mode(BLINK_CHANNEL);
@@ -69,15 +56,7 @@ uint8_t blink_digit(uint8_t num) {
         #ifdef BLINK_CHANNEL
             CH_MODE = old_channel;
         #endif
-        #ifdef USE_AUX_RGB_LEDS
-        if (nice_delay_ms(BLINK_SPEED * 3 / 12)){ rgb_led_reset = 0; }; //need to check if the event was interrupted to reset aux if so. set for each blink to not leave it in the wrong state if e.g. battcheck mode is exited
-        #else
         nice_delay_ms(BLINK_SPEED * 3 / 12);
-        #endif
-
-        #ifdef USE_AUX_RGB_LEDS
-        rgb_led_reset = 0;
-        #endif
     }
 
     #ifdef BLINK_CHANNEL

@@ -4,10 +4,6 @@
 
 #pragma once
 
-#ifdef USE_AUX_RGB_LEDS
-uint8_t rgb_led_reset = 0;
-#endif
-
 #ifdef USE_DYNAMIC_UNDERCLOCKING
 void auto_clock_speed();
 #endif

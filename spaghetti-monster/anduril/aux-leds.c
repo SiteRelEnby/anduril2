@@ -107,7 +107,6 @@ void rgb_led_update(uint8_t mode, uint16_t arg) {
     #ifdef USE_POST_OFF_VOLTAGE
     // use voltage high mode for a few seconds after initial poweroff
     // (but not after changing aux LED settings and other similar actions)
-//    else if ((!setting_rgb_mode_now) && ((arg < (cfg.post_off_voltage * SLEEP_TICKS_PER_SECOND)))
     else if ((arg < (cfg.post_off_voltage * SLEEP_TICKS_PER_SECOND))
           && (ticks_since_on < (cfg.post_off_voltage * SLEEP_TICKS_PER_SECOND))
         ) {

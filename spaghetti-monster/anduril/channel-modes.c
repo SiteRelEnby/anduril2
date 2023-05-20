@@ -11,7 +11,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     static int8_t tint_ramp_direction = 1;
     static uint8_t prev_tint = 0;
     #if (defined(EVENT_TURBO_SHORTCUT_1) || defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY))
-      static uint8_t prev_channel = 0;
+      static uint8_t prev_channel = 255;
       static uint8_t prev_level = 0;
       #if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY))
         static uint8_t momentary_from_lock = 0; //temporary variable to store if we are in a momentary mode from lockout_state for channel-specific turbo modes
@@ -185,10 +185,10 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
 
 #if defined(EVENT_TURBO_SHORTCUT_1) && (NUM_CHANNEL_MODES > 1)
   #ifndef TURBO_SHORTCUT_1_CHANNEL
-    #define TURBO_SHORTCUT_1_CHANNEL 0
+    #define TURBO_SHORTCUT_1_CHANNEL 0 //first channel
   #endif
   else if ((event == EVENT_TURBO_SHORTCUT_1) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){ //TODO: can this just be the event, or are there other states that need to be handled?
-    //prev_channel = CH_MODE;
+    //prev_channel = CH_MODE; don't need this as we're unlocking to on on this channel here
     set_channel_mode(TURBO_SHORTCUT_1_CHANNEL);
     set_state(steady_state, MAX_LEVEL);
     return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
@@ -200,20 +200,27 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     #error "EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE not defined"
   #endif
   else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
-        if (!arg) {
-            prev_channel = CH_MODE;
-            prev_level = actual_level;
-            set_channel_mode(TURBO_SHORTCUT_1_CHANNEL);
-            //if (current_state == lockout_state){ momentary_from_lock = 1 ; set_state(steady_state, arg); } //necessary to get it to stay on from lock? using push_state() doesn't seem to work.
-            set_level_and_therm_target(MAX_LEVEL);
-            return EVENT_HANDLED;
-        }
+    if (prev_channel == 255) {
+      prev_channel = CH_MODE; //save channel we were on the first time round and only *set* that channel then, since eventually arg wraps round to 0
+      prev_level = actual_level;
+      set_channel_mode(TURBO_SHORTCUT_1_CHANNEL);
+      set_level_and_therm_target(MAX_LEVEL);
+    }
   }
-  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
+
+//        if (!arg) {
+//            if (prev_channel == 255) { prev_channel = CH_MODE; prev_level = actual_level; set_channel_mode(TURBO_SHORTCUT_1_CHANNEL); set_channel_mode(TURBO_SHORTCUT_1_CHANNEL); } //save channel we were on the first time round and only *set* that channel then (since eventually arg wraps round to 0 which makes the LEDs blink otherwise when we channel switch (to the same channel), also resets thermal regulation
+//            if (current_state == lockout_state){ momentary_from_lock = 1 ; set_state(steady_state, MAX_LEVEL); } //necessary to get it to stay on from lock? using push_state() doesn't seem to work.
+//            return EVENT_HANDLED;
+//        }
+//  }
+//  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
 //  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && (current_state == lockout_state)) {
-//    if (momentary_from_lock == 1){ momentary_from_lock = 0; set_state(lockout_state, arg); }
+  else if (event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) {
     set_level_and_therm_target(prev_level);
     set_channel_mode(prev_channel);
+    prev_channel = 255; //reset
+    if (momentary_from_lock == 1){ momentary_from_lock = 0; set_state(lockout_state, 0); }
     return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
   }
 #endif
@@ -229,14 +236,19 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
       ((event == EVENT_CHANNEL_CYCLE_ON_HOLD) && (current_state == steady_state))
   #endif
   ){
-    if (0 == (arg % TICKS_PER_SECOND)) { //from lockout-mode.c
+//#ifdef USE_AUX_RGB_LEDS
+//  setting_rgb_mode_now = 1;
+//#endif
       if (actual_level == 0){
-        reset_level = memorized_level;
+        //reset_level = memorized_level;
+        reset_level = 1;
         set_level(memorized_level); //TODO: use another level?
       }
       else {
         reset_level = 0;
       }
+      //from lockout-mode.c
+      if (0 == (arg % TICKS_PER_SECOND)) {
       // pretend the user clicked 3 times to change channels
       return channel_mode_state(EV_3clicks, 0);
     }
@@ -245,13 +257,14 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
   #if defined(EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) //only need release event for off mode, since lockout uses moon from holding anyway
   else if (
 //  #if defined(EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && defined(EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE)
-//      (((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (current_state == off_state)) || ((event == EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE) && (current_state == steady_state))  ) // || ((event == EVENT_CHANNEL_CYCLE_LOCK_HOLD) && (current_state == lockout_state)))
-      ((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (current_state == off_state))
+      (((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (current_state == off_state)) || ((event == EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE) && (current_state == steady_state))  ) // || ((event == EVENT_CHANNEL_CYCLE_LOCK_HOLD) && (current_state == lockout_state)))
+  //      ((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (current_state == off_state))
 //  #else
 //      ((event == EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE) && (current_state == steady_state))
 //  #endif
   ){
-    if (reset_level){
+//    setting_rgb_mode_now = 0; //reset
+    if (reset_level){ //needed for when using from off mode
       set_level(0);
       reset_level = 0;
     }
