@@ -183,7 +183,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     }
     #endif
 
-#if defined(EVENT_TURBO_SHORTCUT_1) && (NUM_CHANNELS > 1)
+#if defined(EVENT_TURBO_SHORTCUT_1) && (NUM_CHANNEL_MODES > 1)
   #ifndef TURBO_SHORTCUT_1_CHANNEL
     #define TURBO_SHORTCUT_1_CHANNEL 0
   #endif
@@ -194,7 +194,8 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
   }
 #endif
-#if defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) && (NUM_CHANNELS > 1)
+
+#if defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) && (NUM_CHANNEL_MODES > 1)
   #ifndef EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE
     #error "EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE not defined"
   #endif
@@ -208,7 +209,8 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
         }
         return EVENT_HANDLED;
   }
-  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
+  //else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
+  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && (current_state == lockout_state)) {
     if (momentary_from_lock == 1){ momentary_from_lock = 0; set_state(lockout_state, arg); }
     set_level_and_therm_target(prev_level);
     set_channel_mode(prev_channel);

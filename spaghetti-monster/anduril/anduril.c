@@ -362,7 +362,7 @@ void loop() {
 
     #ifdef USE_AUX_RGB_LEDS_WHILE_ON
     // display battery charge on RGB button during use
-    if (! setting_rgb_mode_now)
+    if (! setting_rgb_mode_now) {
         #ifndef USE_AUX_RGB_LEDS_LOW_WHILE_ON
           rgb_led_voltage_readout(actual_level > USE_AUX_RGB_LEDS_WHILE_ON); //default: bright if above value of USE_AUX_RGB_LEDS_WHILE_ON
         #else
@@ -372,8 +372,8 @@ void loop() {
           else{
                rgb_led_voltage_readout(actual_level > USE_AUX_RGB_LEDS_LOW_WHILE_ON);
           }
-          rgb_led_voltage_readout
         #endif
+    }
     #endif
 
     if (0) {}  // placeholder
