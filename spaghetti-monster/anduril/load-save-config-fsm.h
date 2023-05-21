@@ -119,6 +119,12 @@ typedef struct Config {
       uint8_t post_off_voltage_brightness;
     #endif
 
+    #if defined(USE_AUX_WHILE_ON_CONFIG) && defined(USE_AUX_RGB_LEDS_WHILE_ON)
+      uint8_t use_aux_while_on;
+      uint8_t use_aux_while_on_threshold_low;
+      uint8_t use_aux_while_on_threshold_high;
+    #endif
+
 } Config;
 
 // auto-detect how many eeprom bytes

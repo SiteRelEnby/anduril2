@@ -163,5 +163,20 @@ Config cfg = {
       .post_off_voltage_brightness = (DEFAULT_POST_OFF_VOLTAGE_BRIGHTNESS_THRESHOLD),
       #endif
     #endif
-};
 
+    #if defined(USE_AUX_WHILE_ON_CONFIG) && defined(USE_AUX_RGB_LEDS_WHILE_ON)
+      .use_aux_while_on = 1,
+      #ifndef USE_AUX_WHILE_ON_CONFIG_DEFAULT_THRESHOLD_HIGH
+        .use_aux_while_on_threshold_high = USE_AUX_WHILE_ON_CONFIG_DEFAULT_THRESHOLD_HIGH,
+      #else
+        .use_aux_while_on_threshold_high = DEFAULT_LEVEL,
+      #endif
+      #ifndef USE_AUX_WHILE_ON_CONFIG_DEFAULT_THRESHOLD_LOW
+        .use_aux_while_on_threshold_high = USE_AUX_WHILE_ON_CONFIG_DEFAULT_THRESHOLD_LOW,
+      #else
+        .use_aux_while_on_threshold_high = (RAMP_SIZE/10),
+      #endif
+
+    #endif
+
+};

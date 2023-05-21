@@ -194,6 +194,11 @@ typedef enum {
     #ifdef USE_JUMP_START
     jump_start_config_step,
     #endif
+    #if defined(USE_AUX_WHILE_ON_CONFIG) && defined(USE_AUX_RGB_LEDS_WHILE_ON)
+    use_aux_while_on_config_step,
+    use_aux_while_on_threshold_low_config_step,
+    use_aux_while_on_threshold_high_config_step,
+    #endif
     globals_config_num_steps
 } globals_config_steps_e;
 

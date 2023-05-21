@@ -291,18 +291,34 @@ void loop() {
 
     #ifdef USE_AUX_RGB_LEDS_WHILE_ON
     // display battery charge on RGB button during use
+
+    #ifdef USE_AUX_WHILE_ON_CONFIG
+      if (cfg.use_aux_while_on == 1){
+    #endif
+
     if (((! setting_rgb_mode_now) && (! aux_led_override)) && (!channel_uses_aux(CH_MODE))) {
-        #ifndef USE_AUX_RGB_LEDS_LOW_WHILE_ON
-          rgb_led_voltage_readout(actual_level > USE_AUX_RGB_LEDS_WHILE_ON); //default: bright if above value of USE_AUX_RGB_LEDS_WHILE_ON
-        #else
-          if (actual_level > USE_AUX_RGB_LEDS_WHILE_ON){
-              rgb_led_voltage_readout(1);
-          }
-          else{
-               rgb_led_voltage_readout(actual_level > USE_AUX_RGB_LEDS_LOW_WHILE_ON);
-          }
-        #endif
+//        #ifndef USE_AUX_RGB_LEDS_LOW_WHILE_ON
+//          rgb_led_voltage_readout(actual_level > USE_AUX_RGB_LEDS_WHILE_ON); //default: bright if above value of USE_AUX_RGB_LEDS_WHILE_ON
+//        #else
+//          if (actual_level > USE_AUX_RGB_LEDS_WHILE_ON){
+//              rgb_led_voltage_readout(1);
+//          }
+//          else{
+//               rgb_led_voltage_readout(actual_level > USE_AUX_RGB_LEDS_LOW_WHILE_ON);
+//          }
+//        #endif
+//      #ifdef USE_AUX_WHILE_ON_CONFIG
+      #ifdef USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
+        if (actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW){
+      #endif
+      rgb_led_voltage_readout(actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH);
+      #ifdef USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
+        }
+      #endif
     }
+    #ifdef USE_AUX_WHILE_ON_CONFIG
+      }
+    #endif
     #endif
 
     if (0) {}  // placeholder

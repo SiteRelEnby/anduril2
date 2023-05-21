@@ -511,6 +511,17 @@ uint8_t steady_state(Event event, uint16_t arg) {
     }
     #endif  // ifdef USE_MANUAL_MEMORY
 
+    #ifdef USE_AUX_WHILE_ON_CONFIG
+      #ifdef AUX_WHILE_ON_TOGGLE_EVENT
+        else if (event == AUX_WHILE_ON_TOGGLE_EVENT){
+          if (cfg.use_aux_while_on) { cfg.use_aux_while_on = 0; } else { cfg.use_aux_while_on = 1; }
+          set_level(actual_level); //required to make LED go off if disabling
+          blip();
+        }
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+      #endif
+    #endif
+
     return EVENT_NOT_HANDLED;
 }
 
@@ -617,6 +628,11 @@ void globals_config_save(uint8_t step, uint8_t value) {
     #endif
     #ifdef USE_JUMP_START
     else if (step == 1+jump_start_config_step) { cfg.jump_start_level = value; }
+    #endif
+    #if defined(USE_AUX_WHILE_ON_CONFIG) && defined(USE_AUX_RGB_LEDS_WHILE_ON)
+    else if ((value) && (step == 1+use_aux_while_on_config_step)) { cfg.use_aux_while_on = (value - 1); } //0C nothing, 1C disable, 2C+ enable
+    else if ((value) && (step == 1+use_aux_while_on_threshold_low_config_step)) { cfg.use_aux_while_on_threshold_low = (value - 1); } //0C ignored, 1C 0 (never off), 2C level 1 (start low at level 1), etc... 151 level 150 (always off)
+    else if ((value) && (step == 1+use_aux_while_on_threshold_high_config_step)) { cfg.use_aux_while_on_threshold_high = (value - 1); } //0C ignored, 1C 0 (always high), 2C level 1 (start high at level 2), etc... 151 level 150 (never high)
     #endif
 }
 
