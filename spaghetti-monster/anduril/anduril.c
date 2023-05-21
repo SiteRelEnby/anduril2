@@ -282,16 +282,16 @@ void loop() {
         #ifdef USE_BUTTON_LED
         button_led_set(0);
         #endif
-        //setting_rgb_mode_now = 1;
+        aux_led_override = 1;
         blink_digit(foo);
-        //setting_rgb_mode_now = 0;
+        aux_led_override = 0;
     }
     #endif
 
 
     #ifdef USE_AUX_RGB_LEDS_WHILE_ON
     // display battery charge on RGB button during use
-    if (! setting_rgb_mode_now) {
+    if (((! setting_rgb_mode_now) && (! aux_led_override)) && (!channel_uses_aux(CH_MODE))) {
         #ifndef USE_AUX_RGB_LEDS_LOW_WHILE_ON
           rgb_led_voltage_readout(actual_level > USE_AUX_RGB_LEDS_WHILE_ON); //default: bright if above value of USE_AUX_RGB_LEDS_WHILE_ON
         #else

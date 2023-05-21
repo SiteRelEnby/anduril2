@@ -24,7 +24,7 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         //remind user light is locked
         remind_lock = 3;
         return EVENT_HANDLED;
-    }
+    } else
     #endif
 
     if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
@@ -54,6 +54,7 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     //  even if the user keeps pressing the button)
     if (event == EV_enter_state) {
         ticks_since_on = 0;
+        aux_led_override = 0;
         #ifdef USE_INDICATOR_LED
             // redundant, sleep tick does the same thing
             // indicator_led_update(cfg.indicator_led_mode >> 2, 0);
@@ -70,7 +71,9 @@ uint8_t lockout_state(Event event, uint16_t arg) {
             //indicator_led_update(cfg.indicator_led_mode >> 2, arg);
             #elif defined(USE_AUX_RGB_LEDS)
 
-            rgb_led_update(cfg.rgb_led_lockout_mode, arg);
+            if (! aux_led_override) {
+              rgb_led_update(cfg.rgb_led_lockout_mode, arg);
+            }
             #endif
         }
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
@@ -89,9 +92,9 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         #if defined(USE_INDICATOR_LED)
         indicator_led_update(cfg.indicator_led_mode >> 2, arg);
         #elif defined(USE_AUX_RGB_LEDS)
-          if (! setting_rgb_mode_now){ //skip this if setting_rgb_mode_now = 1 (not needed when changing aux mode, but is if we're overriding aux to blink or similar as blink_digit() seems to cause ev_sleep_tick() to fire when using nice_delay_ms()? or how else are aux getting reset to the lock default mode?)
-        rgb_led_update(cfg.rgb_led_lockout_mode, arg);
-          }
+        if (! aux_led_override){
+          rgb_led_update(cfg.rgb_led_lockout_mode, arg);
+        }
         #endif
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }

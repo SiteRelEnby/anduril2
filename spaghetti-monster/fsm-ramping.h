@@ -6,6 +6,10 @@
 
 #ifdef USE_RAMPING
 
+#ifdef USE_AUX_RGB_LEDS
+uint8_t aux_led_override = 0;
+#endif
+
 // actual_level: last ramp level set by set_level()
 uint8_t actual_level = 0;
 // the level used before actual
@@ -71,6 +75,8 @@ StatePtr channel_3H_modes[NUM_CHANNEL_MODES];
     // bitmask: which modes respond to their "arg", and which don't?
     //const uint8_t channel_has_args = CHANNEL_HAS_ARGS;
     #define channel_has_args(n) ((CHANNEL_HAS_ARGS >> n) & 1)
+
+    #define channel_uses_aux(n) ((CHANNEL_AUX_OVERRIDE >> n ) & 1)
 #endif
 
 void set_channel_mode(uint8_t mode);
