@@ -517,8 +517,8 @@ uint8_t steady_state(Event event, uint16_t arg) {
           if (cfg.use_aux_while_on) { cfg.use_aux_while_on = 0; } else { cfg.use_aux_while_on = 1; }
           set_level(actual_level); //required to make LED go off if disabling
           blip();
-        }
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        }
       #endif
     #endif
 

@@ -18,7 +18,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
 //      #endif
     #endif
     #if ((NUM_CHANNEL_MODES > 1) && (defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) || (defined(EVENT_CHANNEL_CYCLE_ON_HOLD))))
-      uint8_t reset_level = 0;
+      static uint8_t reset_level = 0;
     #endif
     // don't activate auto-tint modes unless the user hits the edge
     // and keeps pressing for a while
@@ -231,6 +231,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
       set_state(lockout_state, 0);
       //pop_state();
     }
+    active = 0;
     set_level_and_therm_target(prev_level);
     set_channel_mode(prev_channel);
     return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
@@ -269,7 +270,8 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
   #if defined(EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) //only need release event for off mode, since lockout uses moon from holding anyway
   else if (
 //  #if defined(EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && defined(EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE)
-      (((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (current_state == off_state)) || ((event == EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE) && (current_state == steady_state))  ) // || ((event == EVENT_CHANNEL_CYCLE_LOCK_HOLD) && (current_state == lockout_state)))
+//      (((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (current_state == off_state)) || ((event == EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE) && (current_state == steady_state))  ) // || ((event == EVENT_CHANNEL_CYCLE_LOCK_HOLD) && (current_state == lockout_state)))
+      (((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (current_state == off_state))      )// || ((event == EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE) && (current_state == steady_state))  ) // || ((event == EVENT_CHANNEL_CYCLE_LOCK_HOLD) && (current_state == lockout_state)))
   //      ((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (current_state == off_state))
 //  #else
 //      ((event == EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE) && (current_state == steady_state))
