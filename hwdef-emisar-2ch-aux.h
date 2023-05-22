@@ -43,7 +43,7 @@
 // * 2. both channels, tied together
 // * 3. both channels, manual blend, max 200% power?
 // * 4. both channels, auto blend, reversible
-/*#define NUM_CHANNEL_MODES 12
+#define NUM_CHANNEL_MODES 12
 enum CHANNEL_MODES {
     CM_CH1 = 0,
     CM_CH2,
@@ -66,9 +66,10 @@ enum CHANNEL_MODES {
 #define CHANNEL_MODE_ARGS     0,0,0,128,0
 
 #define CHANNEL_MODES_ENABLED 0b0000111111111111
-#define CHANNEL_HAS_ARGS      0b0000000000011000*/
+#define CHANNEL_HAS_ARGS      0b0000000000011000
+#define CHANNEL_AUX_OVERRIDE  0b0000111111100000 //channel uses aux - stops USE_AUX_RGB_LEDS_WHILE_ON messing up the mix/brightness
 
-/*#define SET_LEVEL_MODES      set_level_ch1, \
+#define SET_LEVEL_MODES      set_level_ch1, \
                              set_level_ch2, \
                              set_level_both, \
                              set_level_blend, \
@@ -93,8 +94,9 @@ enum CHANNEL_MODES {
                              gradual_tick_null, \
                              gradual_tick_null, \
                              gradual_tick_null, \
-                             gradual_tick_null*/
+                             gradual_tick_null
 
+/*
 #define NUM_CHANNEL_MODES 8
 //#define CM_CH1      0
 //#define CM_CH2      1
@@ -153,6 +155,8 @@ enum CHANNEL_MODES {
                              gradual_tick_null, \
                              gradual_tick_null, \
                              gradual_tick_null
+*/
+
 // can use some of the common handlers
 #define USE_CALC_2CH_BLEND
 
