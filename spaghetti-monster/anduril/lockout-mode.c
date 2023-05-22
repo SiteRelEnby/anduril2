@@ -9,6 +9,10 @@
 #ifdef BLINK_LOCK_REMINDER
 uint8_t remind_lock = 0;
 #endif
+#if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY))
+  static uint8_t momentary_from_lock = 0; //temporary variable to store if we are in a momentary mode from lockout_state for channel-specific turbo modes
+#endif
+
 
 uint8_t lockout_state(Event event, uint16_t arg) {
     #ifdef USE_MOON_DURING_LOCKOUT_MODE
@@ -27,6 +31,9 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     } else
     #endif
 
+#if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY))
+if (!momentary_from_lock){ //used in channel-modes.c
+#endif
     if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
         // hold: lowest floor
         // click, hold: highest floor (or manual mem level)
@@ -46,6 +53,9 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         set_level(0);
     }
     #endif  // ifdef USE_MOON_DURING_LOCKOUT_MODE
+#if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY))
+}
+#endif
 
     // regular event handling
     // conserve power while locked out

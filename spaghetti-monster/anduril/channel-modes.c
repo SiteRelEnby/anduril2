@@ -13,9 +13,9 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     #if (defined(EVENT_TURBO_SHORTCUT_1) || defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY))
       static uint8_t prev_channel = 255;
       static uint8_t prev_level = 0;
-      #if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY))
-        static uint8_t momentary_from_lock = 0; //temporary variable to store if we are in a momentary mode from lockout_state for channel-specific turbo modes
-      #endif
+//      #if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY))
+//        static uint8_t momentary_from_lock = 0; //temporary variable to store if we are in a momentary mode from lockout_state for channel-specific turbo modes
+//      #endif
     #endif
     #if ((NUM_CHANNEL_MODES > 1) && (defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) || (defined(EVENT_CHANNEL_CYCLE_ON_HOLD))))
       uint8_t reset_level = 0;
@@ -200,13 +200,21 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     #error "EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE not defined"
   #endif
   else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
-    if (prev_channel == 255) {
+    uint8_t active = 0;
+    if ((!arg) && (!active)) {
+      active = 1;
       prev_channel = CH_MODE; //save channel we were on the first time round and only *set* that channel then, since eventually arg wraps round to 0
       prev_level = actual_level;
-      set_channel_mode(TURBO_SHORTCUT_1_CHANNEL);
-      set_level_and_therm_target(MAX_LEVEL);
+      if (CH_MODE != TURBO_SHORTCUT_1_CHANNEL) { set_channel_mode(TURBO_SHORTCUT_1_CHANNEL); }
+      if (current_state == lockout_state){
+          momentary_from_lock = 1;
+          //push_state(steady_state, MAX_LEVEL);
+//          set_state(steady_state, arg);
+        }
+        set_level_and_therm_target(MAX_LEVEL);
+      }
+    return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-  }
 
 //        if (!arg) {
 //            if (prev_channel == 255) { prev_channel = CH_MODE; prev_level = actual_level; set_channel_mode(TURBO_SHORTCUT_1_CHANNEL); set_channel_mode(TURBO_SHORTCUT_1_CHANNEL); } //save channel we were on the first time round and only *set* that channel then (since eventually arg wraps round to 0 which makes the LEDs blink otherwise when we channel switch (to the same channel), also resets thermal regulation
@@ -217,10 +225,14 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
 //  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
 //  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && (current_state == lockout_state)) {
   else if (event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) {
+    //prev_channel = 255; //reset
+    if (momentary_from_lock == 1){
+      momentary_from_lock = 0;
+      set_state(lockout_state, 0);
+      //pop_state();
+    }
     set_level_and_therm_target(prev_level);
     set_channel_mode(prev_channel);
-    prev_channel = 255; //reset
-    if (momentary_from_lock == 1){ momentary_from_lock = 0; set_state(lockout_state, 0); }
     return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
   }
 #endif
