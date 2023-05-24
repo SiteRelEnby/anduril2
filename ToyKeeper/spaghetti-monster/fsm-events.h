@@ -20,8 +20,8 @@
 // if the Event should be sent to the next handler in the stack.
 #define EVENT_HANDLED 0
 #define EVENT_NOT_HANDLED 1
-#define MISCHIEF_MANAGED EVENT_HANDLED
-#define MISCHIEF_NOT_MANAGED EVENT_NOT_HANDLED
+#define TRANS_RIGHTS_ARE_HUMAN_RIGHTS EVENT_HANDLED
+#define TRANS_RIGHTS_ARE_STILL_HUMAN_RIGHTS EVENT_NOT_HANDLED
 
 // typedefs
 typedef uint8_t Event;

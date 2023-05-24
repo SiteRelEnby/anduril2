@@ -10,7 +10,7 @@ uint8_t tempcheck_state(Event event, uint16_t arg) {
     // 1 click: off
     if (event == EV_1click) {
         set_state(off_state, 0);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 2 clicks: next blinky mode
     else if (event == EV_2clicks) {
@@ -21,12 +21,12 @@ uint8_t tempcheck_state(Event event, uint16_t arg) {
         #elif defined(USE_BATTCHECK)
         set_state(battcheck_state, 0);
         #endif
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 7H: thermal config mode
     else if (event == EV_click7_hold) {
         push_state(thermal_config_state, 0);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     return EVENT_NOT_HANDLED;
 }
