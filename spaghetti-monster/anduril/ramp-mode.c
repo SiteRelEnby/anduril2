@@ -516,8 +516,8 @@ uint8_t steady_state(Event event, uint16_t arg) {
     #endif  // ifdef USE_MANUAL_MEMORY
 
     #ifdef USE_AUX_WHILE_ON_CONFIG
-      #ifdef AUX_WHILE_ON_TOGGLE_EVENT
-        else if (event == AUX_WHILE_ON_TOGGLE_EVENT){
+      #ifdef EVENT_AUX_WHILE_ON_TOGGLE
+        else if (event == EVENT_AUX_WHILE_ON_TOGGLE){
           if (cfg.use_aux_while_on) { cfg.use_aux_while_on = 0; } else { cfg.use_aux_while_on = 1; }
           set_level(actual_level); //required to make LED go off if disabling
           blip();

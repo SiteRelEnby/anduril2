@@ -175,7 +175,7 @@ if (!momentary_from_lock){ //used in channel-modes.c
 
     #if defined(USE_INDICATOR_LED)
     // 7 clicks: rotate through indicator LED modes (lockout mode)
-    else if (event == EV_7clicks) {
+    else if (event == EVENT_AUX_CONFIG) {
         #if defined(USE_INDICATOR_LED)
             uint8_t mode = cfg.indicator_led_mode >> 2;
             #ifdef TICK_DURING_STANDBY
@@ -196,7 +196,7 @@ if (!momentary_from_lock){ //used in channel-modes.c
     }
     #elif defined(USE_AUX_RGB_LEDS)
     // 7 clicks: change RGB aux LED pattern
-    else if (event == EV_7clicks) {
+    else if (event == EVENT_AUX_CONFIG) {
         uint8_t mode = (cfg.rgb_led_lockout_mode >> 4) + 1;
         mode = mode % RGB_LED_NUM_PATTERNS;
         cfg.rgb_led_lockout_mode = (mode << 4) | (cfg.rgb_led_lockout_mode & 0x0f);
@@ -210,7 +210,7 @@ if (!momentary_from_lock){ //used in channel-modes.c
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 7H: change RGB aux LED color
-    else if (event == EV_click7_hold) {
+    else if (event == EVENT_AUX_CONFIG_HOLD) {
         setting_rgb_mode_now = 1;
         if (0 == (arg & 0x3f)) {
             uint8_t mode = (cfg.rgb_led_lockout_mode & 0x0f) + 1;
@@ -222,7 +222,7 @@ if (!momentary_from_lock){ //used in channel-modes.c
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 7H, release: save new color
-    else if (event == EV_click7_hold_release) {
+    else if (event == EVENT_AUX_CONFIG_HOLD_RELEASE) {
         setting_rgb_mode_now = 0;
         save_config();
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;

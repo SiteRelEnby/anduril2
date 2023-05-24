@@ -67,8 +67,8 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
         return EVENT_HANDLED;
     } else
 
-    #ifdef PREV_CHANNEL_MODE_EVENT
-    if (event == PREV_CHANNEL_MODE_EVENT){
+    #ifdef EVENT_PREVIOUS_CHANNEL
+    if (event == EVENT_PREVIOUS_CHANNEL){
         //same as above but go backwards
         uint8_t next = cfg.channel_mode;
         uint8_t count = 0;

@@ -27,8 +27,8 @@
 #define LOCK_FROM_ON_EVENT EV_4clicks
 #endif
 
-#ifndef TACTICAL_MODE_EVENT
-#define TACTICAL_MODE_EVENT EV_6clicks
+#ifndef EVENT_TACTICAL_MODE
+#define EVENT_TACTICAL_MODE EV_6clicks
 #endif
 
 #ifndef EVENT_UNLOCK_TO_FLOOR

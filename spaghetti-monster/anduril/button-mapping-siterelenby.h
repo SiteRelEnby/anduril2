@@ -18,12 +18,12 @@
 #define NEXT_CHANNEL_MODE_EVENT EV_3clicks
 #endif
 
-#if !defined(PREV_CHANNEL_MODE_EVENT)
-#define PREV_CHANNEL_MODE_EVENT EV_4clicks
+#if !defined(EVENT_PREVIOUS_CHANNEL)
+#define EVENT_PREVIOUS_CHANNEL EV_4clicks
 #endif
 
-#if !defined(TACTICAL_MODE_EVENT)
-  #define TACTICAL_MODE_EVENT EV_9clicks
+#if !defined(EVENT_TACTICAL_MODE)
+  #define EVENT_TACTICAL_MODE EV_9clicks
 #endif
 
 #if !defined(EVENT_RAMP_CONFIG_HOLD)
@@ -37,6 +37,10 @@
 #ifndef BLINK_LOCK_REMINDER
   #define BLINK_LOCK_REMINDER
 #endif
+
+#define EVENT_AUX_CONFIG EV_7clicks
+#define EVENT_AUX_CONFIG_HOLD EV_click7_hold
+#define EVENT_AUX_CONFIG_HOLD_RELEASE EV_click7_hold_release
 
 //#ifndef MOMENTARY_TURBO_FROM_LOCK_EVENT
 //  #define MOMENTARY_TURBO_FROM_LOCK_EVENT EV_click4_hold
@@ -54,7 +58,7 @@
 #define EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE EV_click8_hold_release
 #define EVENT_CHANNEL_CYCLE_LOCK_HOLD EV_click3_hold
 
-#define AUX_WHILE_ON_TOGGLE_EVENT EV_8clicks
+#define EVENT_AUX_WHILE_ON_TOGGLE EV_8clicks
 
 #define USE_MOMENTARY_TURBO_FROM_LOCK
 

@@ -6,9 +6,9 @@ This is my own modded version of anduril2. Definitely an ongoing project, the id
 
 # The quick info
 
-* I generally keep the underlying codebase reasonably up to date with ToyKeeper's releases. Sometimes I will merge in patches early (e.g. Sofirn LT1S Pro support).
+* I generally keep the underlying codebase reasonably up to date with ToyKeeper's releases. Sometimes I will merge in patches early.
 * Lots of new features. The section outlining them all probably needs rewriting.
-* I mmake releases semi-arbitrarily when I feel there have been enough changes to justify one. I will usuually build custom builds for all of my lights, as well as each configuration listed in [example configurations](#example-configurations). These are intended to be relatively general purpose, and should be built for all lights they make sense for. If you have a good idea for one, open an issue or otherwise let me know.
+* I make releases semi-arbitrarily when I feel there have been enough changes to justify one. I will usuually build custom builds for all of my lights, as well as each configuration listed in [example configurations](#example-configurations). These are intended to be relatively general purpose, and should be built for all lights they make sense for. If you have a good idea for one, open an issue or otherwise let me know.
 * The eventual goal is to make it reasonably simple to build your own configuration via some kind of interactive script/UI... If you're interested (especially if you can make UIs, I hate doing that), let me know.
 
 # Current upstream version this mod is based on
@@ -26,12 +26,14 @@ The goal for this fork is to be reasonably modular - if you don't want/need a fe
 The main feature of this fork. Many functions can be remapped by changing a define in your light's header file. For default anduril mappings:
 ```
 //mappings from ON:
-#define SUNSET_TIMER_HOLD_EVENT EV_click5_hold
+#define EVENT_HOLD_SUNSET_TIMER EV_click5_hold
 #define RAMP_STYLE_TOGGLE_EVENT EV_3clicks
-#define RAMP_CONFIG_HOLD_EVENT EV_click7_hold
-#define MANUAL_MEMORY_SAVE_CLICK_EVENT EV_10clicks
+#define EVENT_RAMP_CONFIG_HOLD EV_click7_hold
 #define MOMENTARY_CLICK_EVENT EV_5clicks
 #define LOCK_FROM_ON_EVENT EV_4clicks
+
+//not yet implemented for multichannel:
+#define MANUAL_MEMORY_SAVE_CLICK_EVENT EV_10clicks
 
 // mappings from OFF:
 #define MOMENTARY_CLICK_EVENT_OFF MOMENTARY_CLICK_EVENT //can set a separate shortcut from off mode
@@ -40,68 +42,58 @@ The main feature of this fork. Many functions can be remapped by changing a defi
 #define MOMENTARY_CLICK_EVENT_STROBE MOMENTARY_CLICK_EVENT //can set a separate shortcut from strobe mode
 
 // mappings from off/lock state:
-#define AUX_CONFIG_CLICK_EVENT EV_7clicks
-#define AUX_CONFIG_HOLD_EVENT EV_click7_hold
-#define AUX_CONFIG_HOLD_RELEASE_EVENT EV_click7_hold
-#define TACTICAL_MODE_CLICK_EVENT EV_6clicks
-
-// mappings from any state other than momentary:
-#define CHANNEL_SWITCH_CONFIGURABLE_HOLD_EVENT EV_click3_hold //default channel switch configurable in 9H config
-#define CHANNEL_SWITCH_CONFIGURABLE_HOLD_RELEASE_EVENT EV_click3_hold_release //default channel switch configurable in 9H config
-
+#define EVENT_AUX_CONFIG EV_7clicks
+#define EVENT_AUX_CONFIG_HOLD EV_click7_hold
+#define EVENT_AUX_CONFIG_HOLD_RELEASE EV_click7_hold
+#define EVENT_TACTICAL_MODE EV_6clicks
 ```
 
 Some stock features can be disabled completely by unsetting their event as well. This will save some image size as well:
 ```
 #undef LOCK_FROM_ON_EVENT
-#undef CHANNEL_SWITCH_CONFIGURABLE_HOLD_EVENT
-#undef CHANNEL_SWITCH_CONFIGURABLE_HOLD_RELEASE_EVENT
-
-// Options to prevent the 10H ramp extras config menu's second item from disabling manual memory if left to time out with no number entry.
-// Letting this happen breaks a fundamental law of UI design: destructive actions shouldn't happen due to *inaction*.
-// (Also, one time accidentally turboing yourself in the face because you accidentally disabled manual memory earlier and didn't notice is one time too many...)
-
-#undef MANUAL_MEMORY_SAVE_CLICK_EVENT //this does not disable manual memory, it just disables saving a new value to it so your build-time configured value will always be the same and can't be overwritten.
-#define DONT_DISABLE_MANUAL_MEMORY_ON_ZERO //from the 10H ramp extras config menu, if the second option is selected, don't disable manual memory. Effectively locks manual memory on (but still allows the timeout to be changed, as well as the actual memorised value to if MANUAL_MEMORY_SAVE_CLICK_EVENT is still defined)
-#define DISABLE_MANUAL_MEMORY_ENTRY_VALUE 3 //if you don't want to completely prevent yourself disabling manual memory, set a value here, and if *this* number is entered for the second ramp extras config item (manual memory timeout), manual memory will be disabled (and won't be if the number entry is left to time out at zero).
 ```
 
 Mappings for new features (see below for an explanation of these features). Adding each of these will generally add a small amount of size to the generated image:
 ```
 // mappings from ON:
-#define TURBO_200_CLICK_EVENT EV_4clicks
-#define TURBO_200_MOMENTARY_HOLD_EVENT EV_click7_hold
-#define TURBO_200_MOMENTARY_RELEASE_EVENT EV_click7_hold_release
+#define MOMENTARY_TURBO_1_EVENT EV_5clicks
+#define TURBO_SHORTCUT_1_CHANNEL CM_CH1
+#define MOMENTARY_TURBO_1_EVENT EV_click5_hold
+#define MOMENTARY_TURBO_1_EVENT EV_click5_hold_release
+#define MOMENTARY_TURBO_2_EVENT EV_5clicks
+#define TURBO_SHORTCUT_2_CHANNEL CM_CH2
+#define MOMENTARY_TURBO_2_EVENT EV_click6_hold
+#define MOMENTARY_TURBO_2_EVENT EV_click6_hold_release
+#define EVENT_PREVIOUS_CHANNEL EV_4clicks
+#define EVENT_AUX_WHILE_ON_TOGGLE EV_8clicks
 
-//#define LOCK_FROM_ON_EVENT EV_4clicks
-#define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT_RELEASE EV_click4_hold_release
-#define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT EV_click4_hold
+// mappings from OFF:
+#define EVENT_CHANNEL_CYCLE_OFF_HOLD EV_click4_hold
+#define EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE EV_click4_hold_release
+#define EVENT_CHANNEL_CYCLE_ON_HOLD EV_click8_hold
+#define EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE EV_click8_hold_release
+#define EVENT_CHANNEL_CYCLE_LOCK_HOLD EV_click3_hold
 
-#define CHANNEL_SWITCH_ONLY_CLICK_EVENT EV_3clicks //always switches instantly between channels
-
-#define CHANNEL_CYCLE_HOLD_EVENT EV_click7_hold //switches instantly between channels, and continues to cycle channels if held longer. This is somewhat a placeholder for future support for more than 2 channels as TK has indicated that the future plan is to have 3C cycle channels and 3H select channel mixing algo.
-
-#define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT_RELEASE EV_click4_hold_release
-#define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT EV_click4_hold
-
+//mappings from LOCKOUT:
+#define EVENT_CHANNEL_CYCLE_LOCK_HOLD EV_click3_hold
 ```
 
 Some example files to look at as examples for your own build:
-* `spaghetti-monster/anduril/cfg-siterelenby-emisar-d4sv2-tintramp-fet.h`
-* `spaghetti-monster/anduril/cfg-siterelenby-noctigon-dm112-tintramp-fet.h`
+* `spaghetti-monster/anduril/cfg-siterelenby-emisar-2ch-aux.h`
 
 Note that the build does not (TODO: currently?) check for conflicts, which may cause weird things to happen, or may just cause the function to not work.
 
 ## All lights
+
+TODO: updated for dual channel up to here
 
 * Remappable shortcuts. A work in progress, see above for details.
   * Remappable default functionality:
     * Momentary mode (default 5C)
     * Sunset timer (default 5H)
     * Lock from on (default 4H - can also be disabled by unsetting)
-    * Channel ramp/switch (default 3H - can also be disabled by unsetting as this fork adds alternate channel switching modes)
     * Ramp config menu (default 7H)
-    * Stepped/smooth ramp toggle (default 3C)
+    * Stepped/smooth ramp toggle (default 3C single channel, 6C multichannel)
     * Aux colour/mode (default 7C/H)
     * Lock from ramp mode (default 4C - can also be disabled by unsetting)
     * Tactical mode (default 6C - can also be disabled by unsetting)

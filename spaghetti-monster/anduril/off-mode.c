@@ -268,7 +268,7 @@ uint8_t off_state(Event event, uint16_t arg) {
 
     #ifdef USE_INDICATOR_LED
     // 7 clicks: change indicator LED mode
-    else if (event == EV_7clicks) {
+    else if (event == EVENT_AUX_CONFIG) {
         uint8_t mode = (cfg.indicator_led_mode & 3) + 1;
         #ifdef TICK_DURING_STANDBY
         mode = mode & 3;
@@ -286,7 +286,7 @@ uint8_t off_state(Event event, uint16_t arg) {
     }
     #elif defined(USE_AUX_RGB_LEDS)
     // 7 clicks: change RGB aux LED pattern
-    else if (event == EV_7clicks) {
+    else if (event == EVENT_AUX_CONFIG) {
         uint8_t mode = (cfg.rgb_led_off_mode >> 4) + 1;
         mode = mode % RGB_LED_NUM_PATTERNS;
         cfg.rgb_led_off_mode = (mode << 4) | (cfg.rgb_led_off_mode & 0x0f);
@@ -300,7 +300,7 @@ uint8_t off_state(Event event, uint16_t arg) {
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 7 clicks (hold last): change RGB aux LED color
-    else if (event == EV_click7_hold) {
+    else if (event == EVENT_AUX_CONFIG_HOLD) {
         setting_rgb_mode_now = 1;
         if (0 == (arg & 0x3f)) {
             uint8_t mode = (cfg.rgb_led_off_mode & 0x0f) + 1;
@@ -311,7 +311,7 @@ uint8_t off_state(Event event, uint16_t arg) {
         rgb_led_update(cfg.rgb_led_off_mode, arg);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
-    else if (event == EV_click7_hold_release) {
+    else if (event == EVENT_AUX_CONFIG_HOLD_RELEASE) {
         setting_rgb_mode_now = 0;
         save_config();
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
@@ -353,9 +353,9 @@ uint8_t off_state(Event event, uint16_t arg) {
     }
     #endif
 
-    #if defined(USE_TACTICAL_MODE) && defined(TACTICAL_MODE_EVENT)
+    #if defined(USE_TACTICAL_MODE) && defined(EVENT_TACTICAL_MODE)
     // 6 clicks: tactical mode
-    else if (event == TACTICAL_MODE_EVENT) {
+    else if (event == EVENT_TACTICAL_MODE) {
         #ifdef TACTICAL_BLINK_CHANNEL
         blink_once();
         #else
