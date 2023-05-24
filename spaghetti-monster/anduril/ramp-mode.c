@@ -372,9 +372,13 @@ uint8_t steady_state(Event event, uint16_t arg) {
     // 3 clicks: toggle smooth vs discrete ramping
     // (and/or 6 clicks when there are multiple channel modes)
     // (handle 3C here anyway, when all but 1 mode is disabled)            //TODO: is this necessary? make optional?
+
+    #ifndef EVENT_RAMP_STYLE_TOGGLE
+
+    #endif
     else if ((event == EV_3clicks)
         #if NUM_CHANNEL_MODES > 1
-             || (event == EV_6clicks)
+             || (event == EVENT_RAMP_STYLE_TOGGLE)
         ) {
             // detect if > 1 channel mode is enabled,
             // and if so, fall through so channel mode code can handle it
@@ -473,7 +477,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
 
     #ifdef USE_RAMP_CONFIG
     // 7H: configure this ramp mode
-    else if (event == EVENT_RAMP_CONFIG) {
+    else if (event == EVENT_RAMP_CONFIG_HOLD) {
         push_state(ramp_config_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }

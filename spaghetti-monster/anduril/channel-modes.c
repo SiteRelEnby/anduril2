@@ -187,7 +187,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
   #ifndef TURBO_SHORTCUT_1_CHANNEL
     #define TURBO_SHORTCUT_1_CHANNEL 0 //first channel
   #endif
-  else if ((event == EVENT_TURBO_SHORTCUT_1) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){ //TODO: can this just be the event, or are there other states that need to be handled?
+  else if (((event == EVENT_TURBO_SHORTCUT_1) || (event == EVENT_TURBO_SHORTCUT_2)) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){ //TODO: can this just be the event, or are there other states that need to be handled?
     //prev_channel = CH_MODE; don't need this as we're unlocking to on on this channel here
     set_channel_mode(TURBO_SHORTCUT_1_CHANNEL);
     set_state(steady_state, MAX_LEVEL);
@@ -195,17 +195,27 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
   }
 #endif
 
-#if defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) && (NUM_CHANNEL_MODES > 1)
-  #ifndef EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE
+#if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY)) && (NUM_CHANNEL_MODES > 1)
+  #if defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) && !defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE)
     #error "EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE not defined"
   #endif
-  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
+  #if defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY) && !defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY_RELEASE)
+    #error "EVENT_TURBO_SHORTCUT_2_MOMENTARY_RELEASE not defined"
+  #endif
+  else if (((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY) || (event == EVENT_TURBO_SHORTCUT_2_MOMENTARY)) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
     uint8_t active = 0;
+    uint8_t new_ch = 0;
     if ((!arg) && (!active)) {
       active = 1;
       prev_channel = CH_MODE; //save channel we were on the first time round and only *set* that channel then, since eventually arg wraps round to 0
       prev_level = actual_level;
-      if (CH_MODE != TURBO_SHORTCUT_1_CHANNEL) { set_channel_mode(TURBO_SHORTCUT_1_CHANNEL); }
+      if (event == EVENT_TURBO_SHORTCUT_1_MOMENTARY){
+        new_ch = TURBO_SHORTCUT_1_CHANNEL;
+      }
+      else {
+        new_ch = TURBO_SHORTCUT_2_CHANNEL;
+      }
+      if (CH_MODE != new_ch) { set_channel_mode(new_ch); }
       if (current_state == lockout_state){
           momentary_from_lock = 1;
           //push_state(steady_state, MAX_LEVEL);
@@ -224,7 +234,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
 //  }
 //  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
 //  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && (current_state == lockout_state)) {
-  else if (event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) {
+  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) || (event == EVENT_TURBO_SHORTCUT_2_MOMENTARY_RELEASE)) {
     //prev_channel = 255; //reset
     if (momentary_from_lock == 1){
       momentary_from_lock = 0;

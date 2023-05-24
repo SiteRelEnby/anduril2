@@ -19,8 +19,8 @@
 #define NEXT_CHANNEL_MODE_EVENT EV_3clicks
 #endif
 
-#if defined(USE_RAMP_CONFIG) && !defined(EVENT_RAMP_CONFIG)
-#define EVENT_RAMP_CONFIG EV_click7_hold
+#if defined(USE_RAMP_CONFIG) && !defined(EVENT_RAMP_CONFIG_HOLD)
+#define EVENT_RAMP_CONFIG_HOLD EV_click7_hold
 #endif
 
 #ifndef LOCK_FROM_ON_EVENT
@@ -45,6 +45,10 @@
 
 #ifndef EVENT_SUNSET_TIMER_HOLD
 #define EVENT_SUNSET_TIMER_HOLD EV_click12_hold
+#endif
+
+#ifndef EVENT_RAMP_STYLE_TOGGLE
+#define EVENT_RAMP_STYLE_TOGGLE EV_6clicks
 #endif
 
 #define USE_POST_OFF_VOLTAGE_BRIGHTNESS_CONFIG

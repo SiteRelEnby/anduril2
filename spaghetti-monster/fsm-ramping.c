@@ -16,6 +16,10 @@ void set_channel_mode(uint8_t mode) {
 
     // update the LEDs
     set_level(cur_level);
+
+    //#ifdef BLINK_CHANNEL_WITH_ARGS
+      //if (channel_has_args(mode)){ blip(); }
+    //#endif
 }
 
 #ifdef HAS_AUX_LEDS
