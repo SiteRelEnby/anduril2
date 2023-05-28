@@ -51,7 +51,9 @@ uint8_t off_state(Event event, uint16_t arg) {
         if (ticks_since_on < 255) ticks_since_on ++;
         #ifdef USE_MANUAL_MEMORY_TIMER
         // reset to manual memory level when timer expires
-        if (cfg.manual_memory &&
+        //if (cfg.manual_memory &&
+        uint8_t manual_mem = get_manual_mem_level();
+        if (manual_mem &&
                 (arg >= (cfg.manual_memory_timer * SLEEP_TICKS_PER_MINUTE))) {
             manual_memory_restore();
         }
@@ -119,7 +121,8 @@ uint8_t off_state(Event event, uint16_t arg) {
         #if defined(USE_MANUAL_MEMORY) && !defined(USE_MANUAL_MEMORY_TIMER)
             // this clause probably isn't used by any configs any more
             // but is included just in case someone configures it this way
-            if (cfg.manual_memory) {
+            uint8_t manual_mem = get_manual_mem_level();
+            if (manual_mem) {
                 manual_memory_restore();
             }
         #endif
@@ -225,6 +228,7 @@ uint8_t off_state(Event event, uint16_t arg) {
         if (cfg.simple_ui_active) {  // turn off simple UI
             blink_once();
             cfg.simple_ui_active = 0;
+            manual_memory_restore(); //necessary as otherwise the first use of manual mem when switching in/out of simple is wrong
             save_config();
         }
         else {  // configure simple UI ramp
@@ -316,6 +320,7 @@ uint8_t off_state(Event event, uint16_t arg) {
     else if (event == EV_10clicks) {
         blink_once();
         cfg.simple_ui_active = 1;
+        manual_memory_restore(); //necessary as otherwise the first use of manual mem when switching in/out of simple is wrong
         save_config();
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }

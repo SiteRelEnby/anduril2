@@ -4,6 +4,10 @@
 
 #pragma once
 
+#ifdef USE_MANUAL_MEMORY
+uint8_t get_manual_mem_level();
+#endif
+
 // soft lockout
 uint8_t lockout_state(Event event, uint16_t arg);
 

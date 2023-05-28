@@ -60,7 +60,9 @@ Config cfg = {
     .dont_ramp_after_moon = DEFAULT_DONT_RAMP_AFTER_MOON,
 
     #ifdef USE_MANUAL_MEMORY
-        .manual_memory = DEFAULT_MANUAL_MEMORY,
+        .manual_memory_simple = DEFAULT_MANUAL_MEMORY,
+        .manual_memory_smooth = DEFAULT_MANUAL_MEMORY,
+        .manual_memory_stepped = DEFAULT_MANUAL_MEMORY,
         #ifdef USE_MANUAL_MEMORY_TIMER
             .manual_memory_timer = DEFAULT_MANUAL_MEMORY_TIMER,
         #endif
@@ -75,7 +77,9 @@ Config cfg = {
         .channel_modes_enabled = CHANNEL_MODES_ENABLED,
         #ifdef USE_MANUAL_MEMORY
             // reset w/ manual memory
-            .manual_memory_channel_mode = DEFAULT_CHANNEL_MODE,
+            .manual_memory_channel_mode_simple = DEFAULT_CHANNEL_MODE,
+            .manual_memory_channel_mode_stepped = DEFAULT_CHANNEL_MODE,
+            .manual_memory_channel_mode_smooth = DEFAULT_CHANNEL_MODE,
         #endif
         #ifdef DEFAULT_BLINK_CHANNEL
             // blink numbers in a specific channel (user configurable)

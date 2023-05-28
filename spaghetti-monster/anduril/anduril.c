@@ -226,7 +226,7 @@ void setup() {
         #if defined(USE_MANUAL_MEMORY) && defined(USE_MANUAL_MEMORY_TIMER)
         // without this, initial boot-up brightness is wrong
         // when manual mem is enabled with a non-zero timer
-        if (cfg.manual_memory) manual_memory_restore();
+        if (cfg.manual_memory_simple) manual_memory_restore();
         #endif
 
         #if defined(USE_CHANNEL_MODES)

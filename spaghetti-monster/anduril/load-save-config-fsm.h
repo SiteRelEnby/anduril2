@@ -39,7 +39,9 @@ typedef struct Config {
         uint8_t dont_ramp_after_moon;
     #endif
     #ifdef USE_MANUAL_MEMORY
-        uint8_t manual_memory;
+        uint8_t manual_memory_simple;
+        uint8_t manual_memory_stepped;
+        uint8_t manual_memory_smooth;
         #ifdef USE_MANUAL_MEMORY_TIMER
             uint8_t manual_memory_timer;
         #endif
@@ -50,7 +52,9 @@ typedef struct Config {
         uint8_t channel_mode;
         uint8_t channel_modes_enabled;
         #ifdef USE_MANUAL_MEMORY
-            uint8_t manual_memory_channel_mode;
+            uint8_t manual_memory_channel_mode_simple;
+            uint8_t manual_memory_channel_mode_smooth;
+            uint8_t manual_memory_channel_mode_stepped;
         #endif
         #ifdef DEFAULT_BLINK_CHANNEL
             uint8_t blink_channel;

@@ -23,7 +23,8 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         } else {  // 2nd click or later
             if (cfg.ramp_floors[1] > lvl) lvl = cfg.ramp_floors[1];
             #ifdef USE_MANUAL_MEMORY
-            if (cfg.manual_memory) lvl = cfg.manual_memory;
+              uint8_t manual_mem = (get_manual_mem_level());
+              if (manual_mem) { lvl = manual_mem; }
             #endif
         }
         set_level(lvl);
@@ -67,7 +68,9 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         if (ticks_since_on < 255) ticks_since_on ++;
         #ifdef USE_MANUAL_MEMORY_TIMER
         // reset to manual memory level when timer expires
-        if (cfg.manual_memory &&
+        uint8_t manual_mem = (get_manual_mem_level());
+
+        if (manual_mem &&
                 (arg >= (cfg.manual_memory_timer * SLEEP_TICKS_PER_MINUTE))) {
             manual_memory_restore();
         }
@@ -93,8 +96,9 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         #if defined(USE_MANUAL_MEMORY) && !defined(USE_MANUAL_MEMORY_TIMER)
         // this clause probably isn't used by any configs any more
         // but is included just in case someone configures it this way
-        if (cfg.manual_memory)
-            set_state(steady_state, cfg.manual_memory);
+        uint8_t manual_mem = get_manual_mem_level();
+        if (manual_mem)
+            set_state(steady_state, manual_mem);
         else
         #endif
         set_state(steady_state, memorized_level);
@@ -205,6 +209,19 @@ uint8_t lockout_state(Event event, uint16_t arg) {
 
     return EVENT_NOT_HANDLED;
 }
+
+#ifdef USE_MANUAL_MEMORY
+uint8_t get_manual_mem_level(){
+  if (cfg.simple_ui_active){
+    if (cfg.manual_memory_simple) { return cfg.manual_memory_simple; }
+  } else
+  if (cfg.ramp_style){
+    if (cfg.manual_memory_stepped) { return cfg.manual_memory_stepped; }
+  } else
+  if (cfg.manual_memory_smooth) { return cfg.manual_memory_smooth; }
+  return 0;
+}
+#endif
 
 #ifdef USE_AUTOLOCK
 // set the auto-lock timer to N minutes, where N is the number of clicks

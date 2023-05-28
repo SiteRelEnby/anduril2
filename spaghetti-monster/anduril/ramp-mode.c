@@ -357,6 +357,16 @@ uint8_t steady_state(Event event, uint16_t arg) {
     #endif  // ifdef USE_SET_LEVEL_GRADUALLY
     #endif  // ifdef USE_THERMAL_REGULATION
 
+    #ifdef USE_MANUAL_MEMORY
+    else if (((cfg.simple_ui_active) && (event == EV_8clicks)) || (event == EV_10clicks)) {
+        // turn on manual memory and save current brightness
+        manual_memory_save();
+        save_config();
+        blink_once();
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+    }
+    #endif
+
     ////////// Every action below here is blocked in the simple UI //////////
     // That is, unless we specifically want to enable 3C for smooth/stepped selection in Simple UI
     #if defined(USE_SIMPLE_UI) && !defined(USE_SIMPLE_UI_RAMPING_TOGGLE)
@@ -463,13 +473,6 @@ uint8_t steady_state(Event event, uint16_t arg) {
     #endif
 
     #ifdef USE_MANUAL_MEMORY
-    else if (event == EV_10clicks) {
-        // turn on manual memory and save current brightness
-        manual_memory_save();
-        save_config();
-        blink_once();
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-    }
     else if (event == EV_click10_hold) {
         #ifdef USE_RAMP_EXTRAS_CONFIG
         // let user configure a bunch of extra ramp options
@@ -550,7 +553,11 @@ uint8_t simple_ui_config_state(Event event, uint16_t arg) {
 #ifdef USE_RAMP_EXTRAS_CONFIG
 void ramp_extras_config_save(uint8_t step, uint8_t value) {
     // item 1: disable manual memory, go back to automatic
-    if (1 == step) { cfg.manual_memory = 0; }
+    if (1 == step) {
+    if (cfg.simple_ui_active){ cfg.manual_memory_simple = 0;} else
+    if (cfg.ramp_style){ cfg.manual_memory_stepped = 0;} else {
+    cfg.manual_memory_smooth = 0; }
+}
 
     #ifdef USE_MANUAL_MEMORY_TIMER
     // item 2: set manual memory timer duration
@@ -663,9 +670,12 @@ void set_level_and_therm_target(uint8_t level) {
 #endif
 
 void manual_memory_restore() {
-    memorized_level = cfg.manual_memory;
+    memorized_level = get_manual_mem_level();
     #if NUM_CHANNEL_MODES > 1
-        cfg.channel_mode = cfg.manual_memory_channel_mode;
+        if (cfg.simple_ui_active){ cfg.channel_mode = cfg.manual_memory_channel_mode_simple; } else
+        if (cfg.ramp_style) { cfg.channel_mode = cfg.manual_memory_channel_mode_stepped; } else
+        { cfg.channel_mode = cfg.manual_memory_channel_mode_smooth; }
+        //cfg.channel_mode = cfg.manual_memory_channel_mode;
     #endif
     #ifdef USE_CHANNEL_MODE_ARGS
         for (uint8_t i=0; i<NUM_CHANNEL_MODES; i++)
@@ -674,9 +684,14 @@ void manual_memory_restore() {
 }
 
 void manual_memory_save() {
-    cfg.manual_memory = actual_level;
+    if (cfg.simple_ui_active){ cfg.manual_memory_simple = actual_level; } else
+    if (cfg.ramp_style) { cfg.manual_memory_stepped = actual_level; } else
+    { cfg.manual_memory_smooth = actual_level; }
+
     #if NUM_CHANNEL_MODES > 1
-        cfg.manual_memory_channel_mode = cfg.channel_mode;
+        if (cfg.simple_ui_active){ cfg.manual_memory_channel_mode_simple = cfg.channel_mode; } else
+        if (cfg.ramp_style) { cfg.manual_memory_channel_mode_stepped = cfg.channel_mode; } else
+        { cfg.manual_memory_channel_mode_smooth = cfg.channel_mode; }
     #endif
     #ifdef USE_CHANNEL_MODE_ARGS
         for (uint8_t i=0; i<NUM_CHANNEL_MODES; i++)
