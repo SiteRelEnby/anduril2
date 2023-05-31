@@ -297,7 +297,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
 #endif
 #endif
 
-  return EVENT_NOT_HANDLED;
+    return EVENT_NOT_HANDLED;
 }
 
 
