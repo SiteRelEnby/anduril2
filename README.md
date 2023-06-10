@@ -117,6 +117,8 @@ Note that the build does not (TODO: currently?) check for conflicts, which may c
         * 6C (unless remapped): Exit tactical mode
         * 7H: tactical mode config menu. Enter the level for each slot.
           * Slots can be preconfigured in your header file with `TACTICAL_LEVELS` - e.g. `TACTICAL_LEVELS RAMP_SIZE,(RAMP_SIZE+2),100` for turbo/strobe/high.
+    * Post-off voltage (anothhr new upstream feature). When the light is switched off, displays the voltage for a few seconds using RGB aux before resuming normal off/lockout aux pattern. Configurable from the 7H menu on battcheck mode - second item is the number of seconds to display for (0C to disable)
+      * Added a third item to the menu, which sets the level at which high brightness is used rather than low to (clicks - 1). e.g. 0C ignored, 1C = use low aux after the light was on at level 1 only, 11C = use low aux after the light was on at <= level 10, etc.)
 
 ## Multichannel lights only
 * Configurable shortcuts to specific channel mode turbo modes (`TURBO_SHORTCUT_1_CHANNEL`, `EVENT_TURBO_SHORTCUT_1`, `EVENT_TURBO_SHORTCUT_1_MOMENTARY`, `EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE`) and maximum (i.e. 200%) (`EVENT_TURBO_MAX`, `TURBO_MAX_CHANNEL` `EVENT_MOMENTARY_TURBO_MAX`, `EVENT_MOMENTARY_TURBO_MAX_RELEASE`)
