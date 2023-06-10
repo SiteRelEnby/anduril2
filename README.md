@@ -85,108 +85,60 @@ Note that the build does not (TODO: currently?) check for conflicts, which may c
 
 ## All lights
 
-TODO: updated for dual channel up to here
-
 * Remappable shortcuts. A work in progress, see above for details.
   * Remappable default functionality:
     * Momentary mode (default 5C)
     * Sunset timer (default 5H)
     * Lock from on (default 4H - can also be disabled by unsetting)
     * Ramp config menu (default 7H)
+    * Channel mode config (default 9H from on)
     * Stepped/smooth ramp toggle (default 3C single channel, 6C multichannel)
-    * Aux colour/mode (default 7C/H)
-    * Lock from ramp mode (default 4C - can also be disabled by unsetting)
+    * Aux colour/mode config (default 7C/H)
     * Tactical mode (default 6C - can also be disabled by unsetting)
     * Save manual memory (default 10) - can also be disabled by unsetting)
   * New features:
     * Dual channel turbo shortcuts
-    * 200% turbo shortcut
-    * Channel ramping only (ignoring 9H config)
-    * Channel switching only (ignoring 9H config)
-    * Channel cycle - continues to switch channels when held. Somewhat of a placeholder for future support of >2 channels but also works fine with two.
-    * Blink RGB aux (if present) red when locked on 1/2C (`BLINK_LOCK_REMINDER`)
-    * Optionally use aux instead of main emitters to blink numbers (`BLINK_NUMBERS_WITH_AUX`)
-      * Configure in the 9H menu as the last item (after channel ramp/switch selection and jumpstart config, if present). 1C = low aux. 2C = high aux. 3+C: Use main emitters; number of clicks is the brightness level to use (e.g. 25C, 50C, 150C...).
-      * Set the colour with `BLINK_NUMBERS_WITH_AUX_COLOUR` - e.g. `#define BLINK_NUMBERS_WITH_AUX_COLOUR 0x14 //cyan` (see configuration section for other values)
-      * Set the default config with `BLINK_NUMBERS_WITH_AUX_DEFAULT_SETTING` (1: low aux, 2: high aux, 3+: main LEDs (sets ramp level to use)
-* Additional options in beacon mode
-  * 2H to set the time the light is on (1 blink = 100ms) (`USE_BEACON_ON_CONFIG`). Each blink while held is 100ms of time on.
-  * 3/4H to increase/decrease brightness without exiting. This is not strictly a *new* feature as beacon mode normally uses the last ramped level, it just allows on the fly adjustment. Enabled with `USE_BEACON_BRIGHTNESS_RAMP`.
-  * Note that there is no thermal regulation in this mode so don't overheat your light - test it before leaving it unattended.
-* Incorporated some changes from [starryalley](https://github.com/starryalley/Anduril2):
-  * Candle and strobe code is now a direct port:
-    * Strobe modes reordered (candle, lightning, fireworks (if enabled), party strobe, tactical strobe, dual channel modes) to avoid accidentally blinding the user.
-    * 2C to cycle to next strobe, 3C to cycle to previous.
-    * 4C to decrease candle/lighting mode activity, 5C to increase, 6C to reset
-    * 4H in candle mode to change candle style (3 options)
-    * 7C in candle mode to toggle aux LEDs
-    * Additional strobe mode: Fireworks mode (`USE_FIREWORK_MODE`), after lightning mode
-    * 2C to cycle to next strobe, 3C to cycle to previous.
-    * 4C to decrease candle/lighting mode activity, 5C to increase, 6C to reset. 4H to change candle style (3 options). 7C to toggle aux LEDs.`
-    * On tint ramping lights, two additional strobe modes to switch and ramp between channels (after tactical strobe mode)
-  * Blink aux/button red in off/lockout modes when battery is <= 3.2V
-    * Blink aux yellow instead of red for the first `VOLTAGE_WARN_DELAY_TICKS` ticks (TODO: set in seconds?) if this var is set.
-      * `VOLTAGE_WARN_HIGH_RAMP_LEVEL` - sets a ramp level to be considered a "high" setting that will result in voltage drop (this probably needs some finetuning and testing per driver and emitter. When `memorized_level` (i.e. last ramped level) is above this, the orange low battery warning will be used; if not (i.e. the light was last used on a lower setting but still reads low) it will go straight to red.
-      * `VOLTAGE_WARN_MAX_TICKS` - after this many ticks, stop blinking battery warning and return to normal aux mode (or aux off if battery is now critically low)
-      * Increased the speed and time in an on state of the breathing animation (aux will still switch off entirely below 3V)
-  * If aux LEDs are present, use those for lock/unlock/poweron blinks instead of main LEDs (can be disabled by building with `USE_MAIN_LEDS_FOR_ALL_BLINKS`, e.g. on lights where feedback from the aux is hard to see)
-  * Temperature aux LED mode (after voltage in the cycle)
-* Added options to only use momentary mode from lock after enough time has passed to make sure it was only 1H (`WAIT_FOR_MOMENTARY_WHEN_LOCKED` / `MOMENTARY_WHEN_LOCKED_DELAY`)
+    * Max (200%) turbo shortcut
+    * Channel cycle - continues to cycle through channels when held. Somewhat of a placeholder for future support of >2 channels but also works fine with two.
+    * Blink RGB aux (if present) when locked on 1/2C (`BLINK_LOCK_REMINDER`)
+    * Option to always use RGB aux when on (even on lights with forward facing aux) (`USE_AUX_RGB_LEDS_WHILE_ON`)
+      * Voltage aux can be switched on/off while on if `EVENT_AUX_WHILE_ON_TOGGLE` is defined
+      * If `USE_AUX_WHILE_ON_CONFIG`, adds extra items to off->9H menu:
+        * 3rd item: 1C disable aux voltage while on, 2+C enable
+        * 4th item: Set threshold for which voltage aux are enabled on LOW brightness (clicks minus 1 = ramp level, e.g. 1C = always if not enabled for high instead, n clicks: enable low at n-1 (i.e. 2C for level 1, 151+C for always disabled)
+        * 5th item: Set threshold for which voltage aux are enabled on HIGH brightness (clicks minus 1 = ramp level, e.g. 1C = always high, 51C = enable high at level 50, 151+C = never use high)
+    * Build-time configuration for some additional stuff (in its own section)
+    * [Tactical mode](https://budgetlightforum.com/t/why-i-still-use-anduril-1-for-edc-anduril-2-lacking-an-anduril-1-feature-suggestion-and-request-for-programmer/217573). This is actually a new upstream feature that has not made it into any releases yet. Enable with `USE_TACTICAL_MODE`
+      * Default 6C from off to enter/exit (remappable in this fork with `TACTICAL_MODE_CLICK_EVENT`). Tactical mode has 3 different momentary level slots that can be configured to be either level 1-150 as normal, or levels above 151 which correspond to strobe modes (151 == party strobe, 152 == tactical strobe, 153 == lightning mode, 154 == candle mode, etc...)
+      * Tactical mode controls:
+        * 1H: Tactical slot 1
+        * 2H: Tactical slot 2
+        * 3H: Tactical slot 3
+        * 6C (unless remapped): Exit tactical mode
+        * 7H: tactical mode config menu. Enter the level for each slot.
+          * Slots can be preconfigured in your header file with `TACTICAL_LEVELS` - e.g. `TACTICAL_LEVELS RAMP_SIZE,(RAMP_SIZE+2),100` for turbo/strobe/high.
+
+## Multichannel lights only
+* Configurable shortcuts to specific channel mode turbo modes (`TURBO_SHORTCUT_1_CHANNEL`, `EVENT_TURBO_SHORTCUT_1`, `EVENT_TURBO_SHORTCUT_1_MOMENTARY`, `EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE`) and maximum (i.e. 200%) (`EVENT_TURBO_MAX`, `TURBO_MAX_CHANNEL` `EVENT_MOMENTARY_TURBO_MAX`, `EVENT_MOMENTARY_TURBO_MAX_RELEASE`)
+* Previous channel (`EVENT_PREVIOUS_CHANNEL`)
+* Cycle through channel modes in off or ramp mode, similarly to in lockout mode (`EVENT_CHANNEL_CYCLE_OFF_HOLD`, `EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE`, `EVENT_CHANNEL_CYCLE_ON_HOLD`, `EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE`)
+  * Remappable for lockout mode (`EVENT_CHANNEL_CYCLE_LOCK_HOLD`)
+
+Old features still to be ported to multichanne (subject to change):
+* More configurable beacon mode
+* [Starryalley](https://github.com/starryalley/Anduril2) aux modes
+* Blink aux/button red in off/lockout modes when battery is <= 3.2V
+* More configurable blinks using aux
+* Options to only use momentary mode from lock after enough time has passed to make sure it was only 1H (`WAIT_FOR_MOMENTARY_WHEN_LOCKED` / `MOMENTARY_WHEN_LOCKED_DELAY`)
 * Made the default aux blinking mode blink more often and intensely
-* Build-time configuration for some additional stuff (in its own section)
+* More aux modes
+  * High for a certain time when locked, then low
+  * Low with high blink (the default off/low/high blink mode bothers me for a reason I can't quite work out)
   * Ability to enable using aux LEDs to display the battery voltage while the light is on.
-    * This is by default only enabled for lights with an RGB button but no RGB aux (e.g. K1), but can be enabled for any light by setting `USE_AUX_RGB_LEDS_WHILE_ON` in the relevant header file.
-    * For lights with forward facing aux, added `RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF` and `RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW` to customise when the voltage is displayed, so if this causes a problem it can be disabled at low ramp levels. These also come in useful as a way to mark a specific level in the ramp with a visual cue (e.g. having the LED go to high at your thermally sustainable level).
-  * Options to prevent the 10H ramp extras config menu's second item from disabling manual memory if left to time out with no number entry. Letting this happen breaks a fundamental law of UI design: destructive actions shouldn't happen due to *inaction*. (Also, one time accidentally turboing yourself in the face because you accidentally disabled manual memory earlier and didn't notice is one time too many...)
-    * `#define DONT_DISABLE_MANUAL_MEMORY_ON_ZERO` - from the 10H ramp extras config menu, if the second option is selected, don't disable manual memory. Effectively locks manual memory on (but still allows the timeout to be changed)
-    * `#define DISABLE_MANUAL_MEMORY_ENTRY_VALUE 3` - if you don't want to completely prevent yourself disabling manual memory, set a value here, and if *this* number is entered for the second ramp extras config item (manual memory timeout), manual memory will be disabled (and won't be if the number entry is left to time out at zero).
-* [Tactical mode](https://budgetlightforum.com/t/why-i-still-use-anduril-1-for-edc-anduril-2-lacking-an-anduril-1-feature-suggestion-and-request-for-programmer/217573). This is actually a new upstream feature that has not made it into any releases yet. Enable with `USE_TACTICAL_MODE`
-  * Default 6C from off to enter/exit (remappable in this fork with `TACTICAL_MODE_CLICK_EVENT`). Tactical mode has 3 different momentary level slots that can be configured to be either level 1-150 as normal, or levels above 151 which correspond to strobe modes (151 == party strobe, 152 == tactical strobe, 153 == lightning mode, 154 == candle mode, etc...)
-  * Tactical mode controls:
-    * 1H: Tactical slot 1
-    * 2H: Tactical slot 2
-    * 3H: Tactical slot 3
-    * 6H (unless remapped): Exit tactical mode
-    * 7H: tactical mode config menu. Enter the level for each slot.
-  * Slots can be preconfigured in your header file with `TACTICAL_LEVELS` - e.g. `TACTICAL_LEVELS RAMP_SIZE,(RAMP_SIZE+2),100` for turbo/strobe/high.
-* Use a less bzr/bizarre VCS
-* Remove reference to bad childrens' fantasy novels by a terrible person. Please [read another book](https://knowyourmeme.com/memes/read-another-book).
-
-## Dual channel lights only
-* `DUALCHANNEL_2C_ALWAYS_USE_SINGLE_CHANNEL`: When set, 2C now always goes to level 130 (single channel on maximum) instead of using 7H configured mode
-* Shortcuts to channel 1 and 2 turbo modes, including momentary. This needs configuration in a light-specific header file:
-```
-#define CHANNEL_1_TURBO_CLICK_EVENT EV_5clicks
-#define CHANNEL_1_TURBO_HOLD_EVENT EV_click5_hold
-#define CHANNEL_1_TURBO_HOLD_RELEASE_EVENT EV_click5_hold_release
-
-#define CHANNEL_2_TURBO_CLICK_EVENT EV_6clicks
-#define CHANNEL_2_TURBO_HOLD_EVENT EV_click6_hold
-#define CHANNEL_2_TURBO_HOLD_RELEASE_EVENT EV_click6_hold_release
-```
+  * Changes to saving manual memory?
+  * Manual EEPROM save instead of automatic
 * Momentary opposite channel mode (e.g. `#define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT_RELEASE EV_click4_hold_release` `#define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT EV_click4_hold`
-  * At the moment this will invert the ramp, e.g. if you are at a 25/75% mix between the two channels it will flip to 75/25. I may make this behaviour configurable in the future with other options.
-* Mappable shortcuts for instant channel switching only and for ramping only, ignoring 9H config (`CHANNEL_RAMP_ONLY_HOLD_EVENT`, `CHANNEL_RAMP_ONLY_RELEASE_EVENT`, `CHANNEL_SWITCH_ONLY_CLICK_EVENT`)
-* `DEFAULT_TINT` build-time option to make the light start at a value other than 50% mix
-* Option to make the light start in instant switching mode by default via header file (currently kind of a kludge as it just inverts the two states, so the 9H options are swapped round from normal too when enabled - although fixing that is low priority as it's not something that many people probably want to change much, plus doing it this way saves some space on the MCU) (`USE_OPPOSITE_TINTRAMP_KLUDGE`)
-* Shortcuts to turbo modes for each channel (`CHANNEL_1_TURBO_CLICK_EVENT`, `CHANNEL_2_TURBO_CLICK_EVENT`)
-* Momentary turbo modes for each channel (`CHANNEL_1_TURBO_HOLD_EVENT`, `CHANNEL_1_TURBO_HOLD_RELEASE_EVENT`,  `CHANNEL_2_TURBO_HOLD_EVENT`, `CHANNEL_2_TURBO_HOLD_RELEASE_EVENT`)
-
-## Single channel lights only
-* 3H from lock for turbo (can be disabled with `DISABLE_MOMENTARY_TURBO_FROM_LOCK`). This does not work for dual channel lights by default because channel swiching on 3H will override it. TODO: 5H? Something like `LOCKOUT_3H_ACTION`? (should probably force 200% here in case the user is on the wrong channel? configurable?)
-
-# Lights tested with
-These are lights that I own. Currently all of them are running this fork. Not every single commit or release will be tested on every single light.
-
-* D4Sv2 (dual channel, FET)
-* DM1.12 (FET on flood channel. based on D4Sv2 header file)
-* K1 (noFET)
-* KR1 (noFET)
-* DT8K (linear+FET, based on KR4 header file)
-* D2 (based on D4Sv2-tintramp (no FET) header file)
-* DM11 (SBT90)
-* D4K (noFET)
-* D4 (boost driver; no FET)
+* 3H from lock for turbo
 
 # Build-time configuration
 
@@ -216,6 +168,8 @@ Example header files:
 ## Complete configuration reference
 
 ### Stock compatible config
+
+**This is probably out of date as I haven't gone through it for multichannel yet. Most of it probably still works but some may not.**
 
 ```
 //#define SIMPLE_UI_ACTIVE 0    // disable simple UI by default/from factory reset
@@ -299,73 +253,18 @@ Example header files:
 ```
 ### Modded-only config
 
-Settings related to my mods, will be ignored in stock anduril:
-```
-#define USE_AUX_RGB_LEDS_WHILE_ON //show voltage using RGB aux even if this isn't just a button LED
-#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_OFF 30 // Sets the threshold at which to switch the voltage RGB aux off
-#define RGB_VOLTAGE_WHILE_ON_THRESHOLD_LOW 50 //Sets the threshold at which to switch the voltage RGB aux to low mode
-#define USE_OPPOSITE_TINTRAMP_KLUDGE: When defined, makes the light start in channel switching mode. A very inelegant solution but it works so not being redone for now (plus it probably saves some space over a more elegant solution). May be supplemented with a better way in the future.
+TODO: redo this with multichannel.
 
-// Delay momentary from lock until input is confirmed to definitely be 1H - prevents main LEDs flashing when doing more clicks from lock.
-// This setting guarantees a flash will be avoided when unlocking, but might be too slow for many people (including me) - see MOMENTARY_WHEN_LOCKED_DELAY for an alternative.
-//#define WAIT_FOR_MOMENTARY_WHEN_LOCKED
-
-#define MOMENTARY_WHEN_LOCKED_DELAY 1 //number of ticks to wait (default for HOLD_TIMEOUT is 24) before activating momentary mode when locked - prevents a flash when inputting a higher number of clicks, without waiting for the full HOLD_TIMEOUT delay with WAIT_FOR_MOMENTARY_WHEN_LOCKED. 1-2 is fine at least for lights with higher Vf, but depends on the user's preference. >4 is probably excessive.
-
-// default channel mix for when the light first starts up or is reset. Can be set to any value 1-254, or 0/255 for auto tint modes.
-#define DEFAULT_TINT 1
-//#define DEFAULT_TINT 128 //default
-//#define DEFAULT_TINT 254
-
-//#define USE_FIREWORK_MODE //enable fireworks mode
-
-//#undef DISABLE_4C_LOCK_FROM_RAMP //undefining this flag allows the feature to be entirely disabled
-
-//#define DISABLE_UNLOCK_TO_TURBO //disables 5C/6C from lock shortcuts to unlock to turbo
-
-//#define DISABLE_MOMENTARY_TURBO_FROM_LOCK
-
-//#define USE_MAIN_LEDS_FOR_ALL_BLINKS //disable using aux/button LED for lock/unlock/poweron blinks instead of the main LEDs.
-//#define BLINK_ONCE_AUX_TIME_4MS 10 //when using aux instead of main LEDs, aux stay on green for this long (4ms increments)
-
-//#define BLINK_LOCK_REMINDER //blink aux (or main emitters if no aux) on 1c from locked
-
-//#define BLINK_NUMBERS_WITH_AUX //use aux to blink numbers instead of main emitters (enable entire feature)
-#define BLINK_NUMBERS_WITH_AUX_DEFAULT_SETTING 2 //1: aux low, 2: aux high, 3+ main emitter ramp level (9H menu, last item - 1C = use aux, 2C = use main)
-//#define BLINK_NUMBERS_WITH_AUX_COLOUR 0x14 //cyan, high //set colour (TODO: make configurable at runtime). 3 == Cyan - see spaghetti-monster/anduril/aux-leds.h for definitions
-/*
-//    0b00000001, red: `0x01`
-//    0b00000101, yellow: `0x05`
-//    0b00000100, green: `0x04`
-//    0b00010100, cyan: `0x14`
-//    0b00010000, blue: `0x10`
-//    0b00010001, purple: `0x11`
-//    0b00010101, white: `0x15`
-*/
-
-//#define USE_BEACON_ON_CONFIG //in beacon mode, 2H to set on time - each blink is 100ms.
-//#define USE_BEACON_BRIGHTNESS_RAMP //in beacon mode, 3/4H to ramp brightness up/down
-
-//#define 2C_TURBO_ALWAYS_USE_SINGLE_CHANNEL //ignore 7H turbo config on dual channel lights and always go to single channel at 100%.
-
-//#define USE_LOW_VOLTAGE_WARNING //enable feature
-//#define VOLTAGE_WARN_DELAY_TICKS 40 //for this many ticks after the light is switched off, use a soft low voltage warning (orange aux instead of red) if RGB aux are available, or just blink on low only if there are no RGB aux. TODO: How much time passes definitively for this var? Affected by underclocking when asleep. Implement in seconds instead? (optional)
-//#define VOLTAGE_WARN_MAX_TICKS 500 //stop blinking battery warning after this many ticks (optional)
-//#define VOLTAGE_WARN_HIGH_RAMP_LEVEL 75 //if set, only do a soft low voltage warning for the first VOLTAGE_WARN_DELAY_TICKS if the light was last on at or above this level (optional)
-
-```
+For now, check out my main development config: [cfg-siterelenby-emisar-2ch-aux](spaghetti-monster/cfg-siterelenby-emisar-2ch-aux.h), [my button mappings](spaghetti-monster/anduril/button-mapping-siterelenby.h), and [stock-compatible mappings](spaghetti-monster/anduril/button-mapping-defaults.h)
 
 # Roadmap
-* Rebase on TK/gchart's changes for 3+ channels and att1616 support, probably do a lot of refactoring of how mods are applies
 * (Configurable?) optional time limit for momentary turbo mode from lock (just in case something wedges the button held)
 * In progress: Make modifications and features user-configurable and modular
   * Modularise starryalley mods
     * Integrate startup modes? should be easy to make into a build time option
     * Integrate [6H aux control](https://github.com/starryalley/Anduril2#allow-the-use-of-auxindicator-led-in-lower-levels--default_level-level-6c6h-while-light-is-on) and voltage aux while on (as a mode under 6H functionality? would need to allow aux use at any ramp level. Need to wait for that fork to implement voltage mode there first or it's going to become a massive pain to merge and rebase on changes)
     * Incorporate more changes from [SammysHP](https://github.com/SammysHP/flashlight-firmware/wiki/Modifications-Overview)
-* When blinking aux red for low battery, wait for a while (blink 1-2x only? blink orange for the first 5-10 seconds then red if it remains low?) after running the light on a high setting to not trigger the warning unnecessarily due to voltage sag from putting load on the battery. Use `memorized_level`? needs memory enabled in the build but I think not actually active?
-  * voltage currently read every ~6-7s? will be 1s in future upstream update
- * `LOCKOUT_3H_ACTION` - configurable between momentary turbo and channel ramping/switching for dual channel lights
+ * `LOCKOUT_3H_ACTION` - configurable between momentary turbo and channel switching for dual channel lights
  * Make aux colour for blinking numbers configurable at runtime (9C menu item after which to use? No easy way to display which is being selected to the user. Adding a completely new button combination is easy but takes more MCU space. Or is just having the order be the s
 amme as the aux colour selector for off/lock mode enough?)
  * Find something useful for 3C on single channel (jump to 50%? or user-definable level? back to memory?)
@@ -383,67 +282,11 @@ amme as the aux colour selector for off/lock mode enough?)
 
 I am not responsible if you brick or otherwise break your light for any reason (bad flash, wrong firmware, mods did something unexpected, etc.). In general, I always test my changes myself on at least one light but I don't keep all of mine up to date with every commit or even every relevant one.
 
-# Detailed light support
-
-## attiny85 lights (unsupported)
-
-Supported MCUs might only be the attiny1634/1616 at the moment. By default, should build successfully for attiny85 MCUs but does not fit in the available space even with no new features added. Best bet for making those work with something from here is to disable more extra/default-on features, or to just take the code and apply it to upstream anduril. I will not provide support for these lights. Maybe if you pay me to ;)
-
-<details>
-  <summary>attiny85 lights:</summary>
-```
-0111    emisar-d4                       attiny85
-0112    emisar-d4-219c                  attiny85
-0121    emisar-d1                       attiny85
-0122    emisar-d1s                      attiny85
-0131    emisar-d4s                      attiny85
-0132    emisar-d4s-219c                 attiny85
-0141    emisar-d18                      attiny85
-0142    emisar-d18-219                  attiny85
-0311    fw3a                            attiny85
-0312    fw3a-219                        attiny85
-0313    fw3a-nofet                      attiny85
-0321    blf-gt                          attiny85
-0322    blf-gt-mini                     attiny85
-0411    ff-rot66                        attiny85
-0412    ff-rot66-219                    attiny85
-0413    ff-rot66g2                      attiny85
-0421    ff-pl47                         attiny85
-0422    ff-pl47-219                     attiny85
-0423    ff-pl47g2                       attiny85
-0441    ff-e01                          attiny85
-0511    mateminco-mf01s                 attiny85
-0521    mateminco-mf01-mini             attiny85
-0531    mateminco-mt35-mini             attiny85
-0611    blf-q8                          attiny85
-0612    sofirn-sp36                     attiny85
-0621    blf-lantern                     attiny85
-```
-</details>
-
-## attiny1616 lights (WIP)
-
-These lights should be supported. At the moment the only one I have tested with is the Wurkkos TS10, which works fine. Other t1616 lights build successfully but I can't test. I will be getting a Sofirn LT1S Pro too, but to support that here are multiple large changes upstream at the moment so I will probably wait for those to be merged before working on this.
-
-<details>
-  <summary>attiny1616 lights:</summary>
-```
-0613    blf-q8-t1616                    attiny1616
-0614    sofirn-sp36-t1616               attiny1616
-0622    blf-lantern-t1616               attiny1616
-0631    sofirn-sp10-pro                 attiny1616
-1618    gchart-fet1-t1616               attiny1616
-```
-</details>
-
 # Builds and release
 
 Release schedule is "whenever I feel it justifies one". I will build images for my lights for each release. These should be reasonably stable and tested as they are the lights I am thinking of when I hack on this.
 
-In addition, all the supported (currently only attiny1634) default build targets will be built. These *should* use default anduril mappings with the features defined in `config-default.h`. Do not assume these builds are stable or bug-free, they are mostly provided for people to try it out. In the future I may make a repo for other people's configs to automate new firmware builds for to lower the knowledge demand of building this fork.
-
-
-
+In addition, all the supported default build targets will be built. These *should* use default anduril mappings with the features defined in `config-default.h`. Do not assume these builds are stable or bug-free, they are mostly provided for people to try it out. In the future I may make a repo for other people's configs to automate new firmware builds for to lower the knowledge demand of building this fork.
 
 # Other stuff
 
@@ -477,11 +320,9 @@ Also on Docker Hub: https://hub.docker.com/r/siterelenby/anduril-builder. Suppor
 
 ## Scripts
 
-* `build.sh`: Build anduril. With no args, will build all possible targets (equivalent to running `build-all.sh` but handles running the docker image transparently. For Linux/MacOS/WSL2
-* `build_windows.sh`: `build.sh` with a fix for Cygwin Windows environments. Will still work on unixes as well for automation/convenience purposes.
+* `build.sh`: Build anduril. With no args, will build all possible targets (equivalent to running `build-all.sh` but handles running the docker image transparently. For Linux/MacOS/WSL2/Cygwin (please tell me if it works on anything else if you try it ;))
 * `preprocess_debug.sh` - runs gcc's preprocessor, creating the actual source file (with includes, ifdefs, etc. all handled) that is actually fed to the compiler. Useful for debugging ifdefs and similar. Usage example: `TARGET=cfg-wurkkos-ts10.h MCU=attiny1616 bash -x preprocess_debug.sh`
 * `build-docker-image.sh`: build a local copy of the `anduril-buildenv-docker` image
-* `buildscripts/` individual scripts to build a hex for a specific light, mostly for my own automation
 
 Example build scripts and header files for my lights (`build-siterelenby-*` and `spaghetti-monster/anduril/cfg-siterelenby*.h`) including a few extra default settings vs the default model header files.
 

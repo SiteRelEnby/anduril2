@@ -51,6 +51,10 @@
 #define EVENT_RAMP_STYLE_TOGGLE EV_6clicks
 #endif
 
+#ifndef EVENT_CHANNEL_MODE_CONFIG_HOLD
+#define EVENT_CHANNEL_MODE_CONFIG_HOLD EV_click9_hold
+#endif
+
 #define EVENT_AUX_CONFIG EV_7clicks
 #define EVENT_AUX_CONFIG_HOLD EV_click7_hold
 #define EVENT_AUX_CONFIG_HOLD_RELEASE EV_click7_hold_release
