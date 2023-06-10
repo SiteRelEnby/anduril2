@@ -177,7 +177,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
 
     #if NUM_CHANNEL_MODES > 1
     // channel toggle menu on ... 9H?
-    else if (event == EV_click9_hold) {
+    else if (event == EVENT_CHANNEL_MODE_CONFIG_HOLD) {
         push_state(channel_mode_config_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
@@ -281,6 +281,23 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
       return channel_mode_state(EV_3clicks, 0);
     }
   }
+
+#if ((NUM_CHANNEL_MODES > 1) && (defined(EVENT_TURBO_MAX)) && (defined(TURBO_MAX_CHANNEL)))
+  else if (event == EVENT_TURBO_MAX){
+      if (CH_MODE == TURBO_MAX_CHANNEL){
+        //returning from max turbo
+        set_channel_mode(prev_channel);
+        prev_channel = 255;
+        set_level_and_therm_target(prev_level);
+      }
+      else {
+        prev_channel = CH_MODE;
+        prev_level = actual_level;
+        set_channel_mode(TURBO_MAX_CHANNEL);
+        set_level_and_therm_target(MAX_LEVEL);
+      }
+  }
+#endif
 
   #if defined(EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) //only need release event for off mode, since lockout uses moon from holding anyway
   else if (
