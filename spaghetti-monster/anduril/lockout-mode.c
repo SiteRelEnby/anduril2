@@ -64,7 +64,9 @@ if (!momentary_from_lock){ //used in channel-modes.c
     //  even if the user keeps pressing the button)
     if (event == EV_enter_state) {
         ticks_since_on = 0;
+        #if defined(USE_AUX_RGB_LEDS)
         aux_led_override = 0;
+        #endif
         #ifdef USE_INDICATOR_LED
             // redundant, sleep tick does the same thing
             // indicator_led_update(cfg.indicator_led_mode >> 2, 0);

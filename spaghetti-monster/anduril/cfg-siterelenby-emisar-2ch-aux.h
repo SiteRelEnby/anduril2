@@ -125,4 +125,6 @@
 #define B_TIMING_ON B_TIMEOUT_T
 #define B_TIMING_OFF B_TIMEOUT_T
 
+#define DEFAULT_AUTOLOCK_TIME 60
+
 #include "button-mapping-siterelenby.h"

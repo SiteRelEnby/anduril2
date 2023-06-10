@@ -16,7 +16,9 @@ uint8_t off_state(Event event, uint16_t arg) {
     if (event == EV_enter_state) {
         set_level(0);
         ticks_since_on = 0;
+        #if defined(USE_AUX_RGB_LEDS)
         aux_led_override = 0;
+        #endif
         #ifdef USE_INDICATOR_LED
         // redundant, sleep tick does the same thing
         //indicator_led_update(cfg.indicator_led_mode & 0x03, 0);

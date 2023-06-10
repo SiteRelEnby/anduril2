@@ -296,22 +296,21 @@ void loop() {
       if (cfg.use_aux_while_on == 1){
     #endif
 
-    if (((! setting_rgb_mode_now) && (! aux_led_override)) && (!channel_uses_aux(CH_MODE))) {
-//        #ifndef USE_AUX_RGB_LEDS_LOW_WHILE_ON
-//          rgb_led_voltage_readout(actual_level > USE_AUX_RGB_LEDS_WHILE_ON); //default: bright if above value of USE_AUX_RGB_LEDS_WHILE_ON
-//        #else
-//          if (actual_level > USE_AUX_RGB_LEDS_WHILE_ON){
-//              rgb_led_voltage_readout(1);
-//          }
-//          else{
-//               rgb_led_voltage_readout(actual_level > USE_AUX_RGB_LEDS_LOW_WHILE_ON);
-//          }
-//        #endif
-//      #ifdef USE_AUX_WHILE_ON_CONFIG
+    if (
+    #ifdef CHANNEL_AUX_OVERRIDE
+    ((! setting_rgb_mode_now) && (! aux_led_override)) && (!channel_uses_aux(CH_MODE))
+    #else
+    (! setting_rgb_mode_now) && (! aux_led_override)
+    #endif
+      ){
       #ifdef USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
-        if (actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW){
+        if (actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW){ //skip over the whole block if below USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
       #endif
-      rgb_led_voltage_readout(actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH);
+      #ifdef USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH
+      rgb_led_voltage_readout(actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH); //high if above USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH
+      #else
+      rgb_led_voltage_readout(actual_level > USE_AUX_RGB_LEDS_WHILE_ON);
+      #endif
       #ifdef USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
         }
       #endif

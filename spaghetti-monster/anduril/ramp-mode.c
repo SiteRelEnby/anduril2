@@ -373,9 +373,6 @@ uint8_t steady_state(Event event, uint16_t arg) {
     // (and/or 6 clicks when there are multiple channel modes)
     // (handle 3C here anyway, when all but 1 mode is disabled)            //TODO: is this necessary? make optional?
 
-    #ifndef EVENT_RAMP_STYLE_TOGGLE
-
-    #endif
     else if ((event == EV_3clicks)
         #if NUM_CHANNEL_MODES > 1
              || (event == EVENT_RAMP_STYLE_TOGGLE)
@@ -423,10 +420,12 @@ uint8_t steady_state(Event event, uint16_t arg) {
             #endif
         ) {
             // ramp tint if tint exists in this mode
+            #ifdef USE_CHANNEL_MODE_ARGS
             if (event == EV_click3_hold){
                 if(channel_has_args(cfg.channel_mode)) {
                   return EVENT_NOT_HANDLED;
                 }
+            #endif
         #if defined(USE_CHANNEL_MODE_ARGS) && !defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)
         //don't turbo on 3h
                 else {

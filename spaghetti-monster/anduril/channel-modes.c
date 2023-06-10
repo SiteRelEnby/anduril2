@@ -189,7 +189,12 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
   #endif
   else if (((event == EVENT_TURBO_SHORTCUT_1) || (event == EVENT_TURBO_SHORTCUT_2)) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){ //TODO: can this just be the event, or are there other states that need to be handled?
     //prev_channel = CH_MODE; don't need this as we're unlocking to on on this channel here
-    set_channel_mode(TURBO_SHORTCUT_1_CHANNEL);
+    if (event ==  EVENT_TURBO_SHORTCUT_1){
+      set_channel_mode(TURBO_SHORTCUT_1_CHANNEL);
+    }
+    else {
+      set_channel_mode(TURBO_SHORTCUT_2_CHANNEL);
+    }
     set_state(steady_state, MAX_LEVEL);
     return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
   }
