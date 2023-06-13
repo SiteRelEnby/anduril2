@@ -12,11 +12,29 @@
 #undef USE_SET_LEVEL_2CH_STACKED
 #undef USE_GRADUAL_TICK_2CH_STACKED
 #define USE_SET_LEVEL_1CH
-#define USE_GRADUAL_TICK_1CH
+//#define USE_GRADUAL_TICK_1CH
 #undef SET_LEVEL_MODES
 #undef GRADUAL_TICK_MODES
-#define SET_LEVEL_MODES      set_level_1ch
-#define GRADUAL_TICK_MODES   gradual_tick_1ch
+//#define SET_LEVEL_MODES      set_level_1ch
+//#define GRADUAL_TICK_MODES   gradual_tick_1ch
+#define LOW_PWM_LVL CH1_PWM
+#define SET_LEVEL_MODES      set_level_1ch, \
+                             set_level_auxred, \
+                             set_level_auxyel, \
+                             set_level_auxgrn, \
+                             set_level_auxcyn, \
+                             set_level_auxblu, \
+                             set_level_auxprp, \
+                             set_level_auxwht
+// gradual ticking for thermal regulation
+#define GRADUAL_TICK_MODES   gradual_tick_main, \
+                             gradual_tick_null, \
+                             gradual_tick_null, \
+                             gradual_tick_null, \
+                             gradual_tick_null, \
+                             gradual_tick_null, \
+                             gradual_tick_null, \
+                             gradual_tick_null
 
 #undef PWM_CHANNELS
 #define PWM_CHANNELS 1
@@ -24,6 +42,8 @@
 #undef LOW_PWM_LEVELS
 #undef HIGH_PWM_LEVELS
 #define LOW_PWM_LEVELS 1,1,1,2,2,2,2,3,3,3,3,4,4,5,5,6,6,6,7,8,8,9,9,10,10,11,12,13,13,14,15,16,16,17,18,19,20,21,22,23,23,24,26,27,28,29,30,31,32,33,34,36,37,38,39,41,42,43,45,46,47,49,50,52,53,55,56,58,59,61,62,64,66,67,69,71,72,74,76,78,80,81,83,85,87,89,91,93,95,97,99,101,103,105,107,109,111,113,116,118,120,122,125,127,129,132,134,136,139,141,144,146,148,151,154,156,159,161,164,166,169,172,174,177,180,183,185,188,191,194,197,200,203,205,208,211,214,217,220,223,226,230,233,236,239,242,245,249,252,255
+
+
 
 #undef MAX_1x7135
 #define MAX_1x7135 150

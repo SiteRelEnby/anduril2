@@ -31,6 +31,19 @@ void set_level_main(uint8_t level) {
     if (! actual_level) PWM_CNT = 0;
 }
 
+#if PWM_CHANNELS == 1
+bool gradual_tick_main(uint8_t gt) {
+    PWM_DATATYPE pwm1 = PWM_GET(pwm1_levels, gt);
+
+    GRADUAL_ADJUST_SIMPLE(pwm1, CH1_PWM);
+
+    if (   (pwm1 == CH1_PWM)
+       ) {
+        return true;  // done
+    }
+    return false;  // not done yet
+}
+#elif PWM_CHANNELS == 2
 bool gradual_tick_main(uint8_t gt) {
     PWM_DATATYPE pwm1 = PWM_GET(pwm1_levels, gt);
     PWM_DATATYPE pwm2 = PWM_GET(pwm2_levels, gt);
@@ -45,4 +58,4 @@ bool gradual_tick_main(uint8_t gt) {
     }
     return false;  // not done yet
 }
-
+#endif
