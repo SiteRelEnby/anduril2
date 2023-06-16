@@ -101,7 +101,7 @@ uint8_t tactical_state(Event event, uint16_t arg) {
     // 7H: configure tactical mode
     else if (event == EV_click7_hold) {
         push_state(tactical_config_state, 0);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
 
     return ret;

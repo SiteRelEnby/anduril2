@@ -45,24 +45,24 @@ uint8_t strobe_state(Event event, uint16_t arg) {
     // init anything which needs to be initialized
     else if (event == EV_enter_state) {
         ramp_direction = 1;
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 1 click: off
     else if (event == EV_1click) {
         set_state(off_state, 0);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 2 clicks: rotate through strobe/flasher modes
     else if (event == EV_2clicks) {
         strobe_type = (st + 1) % NUM_STROBES;
         save_config();
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // 4 clicks: rotate backward through strobe/flasher modes
     else if (event == EV_4clicks) {
         strobe_type = (st - 1 + NUM_STROBES) % NUM_STROBES;
         save_config();
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // hold: change speed (go faster)
     //       or change brightness (brighter)
@@ -99,14 +99,14 @@ uint8_t strobe_state(Event event, uint16_t arg) {
         }
         #endif
 
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // reverse ramp direction on hold release
     // ... and save new strobe settings
     else if (event == EV_click1_hold_release) {
         ramp_direction = -ramp_direction;
         save_config();
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // click, hold: change speed (go slower)
     //       or change brightness (dimmer)
@@ -140,19 +140,19 @@ uint8_t strobe_state(Event event, uint16_t arg) {
         }
         #endif
 
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // release hold: save new strobe settings
     else if (event == EV_click2_hold_release) {
         save_config();
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #ifdef USE_MOMENTARY_MODE
     // 5 clicks: go to momentary mode (momentary strobe)
     else if (event == EV_5clicks) {
         set_state(momentary_state, 0);
         set_level(0);
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
     #if defined(USE_LIGHTNING_MODE) || defined(USE_CANDLE_MODE)
@@ -162,7 +162,7 @@ uint8_t strobe_state(Event event, uint16_t arg) {
         if (arg == AUTO_REVERSE_TIME) ramp_direction = 1;
 
         pseudo_rand_seed += arg;
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
     return EVENT_NOT_HANDLED;

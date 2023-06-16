@@ -33,7 +33,7 @@ uint8_t sunset_timer_state(Event event, uint16_t arg) {
     if (event == EV_enter_state) {
         sunset_timer = 0;
         sunset_ticks = 0;
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // hold: maybe "bump" the timer if it's active and almost expired
     else if (event == EV_hold) {
@@ -55,7 +55,7 @@ uint8_t sunset_timer_state(Event event, uint16_t arg) {
                 blink_once();
             }
         }
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     // tick: count down until time expires
     else if (event == EV_tick) {
@@ -68,7 +68,7 @@ uint8_t sunset_timer_state(Event event, uint16_t arg) {
                 sunset_timer --;
             }
         }
-        return MISCHIEF_MANAGED;
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     return EVENT_NOT_HANDLED;
 }
