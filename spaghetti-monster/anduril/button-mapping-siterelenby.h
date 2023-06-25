@@ -2,9 +2,6 @@
 
 #define BUTTON_MAPPINGS_DEFINED
 
-#ifdef
-#undef EVENT_MOMENTARY
-#endif
 #if defined(USE_MOMENTARY_MODE) && !defined(EVENT_MOMENTARY)
 #define EVENT_MOMENTARY EV_12clicks
 #endif
