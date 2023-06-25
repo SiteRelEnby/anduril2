@@ -26,7 +26,7 @@ The goal for this fork is to be reasonably modular - if you don't want/need a fe
 The main feature of this fork. Many functions can be remapped by changing a define in your light's header file. For default anduril mappings:
 ```
 //mappings from ON:
-#define EVENT_HOLD_SUNSET_TIMER EV_click5_hold
+#define EVENT_SUNSET_TIMER_HOLD EV_click5_hold
 #define RAMP_STYLE_TOGGLE_EVENT EV_3clicks
 #define EVENT_RAMP_CONFIG_HOLD EV_click7_hold
 #define MOMENTARY_CLICK_EVENT EV_5clicks

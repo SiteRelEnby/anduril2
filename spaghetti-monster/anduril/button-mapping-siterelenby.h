@@ -42,7 +42,7 @@
 #define EVENT_UNLOCK_TO_FLOOR EV_click4_hold
 //#define EVENT_UNLOCK_TO_CEILING EV_click5_hold
 
-#define EVENT_SUNSET_TIMER_HOLD EV_click5_hold
+#define EVENT_SUNSET_TIMER_HOLD EV_click12_hold
 
 #define EVENT_AUX_WHILE_ON_TOGGLE EV_8clicks
 
