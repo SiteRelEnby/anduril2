@@ -2,6 +2,9 @@
 
 #define BUTTON_MAPPINGS_DEFINED
 
+#ifdef
+#undef EVENT_MOMENTARY
+#endif
 #if defined(USE_MOMENTARY_MODE) && !defined(EVENT_MOMENTARY)
 #define EVENT_MOMENTARY EV_12clicks
 #endif
@@ -10,8 +13,8 @@
 #define EVENT_MOMENTARY_STROBE EVENT_MOMENTARY
 #endif
 
-#if defined(USE_SUNSET_TIMER) && !defined(EVENT_HOLD_SUNSET_TIMER)
-#define EVENT_HOLD_SUNSET_TIMER EV_click12_hold
+#if defined(USE_SUNSET_TIMER) && !defined(EVENT_SUNSET_TIMER_HOLD)
+#define EVENT_SUNSET_TIMER_HOLD EV_click12_hold
 #endif
 
 #if !defined(NEXT_CHANNEL_MODE_EVENT)
@@ -62,9 +65,9 @@
   #define EVENT_TURBO_SHORTCUT_2_MOMENTARY_RELEASE EV_click6_hold_release
 
   #define EVENT_TURBO_MAX EV_7clicks
-  #define TURBO_MAX_CHANNEL CM_BOTH //this will usually be CM_BOTH? Probably different on 3+ channel lights where it makes sense to have this feature 
-  #define EVENT_MOMENTARY_TURBO_MAX EV_click7_hold
-  #define EVENT_MOMENTARY_TURBO_MAX_RELEASE EV_click7_hold_release
+  #define TURBO_MAX_CHANNEL CM_BOTH //this will usually be CM_BOTH? Probably different on 3+ channel lights where it makes sense to have this feature specifically
+  #define EVENT_TURBO_MAX_MOMENTARY EV_click7_hold
+  #define EVENT_TURBO_MAX_MOMENTARY_RELEASE EV_click7_hold_release
 
   #define EVENT_AUX_CONFIG EV_8clicks
   #define EVENT_AUX_CONFIG_HOLD EV_click8_hold

@@ -121,7 +121,7 @@ Note that the build does not (TODO: currently?) check for conflicts, which may c
       * Added a third item to the menu, which sets the level at which high brightness is used rather than low to (clicks - 1). e.g. 0C ignored, 1C = use low aux after the light was on at level 1 only, 11C = use low aux after the light was on at <= level 10, etc.)
 
 ## Multichannel lights only
-* Configurable shortcuts to specific channel mode turbo modes (`TURBO_SHORTCUT_1_CHANNEL`, `EVENT_TURBO_SHORTCUT_1`, `EVENT_TURBO_SHORTCUT_1_MOMENTARY`, `EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE`) and maximum (i.e. 200%) (`EVENT_TURBO_MAX`, `TURBO_MAX_CHANNEL` `EVENT_MOMENTARY_TURBO_MAX`, `EVENT_MOMENTARY_TURBO_MAX_RELEASE`)
+* Configurable shortcuts to specific channel mode turbo modes (`TURBO_SHORTCUT_1_CHANNEL`, `EVENT_TURBO_SHORTCUT_1`, `EVENT_TURBO_SHORTCUT_1_MOMENTARY`, `EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE`) and maximum (i.e. 200%) (`EVENT_TURBO_MAX`, `TURBO_MAX_CHANNEL` `EVENT_TURBO_MAX_MOMENTARY`, `EVENT_TURBO_MAX_MOMENTARY_RELEASE`)
 * Previous channel (`EVENT_PREVIOUS_CHANNEL`)
 * Cycle through channel modes in off or ramp mode, similarly to in lockout mode (`EVENT_CHANNEL_CYCLE_OFF_HOLD`, `EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE`, `EVENT_CHANNEL_CYCLE_ON_HOLD`, `EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE`)
   * Remappable for lockout mode (`EVENT_CHANNEL_CYCLE_LOCK_HOLD`)
