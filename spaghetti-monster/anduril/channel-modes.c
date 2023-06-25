@@ -12,7 +12,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     static uint8_t prev_tint = 0;
     #if (defined(EVENT_TURBO_SHORTCUT_1) || defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY))
       static uint8_t prev_channel = 255;
-      static uint8_t prev_level = 0;
+      static uint8_t prev_level = 255;
 //      #if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY))
 //        static uint8_t momentary_from_lock = 0; //temporary variable to store if we are in a momentary mode from lockout_state for channel-specific turbo modes
 //      #endif
@@ -187,27 +187,111 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
   #ifndef TURBO_SHORTCUT_1_CHANNEL
     #define TURBO_SHORTCUT_1_CHANNEL 0 //first channel
   #endif
-  else if (((event == EVENT_TURBO_SHORTCUT_1) || (event == EVENT_TURBO_SHORTCUT_2)) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){ //TODO: can this just be the event, or are there other states that need to be handled?
-    //prev_channel = CH_MODE; don't need this as we're unlocking to on on this channel here
-    if (event ==  EVENT_TURBO_SHORTCUT_1){
-      set_channel_mode(TURBO_SHORTCUT_1_CHANNEL);
+//  else if (((event == EVENT_TURBO_SHORTCUT_1) || (event == EVENT_TURBO_SHORTCUT_2) || (event == EVENT_TURBO_SHORTCUT_MAX)) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){ //TODO: can this just be the event, or are there other states that need to be handled?
+    else if ((
+    #if defined(EVENT_TURBO_SHORTCUT_1) && defined(EVENT_TURBO_SHORTCUT_2) && defined(EVENT_TURBO_MAX)
+    (event == EVENT_TURBO_SHORTCUT_1) || (event == EVENT_TURBO_SHORTCUT_2) || (event == EVENT_TURBO_MAX)
+    #elif defined(EVENT_TURBO_SHORTCUT_1) && defined(EVENT_TURBO_SHORTCUT_2)
+    (event == EVENT_TURBO_SHORTCUT_1) || (event == EVENT_TURBO_SHORTCUT_2)
+    #elif defined(EVENT_TURBO_SHORTCUT_2) && defined(EVENT_TURBO_MAX)
+    (event == EVENT_TURBO_SHORTCUT_2) || (event == EVENT_TURBO_MAX)
+    #elif defined(EVENT_TURBO_SHORTCUT_1) && defined(EVENT_TURBO_MAX)
+    (event == EVENT_TURBO_SHORTCUT_1) || (event == EVENT_TURBO_MAX)
+    #elif defined(EVENT_TURBO_SHORTCUT_1)
+    (event == EVENT_TURBO_SHORTCUT_1)
+    #elif defined(EVENT_TURBO_SHORTCUT_2)
+    (event == EVENT_TURBO_SHORTCUT_2)
+    #elif defined(EVENT_TURBO_MAX)
+    (event == EVENT_TURBO_MAX)
+    #else
+      #error "shouldn't happen(?!)"
+    #endif
+    ) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){ ///TODO: can this just be the event, or are there other states that need to be handled?
+
+    uint8_t new_channel = 255;
+    prev_channel = CH_MODE;
+    switch(event){
+      #if (defined(EVENT_TURBO_SHORTCUT_2) && (defined(TURBO_SHORTCUT_2_CHANNEL)))
+      case EVENT_TURBO_SHORTCUT_1:
+        new_channel = TURBO_SHORTCUT_1_CHANNEL;
+      break;
+      #endif
+      #if (defined(EVENT_TURBO_SHORTCUT_2) && (defined(TURBO_SHORTCUT_2_CHANNEL)))
+      case EVENT_TURBO_SHORTCUT_2:
+        new_channel = TURBO_SHORTCUT_2_CHANNEL;
+      break;
+      #endif
+      #if (defined(EVENT_TURBO_SHORTCUT_MAX) && (defined(TURBO_MAX_CHANNEL)))
+      case EVENT_TURBO_MAX:
+        new_channel = TURBO_MAX_CHANNEL;
+      break;
+      #endif
+    }
+
+    if ((prev_level == 255) && (prev_channel = 255)){
+        // first time? assume the user *wants* turbo rather than exit it, also fixes a bug of 'returning' to 0 when you hit a channel turbo mode while on that channel
+        //   below max by always making sure prev_level is accurate without needing to worry about which state we are coming from
+        prev_level = actual_level;
+    }
+
+    if (CH_MODE != new_channel ){ //assume the user did always want to activate turbo regardless of brightness (e.g. switching channels quickly) if it's for a different channelmode than current
+      prev_channel = CH_MODE;
+      prev_level = actual_level;
+      set_channel_mode(new_channel);
+      set_state(steady_state, MAX_LEVEL);
     }
     else {
-      set_channel_mode(TURBO_SHORTCUT_2_CHANNEL);
+      //channels are the same, user may want to go up to turbo or back down to last used?
+      if (actual_level == MAX_LEVEL){
+        //coming from turbo
+        //set_level(0);
+        if (prev_channel != 255) { set_level(0); set_channel_mode(prev_channel); }
+        set_level(prev_level); //prev_level might be 0, which is fine (for off/lockout)
+        prev_channel=255;
+        prev_level=255;
+      }
+      else {
+        //goto turbo
+        prev_level = actual_level;
+        set_level(MAX_LEVEL);
+        prev_channel=255; //TODO: necessary?
+      }
     }
-    set_state(steady_state, MAX_LEVEL);
     return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
   }
 #endif
 
-#if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY)) && (NUM_CHANNEL_MODES > 1)
+#if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY) || defined(EVENT_TURBO_MAX_MOMENTARY)) && (NUM_CHANNEL_MODES > 1)
   #if defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) && !defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE)
     #error "EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE not defined"
   #endif
   #if defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY) && !defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY_RELEASE)
     #error "EVENT_TURBO_SHORTCUT_2_MOMENTARY_RELEASE not defined"
   #endif
-  else if (((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY) || (event == EVENT_TURBO_SHORTCUT_2_MOMENTARY)) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
+  #if defined(EVENT_TURBO_MAX_MOMENTARY) && !defined(EVENT_TURBO_MAX_MOMENTARY_RELEASE)
+    #error "EVENT_TURBO_MAX_MOMENTARY_RELEASE not defined"
+  #endif
+
+//  else if (((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY) || (event == EVENT_TURBO_SHORTCUT_2_MOMENTARY)) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
+    else if ((
+    #if defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) && defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY) && defined(EVENT_TURBO_MAX_MOMENTARY)
+    (event == EVENT_TURBO_SHORTCUT_1_MOMENTARY) || (event == EVENT_TURBO_SHORTCUT_2_MOMENTARY) || (event == EVENT_TURBO_MAX_MOMENTARY)
+    #elif defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) && defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY)
+    (event == EVENT_TURBO_SHORTCUT_1_MOMENTARY) || (event == EVENT_TURBO_SHORTCUT_2_MOMENTARY)
+    #elif defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY) && defined(EVENT_TURBO_MAX_MOMENTARY)
+    (event == EVENT_TURBO_SHORTCUT_2_MOMENTARY) || (event == EVENT_TURBO_MAX_MOMENTARY)
+    #elif defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) && defined(EVENT_TURBO_MAX_MOMENTARY)
+    (event == EVENT_TURBO_SHORTCUT_1_MOMENTARY) || (event == EVENT_TURBO_MAX_MOMENTARY)
+    #elif defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY)
+    (event == EVENT_TURBO_SHORTCUT_1_MOMENTARY)
+    #elif defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY)
+    (event == EVENT_TURBO_SHORTCUT_2_MOMENTARY)
+    #elif defined(EVENT_TURBO_MAX_MOMENTARY)
+    (event == EVENT_TURBO_MAX_MOMENTARY)
+    #else
+      #error "shouldn't happen (?!)"
+    #endif
+    ) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
     uint8_t active = 0;
     uint8_t new_ch = 0;
     if ((!arg) && (!active)) {
@@ -217,8 +301,11 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
       if (event == EVENT_TURBO_SHORTCUT_1_MOMENTARY){
         new_ch = TURBO_SHORTCUT_1_CHANNEL;
       }
-      else {
+      else if (event == EVENT_TURBO_SHORTCUT_2_MOMENTARY) {
         new_ch = TURBO_SHORTCUT_2_CHANNEL;
+      }
+      else {
+        new_ch = TURBO_MAX_CHANNEL;
       }
       if (CH_MODE != new_ch) { set_channel_mode(new_ch); }
       if (current_state == lockout_state){
@@ -239,7 +326,22 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
 //  }
 //  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
 //  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && (current_state == lockout_state)) {
-  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) || (event == EVENT_TURBO_SHORTCUT_2_MOMENTARY_RELEASE)) {
+
+
+//  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) || (event == EVENT_TURBO_SHORTCUT_2_MOMENTARY_RELEASE)) {
+    else if ((
+    #if defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY_RELEASE) && defined(EVENT_TURBO_MAX_MOMENTARY_RELEASE)
+    (event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) || (event == EVENT_TURBO_SHORTCUT_2_MOMENTARY_RELEASE) || (event == EVENT_TURBO_MAX_MOMENTARY_RELEASE)
+    #elif defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY_RELEASE)
+    (event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) || (event == EVENT_TURBO_SHORTCUT_2_MOMENTARY_RELEASE)
+    #elif defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY_RELEASE) && defined(EVENT_TURBO_MAX_MOMENTARY_RELEASE)
+    (event == EVENT_TURBO_SHORTCUT_2_MOMENTARY_RELEASE) || (event == EVENT_TURBO_MAX_MOMENTARY_RELEASE)
+    #elif defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE)
+    (event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE)
+    #elif defined(EVENT_TURBO_MAX_MOMENTARY_RELEASE)
+    (event == EVENT_TURBO_MAX_MOMENTARY_RELEASE)
+    #endif
+    ) ){ //&& ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))) { //TODO: needed?
     //prev_channel = 255; //reset
     if (momentary_from_lock == 1){
       momentary_from_lock = 0;
@@ -281,23 +383,6 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
       return channel_mode_state(EV_3clicks, 0);
     }
   }
-
-#if ((NUM_CHANNEL_MODES > 1) && (defined(EVENT_TURBO_MAX)) && (defined(TURBO_MAX_CHANNEL)))
-  else if (event == EVENT_TURBO_MAX){
-      if (CH_MODE == TURBO_MAX_CHANNEL){
-        //returning from max turbo
-        set_channel_mode(prev_channel);
-        prev_channel = 255;
-        set_level_and_therm_target(prev_level);
-      }
-      else {
-        prev_channel = CH_MODE;
-        prev_level = actual_level;
-        set_channel_mode(TURBO_MAX_CHANNEL);
-        set_level_and_therm_target(MAX_LEVEL);
-      }
-  }
-#endif
 
   #if defined(EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) //only need release event for off mode, since lockout uses moon from holding anyway
   else if (
