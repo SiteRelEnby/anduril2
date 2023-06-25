@@ -84,8 +84,9 @@ enum CHANNEL_MODES {
                              set_level_auxwht
 
 // gradual ticking for thermal regulation
-#define GRADUAL_TICK_MODES   gradual_tick_ch1, \
-                             gradual_tick_ch2, \
+//note inverted channels here too
+#define GRADUAL_TICK_MODES   gradual_tick_ch2, \
+                             gradual_tick_ch1, \
                              gradual_tick_both, \
                              gradual_tick_blend, \
                              gradual_tick_auto, \
