@@ -209,7 +209,6 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     ) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){ ///TODO: can this just be the event, or are there other states that need to be handled?
 
     uint8_t new_channel = 255;
-    prev_channel = CH_MODE;
     switch(event){
       #if (defined(EVENT_TURBO_SHORTCUT_2) && (defined(TURBO_SHORTCUT_2_CHANNEL)))
       case EVENT_TURBO_SHORTCUT_1:
@@ -221,18 +220,19 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
         new_channel = TURBO_SHORTCUT_2_CHANNEL;
       break;
       #endif
-      #if (defined(EVENT_TURBO_SHORTCUT_MAX) && (defined(TURBO_MAX_CHANNEL)))
+      #if (defined(EVENT_TURBO_MAX) && (defined(TURBO_MAX_CHANNEL)))
       case EVENT_TURBO_MAX:
         new_channel = TURBO_MAX_CHANNEL;
       break;
       #endif
     }
 
-    if ((prev_level == 255) && (prev_channel = 255)){
-        // first time? assume the user *wants* turbo rather than exit it, also fixes a bug of 'returning' to 0 when you hit a channel turbo mode while on that channel
-        //   below max by always making sure prev_level is accurate without needing to worry about which state we are coming from
-        prev_level = actual_level;
-    }
+//    if ((prev_level == 255) && (prev_channel == 255)){
+//        // first time? assume the user *wants* turbo rather than exit it, also fixes a bug of 'returning' to 0 when you hit a channel turbo mode while on that channel
+//        //   below max by always making sure prev_level is accurate without needing to worry about which state we are coming from
+//        prev_level = actual_level;
+//        //prev_channel = CH_MODE; //TODO: necessary?
+//    }
 
     if (CH_MODE != new_channel ){ //assume the user did always want to activate turbo regardless of brightness (e.g. switching channels quickly) if it's for a different channelmode than current
       prev_channel = CH_MODE;
@@ -242,11 +242,12 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     }
     else {
       //channels are the same, user may want to go up to turbo or back down to last used?
-      if (actual_level == MAX_LEVEL){
+      if ((actual_level == MAX_LEVEL) || (target_level == MAX_LEVEL)){
         //coming from turbo
         //set_level(0);
         if (prev_channel != 255) { set_level(0); set_channel_mode(prev_channel); }
-        set_level(prev_level); //prev_level might be 0, which is fine (for off/lockout)
+        //if (prev_level != 255) { set_level(prev_level); } //prev_level might be 0, which is fine (for off/lockout)
+        if (prev_level != 255) { set_state(steady_state, prev_level); } //prev_level might be 0, which is fine (for off/lockout). use set_state because we might be exiting lockout/off state rather than going from ramp
         prev_channel=255;
         prev_level=255;
       }
