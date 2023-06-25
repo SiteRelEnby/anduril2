@@ -1,4 +1,4 @@
-#error This build is broken.
+//#error This build is broken.
 /*
  * K9.3 has unusual power channels, so it must override some of FSM's code.
  * There are two sets of LEDs:
@@ -56,6 +56,7 @@ inline void set_level_override(uint8_t level) {
 // override fsm-ramping.c :: gradual_tick()
 // (because the power handling on this light is weird)
 // call this every frame or every few frames to change brightness very smoothly
+#ifdef OVERRIDE_GRADUAL_TICK
 void gradual_tick() {
     // go by only one ramp level at a time instead of directly to the target
     uint8_t gt = gradual_target;
@@ -100,4 +101,4 @@ void gradual_tick() {
     }
 
 }
-
+#endif
