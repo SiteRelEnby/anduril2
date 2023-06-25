@@ -128,8 +128,3 @@
 #define DEFAULT_AUTOLOCK_TIME 60
 
 #include "button-mapping-siterelenby.h"
-
-#undef TURBO_SHORTCUT_2_CHANNEL
-#undef TURBO_SHORTCUT_1_CHANNEL
-#define TURBO_SHORTCUT_1_CHANNEL CM_CH1 //flipped these channels in the hwdef which is neater than doing it in many places
-#define TURBO_SHORTCUT_2_CHANNEL CM_CH2
