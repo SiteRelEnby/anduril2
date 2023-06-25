@@ -12,7 +12,7 @@
 #endif
 
 #if defined(USE_SUNSET_TIMER) && !defined(EVENT_HOLD_SUNSET_TIMER)
-#define EVENT_HOLD_SUNSET_TIMER EV_click5_hold
+#define EVENT_SUNSET_TIMER_HOLD EV_click5_hold
 #endif
 
 #if !defined(NEXT_CHANNEL_MODE_EVENT)
@@ -41,10 +41,6 @@
 
 #ifndef EVENT_CHANNEL_CYCLE_LOCK_HOLD
 #define EVENT_CHANNEL_CYCLE_LOCK_HOLD EV_click3_hold
-#endif
-
-#ifndef EVENT_SUNSET_TIMER_HOLD
-#define EVENT_SUNSET_TIMER_HOLD EV_click12_hold
 #endif
 
 #ifndef EVENT_RAMP_STYLE_TOGGLE
