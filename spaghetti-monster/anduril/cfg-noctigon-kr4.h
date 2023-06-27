@@ -32,7 +32,7 @@
 
 #define MAX_1x7135 130
 #define DEFAULT_LEVEL 50
-//#define MIN_THERM_STEPDOWN 66  // should be above highest dyn_pwm level
+#define MIN_THERM_STEPDOWN 66  // should be above highest dyn_pwm level
 #define HALFSPEED_LEVEL 12
 #define QUARTERSPEED_LEVEL 4
 
