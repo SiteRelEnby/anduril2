@@ -290,6 +290,12 @@ void loop() {
 
 
     #ifdef USE_AUX_RGB_LEDS_WHILE_ON
+    // compatibility hack: if USE_AUX_RGB_LEDS_WHILE_ON is defined but has no value, set it to something sensible
+    #if (!(USE_AUX_RGB_LEDS_WHILE_ON + 0)) // if USE_AUX_RGB_LEDS_WHILE_ON is an int, passes. If blank, evaluates to `(+0)` which evaluates to false.
+      #undef USE_AUX_RGB_LEDS_WHILE_ON
+      #define USE_AUX_RGB_LEDS_WHILE_ON 0 // default: always on
+    #endif
+
     // display battery charge on RGB button during use
 
     #ifdef USE_AUX_WHILE_ON_CONFIG
