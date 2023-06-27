@@ -67,6 +67,39 @@ uint8_t blink_digit(uint8_t num) {
 }
 #endif
 
+#if (defined(USE_BLINK_DIGIT_CHANNEL) && (NUM_CHANNEL_MODES > 1))
+uint8_t blink_digit_channel(uint8_t num, uint8_t ontime, uint8_t offtime, uint8_t blink_digit_use_channel) {
+//blink a digit on the specified channel, optionally overriding BLINK_DELAY (e.g. for very fast blinks)
+//blink_digit_channel_delay is the equivalent of BLINK_SPEED (default 1000). Number of ms to delay between blinks default is (BLINK_SPEED * 3 / 12) = 250ms; to delay *for* each blink is ( BLINK_SPEED * 2 / 12 ) = 167ms
+//rest is copypasted from blink_digit() with the ifdefs removed since we are always by definition setting a channel here
+
+    // "zero" digit gets a single short blink
+    //uint8_t ontime = blink_digit_channel_delay * 2 / 12;
+    if (!num) { ontime = BLINK_ONCE_TIME; num ++; }
+
+    // channel is set per blink, to prevent issues
+    // if another mode interrupts us (like a config menu)
+    uint8_t old_channel = CH_MODE;
+
+    for (; num>0; num--) {
+        set_channel_mode(blink_digit_use_channel);
+        set_level(BLINK_BRIGHTNESS);
+        CH_MODE = old_channel;
+        nice_delay_ms(offtime);
+
+        set_channel_mode(blink_digit_use_channel);
+        set_level(0);
+        CH_MODE = old_channel;
+        nice_delay_ms(offtime);
+    }
+
+    set_channel_mode(old_channel);
+
+    //return nice_delay_ms(blink_digit_channel_delay * 8 / 12); //TODO: this delay is looooooooooong. Can't think of a reason to keep it for this method since it'll probably be low numbers fast and not often but if necessary can always add another arg to wait a long time
+    return nice_delay_ms(offtime * 2);
+}
+#endif
+
 #ifdef USE_BLINK_BIG_NUM
 uint8_t blink_big_num(uint16_t num) {
     uint16_t digits[] = { 10000, 1000, 100, 10, 1 };

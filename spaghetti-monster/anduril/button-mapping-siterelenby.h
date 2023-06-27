@@ -104,43 +104,84 @@
 #define USE_AUX_RGB_LEDS_WHILE_ON
 #define USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW 20
 #define USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH 70
+
 #if NUM_CHANNEL_MODES > 1
+  #define USE_BLINK_DIGIT_CHANNEL
 
-//#if (!defined(BLINK_LOCK_REMINDER_CHANNEL)) && defined (CM_AUXRED)
-//  #define BLINK_LOCK_REMINDER_CHANNEL CM_AUXRED
-//#endif
+  //BLINK_ONCE_USE_BLINKY_MODE_CHANNEL_SETTING
 
-//BLINK_ONCE_USE_BLINKY_MODE_CHANNEL_SETTING
+  #if (defined(USE_AUX_RGB_LEDS))
+    //RGB aux
+    #if (!defined(BLINK_LOCK_REMINDER_CHANNEL) )// && (defined (CM_AUXRED)))
+      #define BLINK_LOCK_REMINDER_CHANNEL CM_AUXRED
+    #endif
+    #if !(defined(POWERON_BLINK_CHANNEL))// && (defined(CM_AUXBLU))
+      #define POWERON_BLINK_CHANNEL CM_AUXBLU
+    #endif
 
-  #if !(defined(POWERON_BLINK_CHANNEL)) && (defined(CM_AUXBLU))
-    #define POWERON_BLINK_CHANNEL CM_AUXBLU
-  #endif
+    #if !(defined(LOCKOUT_EXIT_BLINK_CHANNEL))// && (defined(CM_AUXCYN))
+      #define LOCKOUT_EXIT_BLINK_CHANNEL CM_AUXCYN
+    #endif
 
-  #if !(defined(LOCKOUT_EXIT_BLINK_CHANNEL)) && (defined(CM_AUXCYN))
-    #define LOCKOUT_EXIT_BLINK_CHANNEL CM_AUXCYN
-  #endif
+    #if !(defined(AUX_CONFIG_BLINK_CHANNEL))// && (defined(CM_AUXCYN))
+      #define AUX_CONFIG_BLINK_CHANNEL CM_AUXCYN
+    #endif
 
-  #if !(defined(AUX_CONFIG_BLINK_CHANNEL)) && (defined(CM_AUXCYN))
-    #define AUX_CONFIG_BLINK_CHANNEL CM_AUXCYN
-  #endif
+    #if !(defined(SIMPLE_UI_BLINK_CHANNEL))// && (defined(CM_AUXWHT))
+      #define SIMPLE_UI_BLINK_CHANNEL CM_AUXWHT
+    #endif
 
-  #if !(defined(SIMPLE_UI_BLINK_CHANNEL)) && (defined(CM_AUXWHT))
-    #define SIMPLE_UI_BLINK_CHANNEL CM_AUXWHT
-  #endif
+    #if !(defined(MOMENTARY_BLINK_CHANNEL))// && (defined(CM_AUXCYN))
+      #define MOMENTARY_BLINK_CHANNEL CM_AUXCYN
+    #endif
 
-  #if !(defined(MOMENTARY_BLINK_CHANNEL)) && (defined(CM_AUXCYN))
-    #define MOMENTARY_BLINK_CHANNEL CM_AUXCYN
-  #endif
+    #if !(defined(TACTICAL_BLINK_CHANNEL))// && (defined(CM_AUXRED))
+      #define TACTICAL_BLINK_CHANNEL CM_AUXRED
+    #endif
 
-  #if !(defined(TACTICAL_BLINK_CHANNEL)) && (defined(CM_AUXRED))
-    #define TACTICAL_BLINK_CHANNEL CM_AUXRED
-  #endif
+    #if !(defined(SAVE_MEMORY_BLINK_CHANNEL))// && (defined(CM_AUXWHT))
+      #define SAVE_MEMORY_BLINK_CHANNEL CM_AUXWHT
+    #endif
 
-  #if !(defined(SAVE_MEMORY_BLINK_CHANNEL)) && (defined(CM_AUXWHT))
-    #define SAVE_MEMORY_BLINK_CHANNEL CM_AUXWHT
-  #endif
+    #if !(defined(LOCK_BLINK_CHANNEL))// && (defined(CM_AUXRED))
+      #define LOCK_BLINK_CHANNEL CM_AUXRED
+    #endif
+  #else
+    //no RGB :c
+    #if (!defined(BLINK_LOCK_REMINDER_CHANNEL) )// && (defined (CM_AUXRED)))
+      #define BLINK_LOCK_REMINDER_CHANNEL CM_AUX
+    #endif
 
-  #if !(defined(LOCK_BLINK_CHANNEL)) && (defined(CM_AUXRED))
-    #define LOCK_BLINK_CHANNEL CM_AUXRED
+    #if !(defined(POWERON_BLINK_CHANNEL))// && (defined(CM_AUXBLU))
+      #define POWERON_BLINK_CHANNEL CM_MAIN
+    #endif
+
+    #if !(defined(LOCKOUT_EXIT_BLINK_CHANNEL))// && (defined(CM_AUXCYN))
+      #define LOCKOUT_EXIT_BLINK_CHANNEL CM_AUX
+    #endif
+
+    #if !(defined(AUX_CONFIG_BLINK_CHANNEL))// && (defined(CM_AUXCYN))
+      #define AUX_CONFIG_BLINK_CHANNEL CM_AUX
+    #endif
+
+    #if !(defined(SIMPLE_UI_BLINK_CHANNEL))// && (defined(CM_AUXWHT))
+      #define SIMPLE_UI_BLINK_CHANNEL CM_AUX
+    #endif
+
+    #if !(defined(MOMENTARY_BLINK_CHANNEL))// && (defined(CM_AUXCYN))
+      #define MOMENTARY_BLINK_CHANNEL CM_MAIN
+    #endif
+
+    #if !(defined(TACTICAL_BLINK_CHANNEL))// && (defined(CM_AUXRED))
+      #define TACTICAL_BLINK_CHANNEL CM_AUX
+    #endif
+
+    #if !(defined(SAVE_MEMORY_BLINK_CHANNEL))// && (defined(CM_AUXWHT))
+      #define SAVE_MEMORY_BLINK_CHANNEL CM_MAIN
+    #endif
+
+    #if !(defined(LOCK_BLINK_CHANNEL))// && (defined(CM_AUXRED))
+      #define LOCK_BLINK_CHANNEL CM_AUX
+    #endif
   #endif
 #endif

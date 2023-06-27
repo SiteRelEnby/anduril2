@@ -115,9 +115,9 @@ if (!momentary_from_lock){ //used in channel-modes.c
     // 3 clicks: exit and turn off
     else if (event == EV_3clicks) {
         #ifdef LOCKOUT_EXIT_BLINK_CHANNEL
-        blink_once();
+          blink_digit_channel(1, 200, 75, LOCKOUT_EXIT_BLINK_CHANNEL);
         #else
-        blink_once();
+          blink_once();
         #endif
         set_state(off_state, 0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
@@ -205,9 +205,10 @@ if (!momentary_from_lock){ //used in channel-modes.c
         rgb_led_update(cfg.rgb_led_lockout_mode, 0);
         save_config();
         #ifdef AUX_CONFIG_BLINK_CHANNEL
-        blink_once();
+          blink_once();
+          blink_digit_channel(1, 200, 75, AUX_CONFIG_BLINK_CHANNEL);
         #else
-        blink_once();
+          blink_once();
         #endif
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
