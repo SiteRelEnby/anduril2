@@ -7,6 +7,10 @@
 #include "channel-modes.h"
 
 uint8_t channel_mode_state(Event event, uint16_t arg) {
+
+    // "current_state" is volatile, so cache it to reduce code size
+    StatePtr state = current_state;
+
     #ifdef USE_CHANNEL_MODE_ARGS
     static int8_t tint_ramp_direction = 1;
     static uint8_t prev_tint = 0;
@@ -38,7 +42,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     #ifdef DEFAULT_BLINK_CHANNEL
       )
     #else
-      && (current_state != battcheck_state))
+      && (state != battcheck_state))
     #endif
     {
         uint8_t next = cfg.channel_mode;
@@ -187,7 +191,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
   #ifndef TURBO_SHORTCUT_1_CHANNEL
     #define TURBO_SHORTCUT_1_CHANNEL 0 //first channel
   #endif
-//  else if (((event == EVENT_TURBO_SHORTCUT_1) || (event == EVENT_TURBO_SHORTCUT_2) || (event == EVENT_TURBO_SHORTCUT_MAX)) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){ //TODO: can this just be the event, or are there other states that need to be handled?
+//  else if (((event == EVENT_TURBO_SHORTCUT_1) || (event == EVENT_TURBO_SHORTCUT_2) || (event == EVENT_TURBO_SHORTCUT_MAX)) && ((state == steady_state) || (state == off_state) || (state == lockout_state))){ //TODO: can this just be the event, or are there other states that need to be handled?
     else if ((
     #if defined(EVENT_TURBO_SHORTCUT_1) && defined(EVENT_TURBO_SHORTCUT_2) && defined(EVENT_TURBO_MAX)
     (event == EVENT_TURBO_SHORTCUT_1) || (event == EVENT_TURBO_SHORTCUT_2) || (event == EVENT_TURBO_MAX)
@@ -206,7 +210,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     #else
       #error "shouldn't happen(?!)"
     #endif
-    ) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){ ///TODO: can this just be the event, or are there other states that need to be handled?
+    ) && ((state == steady_state) || (state == off_state) || (state == lockout_state))){ ///TODO: can this just be the event, or are there other states that need to be handled?
 
     uint8_t new_channel = 255;
     switch(event){
@@ -234,7 +238,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
 //        //prev_channel = CH_MODE; //TODO: necessary?
 //    }
 
-    if (CH_MODE != new_channel ){ //assume the user did always want to activate turbo regardless of brightness (e.g. switching channels quickly) if it's for a different channelmode than current
+    if ((CH_MODE != new_channel ) || (state == lockout_state)){ //assume the user did always want to activate turbo regardless of brightness (e.g. switching channels quickly) if it's for a different channelmode than current
       prev_channel = CH_MODE;
       prev_level = actual_level;
       set_channel_mode(new_channel);
@@ -273,7 +277,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     #error "EVENT_TURBO_MAX_MOMENTARY_RELEASE not defined"
   #endif
 
-//  else if (((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY) || (event == EVENT_TURBO_SHORTCUT_2_MOMENTARY)) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
+//  else if (((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY) || (event == EVENT_TURBO_SHORTCUT_2_MOMENTARY)) && ((state == steady_state) || (state == off_state) || (state == lockout_state))){
     else if ((
     #if defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) && defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY) && defined(EVENT_TURBO_MAX_MOMENTARY)
     (event == EVENT_TURBO_SHORTCUT_1_MOMENTARY) || (event == EVENT_TURBO_SHORTCUT_2_MOMENTARY) || (event == EVENT_TURBO_MAX_MOMENTARY)
@@ -292,7 +296,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     #else
       #error "shouldn't happen (?!)"
     #endif
-    ) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
+    ) && ((state == steady_state) || (state == off_state) || (state == lockout_state))){
     uint8_t active = 0;
     uint8_t new_ch = 0;
     if ((!arg) && (!active)) {
@@ -309,7 +313,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
         new_ch = TURBO_MAX_CHANNEL;
       }
       if (CH_MODE != new_ch) { set_channel_mode(new_ch); }
-      if (current_state == lockout_state){
+      if (state == lockout_state){
           momentary_from_lock = 1;
           //push_state(steady_state, MAX_LEVEL);
 //          set_state(steady_state, arg);
@@ -321,12 +325,12 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
 
 //        if (!arg) {
 //            if (prev_channel == 255) { prev_channel = CH_MODE; prev_level = actual_level; set_channel_mode(TURBO_SHORTCUT_1_CHANNEL); set_channel_mode(TURBO_SHORTCUT_1_CHANNEL); } //save channel we were on the first time round and only *set* that channel then (since eventually arg wraps round to 0 which makes the LEDs blink otherwise when we channel switch (to the same channel), also resets thermal regulation
-//            if (current_state == lockout_state){ momentary_from_lock = 1 ; set_state(steady_state, MAX_LEVEL); } //necessary to get it to stay on from lock? using push_state() doesn't seem to work.
+//            if (state == lockout_state){ momentary_from_lock = 1 ; set_state(steady_state, MAX_LEVEL); } //necessary to get it to stay on from lock? using push_state() doesn't seem to work.
 //            return EVENT_HANDLED;
 //        }
 //  }
-//  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))){
-//  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && (current_state == lockout_state)) {
+//  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && ((state == steady_state) || (state == off_state) || (state == lockout_state))){
+//  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) && (state == lockout_state)) {
 
 
 //  else if ((event == EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE) || (event == EVENT_TURBO_SHORTCUT_2_MOMENTARY_RELEASE)) {
@@ -342,7 +346,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     #elif defined(EVENT_TURBO_MAX_MOMENTARY_RELEASE)
     (event == EVENT_TURBO_MAX_MOMENTARY_RELEASE)
     #endif
-    ) ){ //&& ((current_state == steady_state) || (current_state == off_state) || (current_state == lockout_state))) { //TODO: needed?
+    ) ){ //&& ((state == steady_state) || (state == off_state) || (state == lockout_state))) { //TODO: needed?
     //prev_channel = 255; //reset
     if (momentary_from_lock == 1){
       momentary_from_lock = 0;
@@ -360,11 +364,11 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
 #if ((NUM_CHANNEL_MODES > 1) && (defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) || (defined(EVENT_CHANNEL_CYCLE_ON_HOLD))))
   else if (
   #if defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) && defined(EVENT_CHANNEL_CYCLE_ON_HOLD)
-      (((event == EVENT_CHANNEL_CYCLE_OFF_HOLD) && (current_state == off_state)) || ((event == EVENT_CHANNEL_CYCLE_ON_HOLD) && (current_state == steady_state))  ) // || ((event == EVENT_CHANNEL_CYCLE_LOCK_HOLD) && (current_state == lockout_state)))
+      (((event == EVENT_CHANNEL_CYCLE_OFF_HOLD) && (state == off_state)) || ((event == EVENT_CHANNEL_CYCLE_ON_HOLD) && (state == steady_state))  ) // || ((event == EVENT_CHANNEL_CYCLE_LOCK_HOLD) && (state == lockout_state)))
   #elif (defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) && !defined(EVENT_CHANNEL_CYCLE_ON_HOLD))
-      ((event == EVENT_CHANNEL_CYCLE_OFF_HOLD) && (current_state == off_state))
+      ((event == EVENT_CHANNEL_CYCLE_OFF_HOLD) && (state == off_state))
   #else
-      ((event == EVENT_CHANNEL_CYCLE_ON_HOLD) && (current_state == steady_state))
+      ((event == EVENT_CHANNEL_CYCLE_ON_HOLD) && (state == steady_state))
   #endif
   ){
 //#ifdef USE_AUX_RGB_LEDS
@@ -388,11 +392,11 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
   #if defined(EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) //only need release event for off mode, since lockout uses moon from holding anyway
   else if (
 //  #if defined(EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && defined(EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE)
-//      (((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (current_state == off_state)) || ((event == EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE) && (current_state == steady_state))  ) // || ((event == EVENT_CHANNEL_CYCLE_LOCK_HOLD) && (current_state == lockout_state)))
-      (((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (current_state == off_state))      )// || ((event == EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE) && (current_state == steady_state))  ) // || ((event == EVENT_CHANNEL_CYCLE_LOCK_HOLD) && (current_state == lockout_state)))
-  //      ((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (current_state == off_state))
+//      (((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (state == off_state)) || ((event == EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE) && (state == steady_state))  ) // || ((event == EVENT_CHANNEL_CYCLE_LOCK_HOLD) && (state == lockout_state)))
+      (((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (state == off_state))      )// || ((event == EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE) && (state == steady_state))  ) // || ((event == EVENT_CHANNEL_CYCLE_LOCK_HOLD) && (state == lockout_state)))
+  //      ((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (state == off_state))
 //  #else
-//      ((event == EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE) && (current_state == steady_state))
+//      ((event == EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE) && (state == steady_state))
 //  #endif
   ){
 //    setting_rgb_mode_now = 0; //reset
