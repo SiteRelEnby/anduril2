@@ -203,7 +203,11 @@ uint8_t off_state(Event event, uint16_t arg) {
     // 4 clicks: soft lockout
     else if (event == EV_4clicks) {
         #ifdef LOCK_BLINK_CHANNEL
-        blink_digit_channel(1, 200, 75, LOCK_BLINK_CHANNEL);
+//        blink_digit_channel(1, 200, 75, LOCK_BLINK_CHANNEL);
+          blink_channel_count = 1;
+          blink_channel_ontime = 500;
+          blink_channel_offtime = 100;
+          blink_channel_channel = LOCK_BLINK_CHANNEL;
         #else
         blink_once();
         #endif
@@ -295,7 +299,11 @@ uint8_t off_state(Event event, uint16_t arg) {
         rgb_led_update(cfg.rgb_led_off_mode, 0);
         save_config();
         #ifdef AUX_CONFIG_BLINK_CHANNEL
-        blink_digit_channel(1, 200, 75, AUX_CONFIG_BLINK_CHANNEL);
+//        blink_digit_channel(1, 200, 75, AUX_CONFIG_BLINK_CHANNEL);
+          blink_channel_count = 1;
+          blink_channel_ontime = 500;
+          blink_channel_offtime = 100;
+          blink_channel_channel = AUX_CONFIG_BLINK_CHANNEL;
         #else
         blink_once();
         #endif
@@ -332,7 +340,11 @@ uint8_t off_state(Event event, uint16_t arg) {
     // 10 clicks: enable simple UI
     else if (event == EV_10clicks) {
         #ifdef SIMPLE_UI_BLINK_CHANNEL
-          blink_digit_channel(1, 200, 75, SIMPLE_UI_BLINK_CHANNEL);
+//          blink_digit_channel(1, 200, 75, SIMPLE_UI_BLINK_CHANNEL);
+          blink_channel_count = 1;
+          blink_channel_ontime = 500;
+          blink_channel_offtime = 100;
+          blink_channel_channel = SIMPLE_UI_BLINK_CHANNEL;
         #else
           blink_once();
         #endif
@@ -346,7 +358,11 @@ uint8_t off_state(Event event, uint16_t arg) {
     // 5 clicks: momentary mode
     else if (event == EVENT_MOMENTARY) {
         #ifdef MOMENTARY_BLINK_CHANNEL
-        blink_digit_channel(1, 200, 75, MOMENTARY_BLINK_CHANNEL);
+//        blink_digit_channel(1, 200, 75, MOMENTARY_BLINK_CHANNEL);
+          blink_channel_count = 1;
+          blink_channel_ontime = 500;
+          blink_channel_offtime = 100;
+          blink_channel_channel = MOMENTARY_BLINK_CHANNEL;
         #else
         blink_once();
         #endif
@@ -359,7 +375,11 @@ uint8_t off_state(Event event, uint16_t arg) {
     // 6 clicks: tactical mode
     else if (event == EVENT_TACTICAL_MODE) {
         #ifdef TACTICAL_BLINK_CHANNEL
-        blink_digit_channel(1, 200, 75, TACTICAL_BLINK_CHANNEL);
+//        blink_digit_channel(1, 200, 75, TACTICAL_BLINK_CHANNEL);
+          blink_channel_count = 1;
+          blink_channel_ontime = 500;
+          blink_channel_offtime = 100;
+          blink_channel_channel = TACTICAL_BLINK_CHANNEL;
         #else
         blink_once();
         #endif

@@ -215,7 +215,7 @@ void setup() {
 
         // blink at power-on to let user know power is connected
 
-        #if ((defined(POWERON_BLINK_CHANNEL)) && (defined(USE_BLINK_DIGIT_CHANNEL)))
+        #if ((defined(POWERON_BLINK_CHANNEL)) && (defined(USE_BLINK_CHANNEL)))
           blink_digit_channel(1, 200, 250, POWERON_BLINK_CHANNEL);
         //#elif defined(CM_AUXBLU)
         //  blink_once(CM_AUXBLU);
@@ -265,19 +265,17 @@ void setup() {
 
 }
 
-
 // runs repeatedly whenever light is "on" (not in standby)
 void loop() {
 
     // "current_state" is volatile, so cache it to reduce code size
     StatePtr state = current_state;
 
-
-    #ifdef BLINK_LOCK_REMINDER
+    #ifdef USE_BLINK_CHANNEL
     //remind user light is locked, if the flag was set when locked
-    if (remind_lock > 0){
-        uint8_t foo = remind_lock;
-        remind_lock = 0; //reset first because it doesn't matter if it gets interrupted
+    if (blink_channel_count > 0){
+        uint8_t foo = blink_channel_count;
+        blink_channel_count = 0; //reset first because it doesn't matter if it gets interrupted
         rgb_led_set(0); //no need to reset, EV_sleep_tick handles it in lockout or we're entering off/ramp mode anyway if the user does anything else that removes the lock state
         #ifdef USE_BUTTON_LED
         button_led_set(0); //same
@@ -285,16 +283,14 @@ void loop() {
         //disable aux functions that interfere (voltage aux while on, standard off/lock idle pattern, etc). If nice_delay_ms (inside the blink_digit methods) gets interrupted then we will be entering on/off state anyway so aux gets set then, resetting aux_led_override
         aux_led_override = 1;
 
-        #if (!defined(USE_BLINK_DIGIT_CHANNEL))
-        blink_digit(foo);
+        #if (!defined(USE_BLINK_CHANNEL))
+          blink_digit(foo);
         #else
-          #if !defined (BLINK_LOCK_REMINDER_CHANNEL)
-            #error "!defined (BLINK_LOCK_REMINDER_CHANNEL)"
-          #endif
-          blink_digit_channel(foo, 50, 100, BLINK_LOCK_REMINDER_CHANNEL); //3 fast blinks using BLINK_LOCK_REMINDER_CHANNEL (TODO: multiple channels?)
+          blink_digit_channel(foo, blink_channel_ontime, blink_channel_offtime, blink_channel_channel);
         #endif
         //set aux back to normal control
         aux_led_override = 0;
+        set_level(actual_level); //reset aux mode if steady_state
     }
     #endif
 

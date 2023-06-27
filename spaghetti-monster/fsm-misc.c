@@ -4,6 +4,10 @@
 
 #pragma once
 
+#ifdef USE_BLINK_CHANNEL
+extern uint8_t ticks_since_on;
+#endif
+
 #ifdef USE_DYNAMIC_UNDERCLOCKING
 void auto_clock_speed() {
     uint8_t level = actual_level;  // volatile, avoid repeat access
@@ -32,6 +36,8 @@ uint8_t blink_digit(uint8_t num) {
     uint8_t ontime = BLINK_SPEED * 2 / 12;
     if (!num) { ontime = BLINK_ONCE_TIME; num ++; }
 
+#ifndef USE_BLINK_CHANNEL
+//original code
     #ifdef BLINK_CHANNEL
     // channel is set per blink, to prevent issues
     // if another mode interrupts us (like a config menu)
@@ -62,17 +68,26 @@ uint8_t blink_digit(uint8_t num) {
     #ifdef BLINK_CHANNEL
     set_channel_mode(old_channel);
     #endif
-
+    ticks_since_on = 255;
     return nice_delay_ms(BLINK_SPEED * 8 / 12);
+
+#else //save some space if we have blink_digit_channel available
+    #ifdef BLINK_CHANNEL
+      blink_digit_channel(num, ontime, (BLINK_SPEED * 3 / 12), BLINK_CHANNEL);
+    #else
+      blink_digit_channel(num, ontime, (BLINK_SPEED * 3 / 12), 0);
+    #endif
+    return nice_delay_ms(BLINK_SPEED * 8 / 12);
+#endif
 }
 #endif
 
-#if (defined(USE_BLINK_DIGIT_CHANNEL) && (NUM_CHANNEL_MODES > 1))
+#if (defined(USE_BLINK_CHANNEL) && (NUM_CHANNEL_MODES > 1))
 uint8_t blink_digit_channel(uint8_t num, uint8_t ontime, uint8_t offtime, uint8_t blink_digit_use_channel) {
 //blink a digit on the specified channel, optionally overriding BLINK_DELAY (e.g. for very fast blinks)
 //blink_digit_channel_delay is the equivalent of BLINK_SPEED (default 1000). Number of ms to delay between blinks default is (BLINK_SPEED * 3 / 12) = 250ms; to delay *for* each blink is ( BLINK_SPEED * 2 / 12 ) = 167ms
 //rest is copypasted from blink_digit() with the ifdefs removed since we are always by definition setting a channel here
-
+    aux_led_override = 1;
     // "zero" digit gets a single short blink
     //uint8_t ontime = blink_digit_channel_delay * 2 / 12;
     if (!num) { ontime = BLINK_ONCE_TIME; num ++; }
@@ -80,23 +95,26 @@ uint8_t blink_digit_channel(uint8_t num, uint8_t ontime, uint8_t offtime, uint8_
     // channel is set per blink, to prevent issues
     // if another mode interrupts us (like a config menu)
     uint8_t old_channel = CH_MODE;
-
+    set_level(0);
     for (; num>0; num--) {
         set_channel_mode(blink_digit_use_channel);
         set_level(BLINK_BRIGHTNESS);
+        //ticks_since_on = 255;
         CH_MODE = old_channel;
         nice_delay_ms(offtime);
 
         set_channel_mode(blink_digit_use_channel);
         set_level(0);
+        //ticks_since_on = 255;
         CH_MODE = old_channel;
         nice_delay_ms(offtime);
     }
 
     set_channel_mode(old_channel);
-
+    ticks_since_on = 255;
+    return 0;
     //return nice_delay_ms(blink_digit_channel_delay * 8 / 12); //TODO: this delay is looooooooooong. Can't think of a reason to keep it for this method since it'll probably be low numbers fast and not often but if necessary can always add another arg to wait a long time
-    return nice_delay_ms(offtime * 2);
+    //return nice_delay_ms(offtime * 2);
 }
 #endif
 

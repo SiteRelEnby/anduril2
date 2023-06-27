@@ -185,7 +185,11 @@ uint8_t steady_state(Event event, uint16_t arg) {
                     #endif
                     ) && (actual_level <= mode_min)) {
             #ifdef LOCK_BLINK_CHANNEL
-            blink_digit_channel(1, 200, 75, LOCK_BLINK_CHANNEL);
+//            blink_digit_channel(1, 200, 75, LOCK_BLINK_CHANNEL);
+          blink_channel_count = 1;
+          blink_channel_ontime = 500;
+          blink_channel_offtime = 100;
+          blink_channel_channel = LOCK_BLINK_CHANNEL;
             #else
             blink_once();
             #endif
@@ -488,7 +492,11 @@ uint8_t steady_state(Event event, uint16_t arg) {
         manual_memory_save();
         save_config();
         #ifdef SAVE_MEMORY_BLINK_CHANNEL
-        blink_digit_channel(1, 200, 75, SAVE_MEMORY_BLINK_CHANNEL);
+//        blink_digit_channel(1, 200, 75, SAVE_MEMORY_BLINK_CHANNEL);
+          blink_channel_count = 1;
+          blink_channel_ontime = 500;
+          blink_channel_offtime = 100;
+          blink_channel_channel = SAVE_MEMORY_BLINK_CHANNEL;
         #else
         blink_once();
         #endif
@@ -504,7 +512,11 @@ uint8_t steady_state(Event event, uint16_t arg) {
             cfg.manual_memory = 0;
             save_config();
             #ifdef SAVE_MEMORY_BLINK_CHANNEL
-            blink_digit_channel(1, 200, 75, SAVE_MEMORY_BLINK_CHANNEL);
+//            blink_digit_channel(1, 200, 75, SAVE_MEMORY_BLINK_CHANNEL);
+          blink_channel_count = 1;
+          blink_channel_ontime = 500;
+          blink_channel_offtime = 100;
+          blink_channel_channel = SAVE_MEMORY_BLINK_CHANNEL;
             #else
             blink_once();
             #endif

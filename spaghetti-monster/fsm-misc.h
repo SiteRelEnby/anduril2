@@ -24,8 +24,12 @@ void auto_clock_speed();
     #endif
     uint8_t blink_digit(uint8_t num);
 
-    #ifdef USE_BLINK_DIGIT_CHANNEL
+    #ifdef USE_BLINK_CHANNEL
       uint8_t blink_digit_channel(uint8_t num, uint8_t ontime, uint8_t offtime, uint8_t blink_digit_use_channel);
+      volatile uint8_t blink_channel_count = 0;
+      volatile uint16_t blink_channel_ontime = 0;
+      volatile uint16_t blink_channel_offtime = 0;
+      volatile uint8_t blink_channel_channel = 0;
     #endif
 
 #endif

@@ -13,6 +13,10 @@ uint8_t remind_lock = 0;
   static uint8_t momentary_from_lock = 0; //temporary variable to store if we are in a momentary mode from lockout_state for channel-specific turbo modes
 #endif
 
+extern volatile uint8_t blink_channel_count;
+extern volatile uint16_t blink_channel_ontime;
+extern volatile uint16_t blink_channel_offtime;
+extern volatile uint8_t blink_channel_channel;
 
 uint8_t lockout_state(Event event, uint16_t arg) {
     #ifdef USE_MOON_DURING_LOCKOUT_MODE
@@ -26,7 +30,11 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     #ifdef BLINK_LOCK_REMINDER
     if (((event == EV_1click) || (event == EV_2clicks)) && (current_state != tactical_state)){
         //remind user light is locked
-        remind_lock = 3;
+        blink_channel_count = 3;
+        blink_channel_ontime = 60;
+        blink_channel_offtime = 60;
+        blink_channel_channel = BLINK_LOCK_REMINDER_CHANNEL;
+
         return EVENT_HANDLED;
     } else
     #endif
@@ -115,7 +123,11 @@ if (!momentary_from_lock){ //used in channel-modes.c
     // 3 clicks: exit and turn off
     else if (event == EV_3clicks) {
         #ifdef LOCKOUT_EXIT_BLINK_CHANNEL
-          blink_digit_channel(1, 200, 75, LOCKOUT_EXIT_BLINK_CHANNEL);
+//        blink_digit_channel(1, 200, 75, LOCKOUT_EXIT_BLINK_CHANNEL);
+          blink_channel_count = 1;
+          blink_channel_ontime = 500;
+          blink_channel_offtime = 100;
+          blink_channel_channel = LOCKOUT_EXIT_BLINK_CHANNEL;
         #else
           blink_once();
         #endif
@@ -206,7 +218,12 @@ if (!momentary_from_lock){ //used in channel-modes.c
         save_config();
         #ifdef AUX_CONFIG_BLINK_CHANNEL
           blink_once();
-          blink_digit_channel(1, 200, 75, AUX_CONFIG_BLINK_CHANNEL);
+//          blink_digit_channel(1, 200, 75, AUX_CONFIG_BLINK_CHANNEL);
+          blink_channel_count = 1;
+          blink_channel_ontime = 500;
+          blink_channel_offtime = 100;
+          blink_channel_channel = AUX_CONFIG_BLINK_CHANNEL;
+
         #else
           blink_once();
         #endif
