@@ -43,7 +43,7 @@
 // * 2. both channels, tied together
 // * 3. both channels, manual blend, max 200% power?
 // * 4. both channels, auto blend, reversible
-#define NUM_CHANNEL_MODES 12
+#define NUM_CHANNEL_MODES 13
 enum CHANNEL_MODES {
     CM_CH1 = 0,
     CM_CH2,
@@ -56,7 +56,8 @@ enum CHANNEL_MODES {
     CM_AUXCYN,
     CM_AUXBLU,
     CM_AUXPRP,
-    CM_AUXWHT
+    CM_AUXWHT,
+    CM_AUXMIX
 };
 
 #define DEFAULT_CHANNEL_MODE CM_CH1
@@ -65,9 +66,9 @@ enum CHANNEL_MODES {
 // _, _, _, 128=middle CCT, 0=warm-to-cool
 #define CHANNEL_MODE_ARGS     0,0,0,128,0
 
-#define CHANNEL_MODES_ENABLED 0b0000111111111111
-#define CHANNEL_HAS_ARGS      0b0000000000011000
-#define CHANNEL_AUX_OVERRIDE  0b0000111111100000 //channel uses aux - stops USE_AUX_RGB_LEDS_WHILE_ON messing up the mix/brightness
+#define CHANNEL_MODES_ENABLED 0b0001111111111111
+#define CHANNEL_HAS_ARGS      0b0001000000011000
+#define CHANNEL_AUX_OVERRIDE  0b0001111111100000 //channel uses aux - stops USE_AUX_RGB_LEDS_WHILE_ON messing up the mix/brightness
 
 #define SET_LEVEL_MODES      set_level_ch1, \
                              set_level_ch2, \
@@ -80,7 +81,8 @@ enum CHANNEL_MODES {
                              set_level_auxcyn, \
                              set_level_auxblu, \
                              set_level_auxprp, \
-                             set_level_auxwht
+                             set_level_auxwht, \
+                             set_level_auxmix
 
 // gradual ticking for thermal regulation
 #define GRADUAL_TICK_MODES   gradual_tick_ch1, \
@@ -94,68 +96,8 @@ enum CHANNEL_MODES {
                              gradual_tick_null, \
                              gradual_tick_null, \
                              gradual_tick_null, \
-                             gradual_tick_null
-
-/*
-#define NUM_CHANNEL_MODES 8
-//#define CM_CH1      0
-//#define CM_CH2      1
-//#define CM_BOTH     2
-//#define CM_BLEND    3
-//#define CM_AUTO     4
-//#define CM_AUXRED   5
-//#define CM_AUXCYN   6
-//#define CM_AUXBLU   7
-//#define CM_AUXWHT   8
-
-enum CHANNEL_MODES {
-    CM_CH1 = 0,
-    CM_CH2,
-    CM_BLEND,
-    CM_AUTO,
-    CM_AUXRED,
-//    CM_AUXYEL,
-//    CM_AUXGRN,
-    CM_AUXCYN,
-    CM_AUXBLU,
-//    CM_AUXPRP,
-    CM_AUXWHT
-};
-
-#define CM_AUXRED 4
-#define CM_AUXCYN 5
-#define CM_AUXBLU 6
-#define CM_AUXWHT 7
-
-#define DEFAULT_CHANNEL_MODE CM_CH1
-
-#define CHANNEL_MODES_ENABLED 0b00001111
-#define CHANNEL_HAS_ARGS      0b00001100
-#define CHANNEL_AUX_OVERRIDE  0b11110000 //channel uses aux - stops USE_AUX_RGB_LEDS_WHILE_ON messing up the mix/brightness
-
-#define USE_CHANNEL_MODE_ARGS
-// _, _, _, 128=middle CCT, 0=warm-to-cool
-#define CHANNEL_MODE_ARGS     0,0,0,0,0,0,128,0
-
-#define SET_LEVEL_MODES      set_level_ch1, \
-                             set_level_ch2, \
-                             set_level_blend, \
-                             set_level_auto, \
-                             set_level_auxred, \
-                             set_level_auxcyn, \
-                             set_level_auxblu, \
-                             set_level_auxwht
-
-// gradual ticking for thermal regulation
-#define GRADUAL_TICK_MODES   gradual_tick_ch1, \
-                             gradual_tick_ch2, \
-                             gradual_tick_blend, \
-                             gradual_tick_auto, \
-                             gradual_tick_null, \
-                             gradual_tick_null, \
                              gradual_tick_null, \
                              gradual_tick_null
-*/
 
 // can use some of the common handlers
 #define USE_CALC_2CH_BLEND
