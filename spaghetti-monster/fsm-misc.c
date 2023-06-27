@@ -95,6 +95,7 @@ uint8_t blink_digit_channel(uint8_t num, uint8_t ontime, uint8_t offtime, uint8_
     // channel is set per blink, to prevent issues
     // if another mode interrupts us (like a config menu)
     uint8_t old_channel = CH_MODE;
+    uint8_t prev_level = actual_level;
     set_level(0);
     for (; num>0; num--) {
         set_channel_mode(blink_digit_use_channel);
@@ -109,8 +110,8 @@ uint8_t blink_digit_channel(uint8_t num, uint8_t ontime, uint8_t offtime, uint8_
         CH_MODE = old_channel;
         nice_delay_ms(offtime);
     }
-
     set_channel_mode(old_channel);
+    set_level(prev_level);
     ticks_since_on = 255;
     return 0;
     //return nice_delay_ms(blink_digit_channel_delay * 8 / 12); //TODO: this delay is looooooooooong. Can't think of a reason to keep it for this method since it'll probably be low numbers fast and not often but if necessary can always add another arg to wait a long time

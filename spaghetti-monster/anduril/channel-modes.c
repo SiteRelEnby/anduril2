@@ -312,11 +312,12 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
       else {
         new_ch = TURBO_MAX_CHANNEL;
       }
-      if (CH_MODE != new_ch) { set_channel_mode(new_ch); }
+      //if (CH_MODE != new_ch) { set_channel_mode(new_ch); }
+      set_channel_mode(new_ch);
       if (state == lockout_state){
           momentary_from_lock = 1;
           //push_state(steady_state, MAX_LEVEL);
-//          set_state(steady_state, arg);
+          set_state(steady_state, arg);
         }
         set_level_and_therm_target(MAX_LEVEL);
       }

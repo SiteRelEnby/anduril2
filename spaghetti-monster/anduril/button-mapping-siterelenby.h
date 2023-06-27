@@ -22,8 +22,11 @@
 #define EVENT_PREVIOUS_CHANNEL EV_4clicks
 #endif
 
-#if !defined(EVENT_TACTICAL_MODE)
+#if !defined(EVENT_TACTICAL_MODE) //default setting that might be unset for specific lights e.g. t85
   #define EVENT_TACTICAL_MODE EV_9clicks
+#endif
+#ifndef TACTICAL_LEVELS
+  #define TACTICAL_LEVELS 150,75,(RAMP_SIZE+2)
 #endif
 
 #ifdef LOCK_FROM_ON_EVENT

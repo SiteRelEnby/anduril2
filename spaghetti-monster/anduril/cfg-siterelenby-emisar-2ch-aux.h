@@ -31,8 +31,8 @@
 //#define CONFIG_WAITING_CHANNEL         CM_CH2
 //#define CONFIG_BLINK_CHANNEL           CM_BOTH
 
-#define POLICE_COLOR_STROBE_CH1        CM_CH1
-#define POLICE_COLOR_STROBE_CH2        CM_CH2
+//#define POLICE_COLOR_STROBE_CH1        CM_CH1
+//#define POLICE_COLOR_STROBE_CH2        CM_CH2
 
 // how much to increase total brightness at middle tint
 // (0 = 100% brightness, 64 = 200% brightness)
@@ -79,7 +79,7 @@
 #define POLICE_COLOR_STROBE_CH1 CM_AUXBLU
 #define POLICE_COLOR_STROBE_CH2 CM_AUXRED
 #undef  TACTICAL_LEVELS
-#define TACTICAL_LEVELS 150,(RAMP_SIZE+2),(RAMP_SIZE+3)
+#define TACTICAL_LEVELS 150,75,(RAMP_SIZE+2)
 
 // use the brightest setting for strobe
 #define STROBE_BRIGHTNESS MAX_LEVEL

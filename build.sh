@@ -24,3 +24,4 @@ docker run --rm -v ${SCRIPTPATH}:/src -e COMMITHASH="$(git rev-parse --short HEA
 #BUILDPATH="$(cd ${SCRIPTPATH} && cd .. && pwd -P )"
 #docker run --rm -v ${BUILDPATH}:/src -e COMMITHASH="$(git rev-parse --short HEAD)" -i -t anduril-builder:latest noctigon-k1-siterelenby
 
+git checkout -- spaghetti-monster/anduril/version.h

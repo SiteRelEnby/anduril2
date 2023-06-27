@@ -41,7 +41,7 @@ void set_level_auxmix(uint8_t level) {
         0b00100010,  // 5: purple
         0b00101010,  // 6: white
     };
-    uint8_t color = cfg.channel_mode_args[cfg.channel_mode] / 42;
+    uint8_t color = cfg.channel_mode_args[cfg.channel_mode] / 36;
     rgb_led_set(!!level * rgb_led_colors[color]);
 }
 bool gradual_tick_null(uint8_t gt) { return true; }  // do nothing

@@ -24,7 +24,7 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     // button is being held
     #ifdef USE_AUX_RGB_LEDS
     // don't turn on during RGB aux LED configuration
-    if (event == EV_click7_hold) { set_level(0); } else
+    if (event == EVENT_AUX_CONFIG_HOLD) { set_level(0); } else
     #endif
 
     #ifdef BLINK_LOCK_REMINDER
@@ -39,8 +39,8 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     } else
     #endif
 
-#if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY))
-if (!momentary_from_lock){ //used in channel-modes.c
+#if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY) || defined(EVENT_TURBO_MAX_MOMENTARY))
+if (!momentary_from_lock) {//used in channel-modes.c
 #endif
     if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
         // hold: lowest floor
@@ -61,7 +61,7 @@ if (!momentary_from_lock){ //used in channel-modes.c
         set_level(0);
     }
     #endif  // ifdef USE_MOON_DURING_LOCKOUT_MODE
-#if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY))
+#if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY) || defined(EVENT_TURBO_MAX_MOMENTARY))
 }
 #endif
 
