@@ -6,7 +6,7 @@
 
 #ifdef USE_RAMPING
 
-#ifdef USE_AUX_RGB_LEDS
+#ifdef USE_AUX_LED_OVERRIDE
 uint8_t aux_led_override = 0;
 #endif
 

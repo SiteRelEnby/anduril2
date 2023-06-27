@@ -65,7 +65,10 @@ if (!momentary_from_lock){ //used in channel-modes.c
     if (event == EV_enter_state) {
         ticks_since_on = 0;
         #if defined(USE_AUX_RGB_LEDS)
-        aux_led_override = 0;
+
+        #ifdef USE_AUX_LED_OVERRIDE
+          aux_led_override = 0;
+        #endif
         #endif
         #ifdef USE_INDICATOR_LED
             // redundant, sleep tick does the same thing
@@ -82,10 +85,13 @@ if (!momentary_from_lock){ //used in channel-modes.c
             // redundant, sleep tick does the same thing
             //indicator_led_update(cfg.indicator_led_mode >> 2, arg);
             #elif defined(USE_AUX_RGB_LEDS)
-
-            if (! aux_led_override) {
-              rgb_led_update(cfg.rgb_led_lockout_mode, arg);
-            }
+              #ifdef USE_AUX_LED_OVERRIDE
+                if (! aux_led_override) {
+                  rgb_led_update(cfg.rgb_led_lockout_mode, arg);
+                }
+              #else
+                rgb_led_update(cfg.rgb_led_lockout_mode, arg);
+              #endif
             #endif
         }
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
@@ -102,11 +108,15 @@ if (!momentary_from_lock){ //used in channel-modes.c
         }
         #endif
         #if defined(USE_INDICATOR_LED)
-        indicator_led_update(cfg.indicator_led_mode >> 2, arg);
+          indicator_led_update(cfg.indicator_led_mode >> 2, arg);
         #elif defined(USE_AUX_RGB_LEDS)
-        if (! aux_led_override){
-          rgb_led_update(cfg.rgb_led_lockout_mode, arg);
-        }
+          #ifdef USE_AUX_LED_OVERRIDE
+            if (! aux_led_override){
+              rgb_led_update(cfg.rgb_led_lockout_mode, arg);
+            }
+          #else
+            rgb_led_update(cfg.rgb_led_lockout_mode, arg);
+          #endif
         #endif
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }

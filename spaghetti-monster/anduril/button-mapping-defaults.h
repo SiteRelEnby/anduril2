@@ -36,7 +36,7 @@
 #endif
 
 #ifndef EVENT_UNLOCK_TO_CEILING
-#define EVENT_UNLOCK_TO_CEILING EV_click5_hold
+#define EVENT_UNLOCK_TO_CEILING EV_5clicks
 #endif
 
 #ifndef EVENT_CHANNEL_CYCLE_LOCK_HOLD

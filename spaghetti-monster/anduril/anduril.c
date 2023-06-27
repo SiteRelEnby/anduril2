@@ -274,6 +274,9 @@ void loop() {
 
 
     #ifdef BLINK_LOCK_REMINDER
+    #ifndef USE_AUX_LED_OVERRIDE
+      #define USE_AUX_LED_OVERRIDE
+    #endif
     //remind user light is locked, if the flag was set when locked
     if (remind_lock > 0){
        uint8_t foo = remind_lock;
@@ -302,11 +305,15 @@ void loop() {
       if (cfg.use_aux_while_on == 1){
     #endif
 
-    if (
-    #ifdef CHANNEL_AUX_OVERRIDE
-    ((! setting_rgb_mode_now) && (! aux_led_override)) && (!channel_uses_aux(CH_MODE))
+    if
+    #if (defined(USE_AUX_LED_OVERRIDE) && defined(CHANNEL_AUX_OVERRIDE))
+    ((! setting_rgb_mode_now) && (! aux_led_override) && (!channel_uses_aux(CH_MODE))
+    #elif (defined(USE_AUX_LED_OVERRIDE) && !defined(CHANNEL_AUX_OVERRIDE))
+    ((! setting_rgb_mode_now) && (! aux_led_override)
+    #elif (!defined(USE_AUX_LED_OVERRIDE) && defined(CHANNEL_AUX_OVERRIDE))
+    ((! setting_rgb_mode_now) && (!channel_uses_aux(CH_MODE))
     #else
-    (! setting_rgb_mode_now) && (! aux_led_override)
+    (! setting_rgb_mode_now
     #endif
       ){
       #ifdef USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
