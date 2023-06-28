@@ -16,8 +16,8 @@ uint8_t off_state(Event event, uint16_t arg) {
     if (event == EV_enter_state) {
         set_level(0);
         ticks_since_on = 0;
-        #if defined(USE_AUX_RGB_LEDS)
-        aux_led_override = 0;
+        #ifdef USE_AUX_LED_OVERRIDE
+          aux_led_override = 0;
         #endif
         #ifdef USE_INDICATOR_LED
         // redundant, sleep tick does the same thing
@@ -41,10 +41,13 @@ uint8_t off_state(Event event, uint16_t arg) {
             #ifdef USE_INDICATOR_LED
             // redundant, sleep tick does the same thing
             //indicator_led_update(cfg.indicator_led_mode & 0x03, arg);
-            #elif defined(USE_AUX_RGB_LEDS)
-            if (! aux_led_override){
+            #endif
+            #ifdef USE_AUX_LED_OVERRIDE
+              if (! aux_led_override){
+                rgb_led_update(cfg.rgb_led_off_mode, arg);
+              }
+            #else
               rgb_led_update(cfg.rgb_led_off_mode, arg);
-            }
             #endif
         }
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
@@ -64,7 +67,11 @@ uint8_t off_state(Event event, uint16_t arg) {
         #ifdef USE_INDICATOR_LED
         indicator_led_update(cfg.indicator_led_mode & 0x03, arg);
         #elif defined(USE_AUX_RGB_LEDS)
-        if (! setting_rgb_mode_now) { rgb_led_update(cfg.rgb_led_off_mode, arg); }
+          #ifndef USE_AUX_LED_OVERRIDE
+            rgb_led_update(cfg.rgb_led_off_mode, arg);
+          #else
+            if (! aux_led_override){ rgb_led_update(cfg.rgb_led_off_mode, arg); }
+          #endif
         #endif
 
         #ifdef USE_AUTOLOCK

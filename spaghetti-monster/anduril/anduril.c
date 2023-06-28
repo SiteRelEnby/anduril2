@@ -272,6 +272,10 @@ void loop() {
     StatePtr state = current_state;
 
     #ifdef USE_BLINK_CHANNEL
+
+    #ifndef USE_AUX_LED_OVERRIDE
+      #define USE_AUX_LED_OVERRIDE
+    #endif
     //remind user light is locked, if the flag was set when locked
     if (blink_channel_count > 0){
         uint8_t foo = blink_channel_count;
@@ -296,17 +300,27 @@ void loop() {
 
 
     #ifdef USE_AUX_RGB_LEDS_WHILE_ON
+    // compatibility hack: if USE_AUX_RGB_LEDS_WHILE_ON is defined but has no value, set it to something sensible
+    #if (!(USE_AUX_RGB_LEDS_WHILE_ON + 0)) // if USE_AUX_RGB_LEDS_WHILE_ON is an int, passes. If blank, evaluates to `(+0)` which evaluates to false.
+      #undef USE_AUX_RGB_LEDS_WHILE_ON
+      #define USE_AUX_RGB_LEDS_WHILE_ON 0 // default: always on
+    #endif
+
     // display battery charge on RGB button during use
 
     #ifdef USE_AUX_WHILE_ON_CONFIG
       if (cfg.use_aux_while_on == 1){
     #endif
 
-    if (
-    #ifdef CHANNEL_AUX_OVERRIDE
-    ((! setting_rgb_mode_now) && (! aux_led_override)) && (!channel_uses_aux(CH_MODE))
+    if
+    #if (defined(USE_AUX_LED_OVERRIDE) && defined(CHANNEL_AUX_OVERRIDE))
+    ((! setting_rgb_mode_now) && (! aux_led_override) && (!channel_uses_aux(CH_MODE))
+    #elif (defined(USE_AUX_LED_OVERRIDE) && !defined(CHANNEL_AUX_OVERRIDE))
+    ((! setting_rgb_mode_now) && (! aux_led_override)
+    #elif (!defined(USE_AUX_LED_OVERRIDE) && defined(CHANNEL_AUX_OVERRIDE))
+    ((! setting_rgb_mode_now) && (!channel_uses_aux(CH_MODE))
     #else
-    (! setting_rgb_mode_now) && (! aux_led_override)
+    (! setting_rgb_mode_now
     #endif
       ){
       #ifdef USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW

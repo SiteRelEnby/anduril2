@@ -11,9 +11,12 @@
     #ifndef DEFAULT_POST_OFF_VOLTAGE_SECONDS
         #define DEFAULT_POST_OFF_VOLTAGE_SECONDS  4
     #endif
-    #if !defined(POST_OFF_VOLTAGE_BRIGHTNESS) && defined(USE_POST_OFF_VOLTAGE_BRIGHTNESS_CONFIG)
+    #ifndef POST_OFF_VOLTAGE_BRIGHTNESS
         // level at which to switch from low to high aux brightness
-        //#define POST_OFF_VOLTAGE_BRIGHTNESS (RAMP_SIZE/10)
-        #define POST_OFF_VOLTAGE_BRIGHTNESS cfg.post_off_voltage_brightness
+        #ifndef USE_POST_OFF_VOLTAGE_BRIGHTNESS_CONFIG
+          #define POST_OFF_VOLTAGE_BRIGHTNESS (RAMP_SIZE/10)
+        #else
+          #define POST_OFF_VOLTAGE_BRIGHTNESS cfg.post_off_voltage_brightness
+        #endif
     #endif
 #endif
