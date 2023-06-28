@@ -13,10 +13,12 @@ uint8_t remind_lock = 0;
   static uint8_t momentary_from_lock = 0; //temporary variable to store if we are in a momentary mode from lockout_state for channel-specific turbo modes
 #endif
 
+#ifdef USE_BLINK_CHANNEL
 extern volatile uint8_t blink_channel_count;
 extern volatile uint16_t blink_channel_ontime;
 extern volatile uint16_t blink_channel_offtime;
 extern volatile uint8_t blink_channel_channel;
+#endif
 
 uint8_t lockout_state(Event event, uint16_t arg) {
     #ifdef USE_MOON_DURING_LOCKOUT_MODE

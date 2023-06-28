@@ -26,11 +26,10 @@
   (defined(TACTICAL_BLINK_CHANNEL)) || \
   (defined(SAVE_MEMORY_BLINK_CHANNEL)) || \
   (defined(LOCK_BLINK_CHANNEL))) && (!defined(USE_BLINK_CHANNEL)))
-//#error "need to set `USE_BLINK_CHANNEL` to use event-specific channel blinks (e.g. AUX_CONFIG_BLINK_CHANNEL)"
+#error "need to set `USE_BLINK_CHANNEL` to use event-specific channel blinks (e.g. AUX_CONFIG_BLINK_CHANNEL)"
 #define USE_BLINK_CHANNEL
 #endif
 
-
-#ifndef USE_AUX_LED_OVERRIDE
+#ifdef USE_BLINK_CHANNEL
   #define USE_AUX_LED_OVERRIDE
 #endif
