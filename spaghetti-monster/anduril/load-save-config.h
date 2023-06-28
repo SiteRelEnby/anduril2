@@ -172,9 +172,9 @@ Config cfg = {
         .use_aux_while_on_threshold_high = DEFAULT_LEVEL,
       #endif
       #ifndef USE_AUX_WHILE_ON_CONFIG_DEFAULT_THRESHOLD_LOW
-        .use_aux_while_on_threshold_high = USE_AUX_WHILE_ON_CONFIG_DEFAULT_THRESHOLD_LOW,
+        .use_aux_while_on_threshold_low = USE_AUX_WHILE_ON_CONFIG_DEFAULT_THRESHOLD_LOW,
       #else
-        .use_aux_while_on_threshold_high = (RAMP_SIZE/10),
+        .use_aux_while_on_threshold_low = (RAMP_SIZE/10),
       #endif
 
     #endif

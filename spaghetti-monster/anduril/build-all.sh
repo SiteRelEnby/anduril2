@@ -55,6 +55,4 @@ echo "===== $PASS builds succeeded, $FAIL failed ====="
 if [ 0 != $FAIL ]; then
   echo "FAIL:$FAILED"
 fi
-if [ 0 == $PASS ]; then
-  exit 1
-fi
+if [ 0 == $PASS ]; then exit 1 ; fi #return nonzero if all builds failed

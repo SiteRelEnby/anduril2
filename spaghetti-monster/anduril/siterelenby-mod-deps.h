@@ -33,3 +33,7 @@
 #ifdef USE_BLINK_CHANNEL
   #define USE_AUX_LED_OVERRIDE
 #endif
+
+#if (defined(EVENT_AUX_WHILE_ON_TOGGLE) && !defined(USE_AUX_WHILE_ON_CONFIG))
+  #error "`EVENT_AUX_WHILE_ON_TOGGLE` needs `USE_AUX_WHILE_ON_CONFIG` (TODO: these could be separated?)" //TODO
+#endif
