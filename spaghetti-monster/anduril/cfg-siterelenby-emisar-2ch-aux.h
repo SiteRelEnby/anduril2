@@ -128,3 +128,4 @@
 #define DEFAULT_AUTOLOCK_TIME 60
 
 #include "button-mapping-siterelenby.h"
+#define USER_CONFIG_L0ADED //prevent defaults from loading

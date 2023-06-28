@@ -43,7 +43,13 @@
 
 #include "tk.h"
 #include incfile(CFG_H)
-#include "button-mapping-defaults.h"  //set up any defaults if the user didn't override them
+
+
+//*********************  mod config **********
+//set up any defaults if the user didn't override them
+#ifndef USER_CONFIG_LOADED
+  #include "button-mapping-defaults.h"
+#endif
 
 //process a few things that need to be done at a very low level
 #include "siterelenby-mod-deps.h"

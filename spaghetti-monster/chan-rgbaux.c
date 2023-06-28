@@ -31,7 +31,7 @@ void set_level_auxwht(uint8_t level) {
     rgb_led_set(!(!(level)) * 0b101010);  // red+green+blue, high (or off)
 }
 
-#ifdef USE_CHANNEL_MODE_ARGS
+#if (defined(USE_SET_LEVEL_AUXMIX) && defined(USE_CHANNEL_MODE_ARGS))
 void set_level_auxmix(uint8_t level) {
     const uint8_t rgb_led_colors[] = {
         0b00000010,  // 0: red

@@ -33,6 +33,11 @@
 
 #define HWDEF_C_FILE hwdef-emisar-2ch-aux.c
 
+//if the auxmix channel is included, we need to explicitly include the set_level method as chan-rgbaux.h will otherwise fail on lights without USE_CHANNEL_MODE_ARGS (TODO: better way?)
+#define USE_SET_LEVEL_AUXMIX
+//also need to set USE_CHANNEL_MODE_ARGS earlier
+#define USE_CHANNEL_MODE_ARGS
+
 // allow using aux LEDs as extra channel modes
 #include "chan-rgbaux.h"
 
@@ -62,13 +67,14 @@ enum CHANNEL_MODES {
 
 #define DEFAULT_CHANNEL_MODE CM_CH1
 
-#define USE_CHANNEL_MODE_ARGS
+//#define USE_CHANNEL_MODE_ARGS
 // _, _, _, 128=middle CCT, 0=warm-to-cool
 #define CHANNEL_MODE_ARGS     0,0,0,128,0
 
 #define CHANNEL_MODES_ENABLED 0b0001111111111111
 #define CHANNEL_HAS_ARGS      0b0001000000011000
 #define CHANNEL_AUX_OVERRIDE  0b0001111111100000 //channel uses aux - stops USE_AUX_RGB_LEDS_WHILE_ON messing up the mix/brightness
+
 
 #define SET_LEVEL_MODES      set_level_ch1, \
                              set_level_ch2, \
