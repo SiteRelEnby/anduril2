@@ -4,8 +4,8 @@
 
 #pragma once
 
-#ifdef USE_BLINK_CHANNEL
-extern uint8_t ticks_since_on;
+#if ((defined(USE_BLINK_CHANNEL) || defined(DISABLE_POST_OFF_VOLTAGE_AFTER_BLINK)))
+extern uint8_t ticks_since_on; //normally this should probably be volatile, but it doesn't really matter when we're just writing to it?
 #endif
 
 #ifdef USE_DYNAMIC_UNDERCLOCKING
@@ -68,7 +68,9 @@ uint8_t blink_digit(uint8_t num) {
     #ifdef BLINK_CHANNEL
     set_channel_mode(old_channel);
     #endif
+    #ifdef DISABLE_POST_OFF_VOLTAGE_AFTER_BLINK
     ticks_since_on = 255;
+    #endif
     return nice_delay_ms(BLINK_SPEED * 8 / 12);
 
 #else //save some space if we have blink_digit_channel available
@@ -112,7 +114,9 @@ uint8_t blink_digit_channel(uint8_t num, uint8_t ontime, uint8_t offtime, uint8_
     }
     set_channel_mode(old_channel);
     set_level(prev_level);
+    #ifdef DISABLE_POST_OFF_VOLTAGE_AFTER_BLINK
     ticks_since_on = 255;
+    #endif
     return 0;
     //return nice_delay_ms(blink_digit_channel_delay * 8 / 12); //TODO: this delay is looooooooooong. Can't think of a reason to keep it for this method since it'll probably be low numbers fast and not often but if necessary can always add another arg to wait a long time
     //return nice_delay_ms(offtime * 2);

@@ -45,6 +45,9 @@
 #include incfile(CFG_H)
 #include "button-mapping-defaults.h"  //set up any defaults if the user didn't override them
 
+//process a few things that need to be done at a very low level
+#include "siterelenby-mod-deps.h"
+
 /********* Include headers which need to be before FSM *********/
 
 // enable FSM features needed by basic ramping functions
@@ -273,10 +276,6 @@ void loop() {
 
     #ifdef USE_BLINK_CHANNEL
 
-    #ifndef USE_AUX_LED_OVERRIDE
-      #define USE_AUX_LED_OVERRIDE
-    #endif
-    //remind user light is locked, if the flag was set when locked
     if (blink_channel_count > 0){
         uint8_t foo = blink_channel_count;
         blink_channel_count = 0; //reset first because it doesn't matter if it gets interrupted
