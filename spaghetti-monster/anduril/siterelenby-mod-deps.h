@@ -37,3 +37,7 @@
 #if (defined(EVENT_AUX_WHILE_ON_TOGGLE) && !defined(USE_AUX_WHILE_ON_CONFIG))
   #error "`EVENT_AUX_WHILE_ON_TOGGLE` needs `USE_AUX_WHILE_ON_CONFIG` (TODO: these could be separated?)" //TODO
 #endif
+
+#if ((defined(EVENT_AUX_WHILE_ON_CONFIG) || defined(EVENT_AUX_WHILE_ON_TOGGLE)) && !defined(USE_AUX_RGB_LEDS_WHILE_ON))
+  #define USE_AUX_RGB_LEDS_WHILE_ON
+#endif
