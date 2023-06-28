@@ -30,6 +30,7 @@
 
 ///////////////////////////////////////////
 #define DEFAULT_BLINK_CHANNEL CM_AUXWHT
+#define USE_CONFIG_COLORS
 
 #define USE_AUX_WHILE_ON_CONFIG
 #define USE_AUX_WHILE_ON_CONFIG_DEFAULT_THRESHOLD_LOW 15
