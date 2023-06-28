@@ -24,7 +24,7 @@ void set_channel_mode(uint8_t mode) {
 
 #ifdef HAS_AUX_LEDS
 inline void set_level_aux_leds(uint8_t level) {
-    #ifdef USE_INDICATOR_LED_WHILE_RAMPING
+    #if (defined(USE_INDICATOR_LED_WHILE_RAMPING) && !defined (USE_AUX_WHILE_ON_CONFIG))
         // use side-facing aux LEDs while main LEDs are on
         if (! go_to_standby) {
         #ifdef USE_INDICATOR_LED
