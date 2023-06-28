@@ -75,7 +75,9 @@ StatePtr channel_3H_modes[NUM_CHANNEL_MODES];
     // bitmask: which modes respond to their "arg", and which don't?
     //const uint8_t channel_has_args = CHANNEL_HAS_ARGS;
     #define channel_has_args(n) ((CHANNEL_HAS_ARGS >> n) & 1)
+#endif
 
+#ifdef CHANNEL_AUX_OVERRIDE
     #define channel_uses_aux(n) ((CHANNEL_AUX_OVERRIDE >> n ) & 1)
 #endif
 

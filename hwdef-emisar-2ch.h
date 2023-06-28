@@ -49,6 +49,8 @@
 
 #define CHANNEL_MODES_ENABLED 0b00011111
 #define CHANNEL_HAS_ARGS      0b00011000
+#define CHANNEL_AUX_OVERRIDE  0b11111110 //channel uses aux - stops USE_AUX_RGB_LEDS_WHILE_ON messing up the mix/brightness
+
 #define USE_CHANNEL_MODE_ARGS
 // _, _, _, 128=middle CCT, 0=warm-to-cool
 #define CHANNEL_MODE_ARGS     0,0,0,128,0
