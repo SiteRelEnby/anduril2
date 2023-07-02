@@ -56,7 +56,7 @@ StatePtr channel_3H_modes[NUM_CHANNEL_MODES];
     #define channel_mode_enable(n)  cfg.channel_modes_enabled |= (1 << n)
     #define channel_mode_disable(n) cfg.channel_modes_enabled &= ((1 << n) ^ 0xff)
 #else
-    uint8_t channel_modes_enabled = CHANNEL_MODES_ENABLED;
+    uint16_t channel_modes_enabled = CHANNEL_MODES_ENABLED;
     #define channel_mode_enabled(n) ((channel_modes_enabled >> n) & 1)
     #define channel_mode_enable(n)  channel_modes_enabled |= (1 << n)
     #define channel_mode_disable(n) channel_modes_enabled &= ((1 << n) ^ 0xff)
@@ -66,7 +66,7 @@ StatePtr channel_3H_modes[NUM_CHANNEL_MODES];
 #ifdef USE_CHANNEL_MODE_ARGS
     #ifndef USE_CFG
     // one byte of extra data per channel mode, like for tint value
-    uint8_t channel_mode_args[NUM_CHANNEL_MODES] = { CHANNEL_MODE_ARGS };
+    uint16_t channel_mode_args[NUM_CHANNEL_MODES] = { CHANNEL_MODE_ARGS };
     #endif
     // bitmask: which modes respond to their "arg", and which don't?
     //const uint8_t channel_has_args = CHANNEL_HAS_ARGS;
