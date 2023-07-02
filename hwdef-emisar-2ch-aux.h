@@ -70,7 +70,7 @@ enum CHANNEL_MODES {
 
 #define CHANNEL_MODES_ENABLED 0b0001111111111111
 #define CHANNEL_HAS_ARGS      0b0001000000011000
-#define CHANNEL_AUX_OVERRIDE  0b0001111111100000 //channel uses aux - stops USE_AUX_RGB_LEDS_WHILE_ON messing up the mix/brightness
+#define CHANNEL_USES_AUX      0b0001111111100000 //channel uses aux - stops USE_AUX_RGB_LEDS_WHILE_ON messing up the mix/brightness
 
 
 #define SET_LEVEL_MODES      set_level_ch1, \
