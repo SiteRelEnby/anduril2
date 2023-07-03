@@ -6,11 +6,11 @@
 
 #include "lockout-mode.h"
 
-#ifdef BLINK_LOCK_REMINDER
-uint8_t remind_lock = 0;
-#endif
-#if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY))
+#if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY)) || (defined(USE_3H_TURBO_FROM_LOCK))
   static uint8_t momentary_from_lock = 0; //temporary variable to store if we are in a momentary mode from lockout_state for channel-specific turbo modes
+#endif
+#if (defined(USE_3H_TURBO_FROM_LOCK) && (NUM_CHANNEL_MODES > 1))
+  uint8_t prev_channel_mode = 0;
 #endif
 
 #ifdef USE_BLINK_CHANNEL
@@ -29,6 +29,51 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     if (event == EVENT_AUX_CONFIG_HOLD) { set_level(0); } else
     #endif
 
+    //TODO: how to handle having both momentary lock turbo and channel cycling? I mostly want this on throwers and not multiple main LED lights, but might be diffrent for other people?
+    //  -> shift others up one? have cycle be remappable?
+    #ifdef USE_3H_TURBO_FROM_LOCK
+      // 3H: momentary turbo
+      if (event == EV_click3_hold){
+        momentary_from_lock = 1;
+        //if ((!arg) && (setting_rgb_mode_now == 0)){
+        if (!arg){
+          #if (NUM_CHANNEL_MODES > 1)
+            #ifdef USE_3H_TURBO_FROM_LOCK_FORCE_CHANNEL
+              prev_channel_mode = CH_MODE;
+              set_channel_mode(3H_TURBO_FROM_LOCK_FORCE_CHANNEL);
+            #elif defined(CHANNEL_AUX_OVERRIDE) //we don't want to use an aux channel for this...
+              if (channel_uses_aux(CH_MODE)){
+                prev_channel_mode = CH_MODE;
+                #if defined(CM_MAIN) //probably a single (main) channel light
+                  set_channel_mode(CM_MAIN);
+                #elif defined(CM_CH1) //assume ch1 is the closest thing to a main
+                  set_channel_mode(CM_CH1);
+                #elif defined(DEFAULT_CHANNEL_MODE)
+                  #warning "using DEFAULT_CHANNEL_MODE for 3H from lock"
+                  set_channel_mode(DEFAULT_CHANNEL_MODE);
+                #else
+                  #error "neither CM_MAIN or CM_CH1 exist. Set a channel for 3H turbo from lock by defining `USE_3H_TURBO_FROM_LOCK_FORCE_CHANNEL`)"
+                #endif
+                }
+            #endif
+          #endif
+          //set_state(steady_state,150); //TODO: use 2C_STYLE? config for dual channel?
+          set_level_and_therm_target(150); //TODO: use 2C_STYLE? config for dual channel?
+          return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        }
+      }
+      else if (event == EV_click3_hold_release){
+        set_level(0);
+        momentary_from_lock = 0;
+        #if (NUM_CHANNEL_MODES > 1)
+          set_channel_mode(prev_channel_mode);
+        #endif
+        set_state(lockout_state,0);
+        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+      }
+    #endif
+
+
     #ifdef BLINK_LOCK_REMINDER
     if (((event == EV_1click) || (event == EV_2clicks)) && (current_state != tactical_state)){
         //remind user light is locked
@@ -41,8 +86,8 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     } else
     #endif
 
-#if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY) || defined(EVENT_TURBO_MAX_MOMENTARY))
-if (!momentary_from_lock) {//used in channel-modes.c
+#if ((defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY) || defined(EVENT_TURBO_MAX_MOMENTARY))) || (defined(USE_3H_TURBO_FROM_LOCK))
+if (!momentary_from_lock) { //also used in channel-modes.c
 #endif
     if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
         // hold: lowest floor
@@ -63,7 +108,7 @@ if (!momentary_from_lock) {//used in channel-modes.c
         set_level(0);
     }
     #endif  // ifdef USE_MOON_DURING_LOCKOUT_MODE
-#if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY) || defined(EVENT_TURBO_MAX_MOMENTARY))
+#if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY) || defined(EVENT_TURBO_MAX_MOMENTARY)) || (defined(USE_3H_TURBO_FROM_LOCK))
 }
 #endif
 
@@ -183,13 +228,16 @@ if (!momentary_from_lock) {//used in channel-modes.c
 
     //#if ((NUM_CHANNEL_MODES > 1) && ((!defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) || (!defined(EVENT_CHANNEL_CYCLE_ON_HOLD)))))
     // 3H: next channel mode
-    else if (event == EV_click3_hold) {
+    #if (NUM_CHANNEL_MODES > 1)
+    #ifdef EVENT_CHANNEL_CYCLE_LOCK_HOLD
+    else if (event == EVENT_CHANNEL_CYCLE_LOCK_HOLD) {
         if (0 == (arg % TICKS_PER_SECOND)) {
             // pretend the user clicked 3 times to change channels
             return channel_mode_state(EV_3clicks, 0);
         }
     }
-    //#endif
+    #endif
+    #endif
 
     ////////// Every action below here is blocked in the (non-Extended) Simple UI //////////
 

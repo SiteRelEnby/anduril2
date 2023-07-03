@@ -95,7 +95,8 @@ Note that the build does not (TODO: currently?) check for conflicts, which may c
     * Stepped/smooth ramp toggle (default 3C single channel, 6C multichannel)
     * Aux colour/mode config (default 7C/H)
     * Tactical mode (default 6C - can also be disabled by unsetting)
-    * Save manual memory (default 10) - can also be disabled by unsetting)
+    * Save manual memory (default 10C) - can also be disabled by unsetting)
+    * Cycle channels when locked (default 3H - can also be disabled by unsetting)
   * New features:
     * Dual channel turbo shortcuts
     * Max (200%) turbo shortcut
@@ -119,6 +120,7 @@ Note that the build does not (TODO: currently?) check for conflicts, which may c
           * Slots can be preconfigured in your header file with `TACTICAL_LEVELS` - e.g. `TACTICAL_LEVELS RAMP_SIZE,(RAMP_SIZE+2),100` for turbo/strobe/high.
     * Post-off voltage (anothhr new upstream feature). When the light is switched off, displays the voltage for a few seconds using RGB aux before resuming normal off/lockout aux pattern. Configurable from the 7H menu on battcheck mode - second item is the number of seconds to display for (0C to disable)
       * Added a third item to the menu, which sets the level at which high brightness is used rather than low to (clicks - 1). e.g. 0C ignored, 1C = use low aux after the light was on at level 1 only, 11C = use low aux after the light was on at <= level 10, etc.)
+    * 3H from lock for turbo (enable with `USE_3H_TURBO_FROM_LOCK`)
 
 ## Multichannel lights only
 * Configurable shortcuts to specific channel mode turbo modes (`TURBO_SHORTCUT_1_CHANNEL`, `EVENT_TURBO_SHORTCUT_1`, `EVENT_TURBO_SHORTCUT_1_MOMENTARY`, `EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE`) and maximum (i.e. 200%) (`EVENT_TURBO_MAX`, `TURBO_MAX_CHANNEL` `EVENT_TURBO_MAX_MOMENTARY`, `EVENT_TURBO_MAX_MOMENTARY_RELEASE`)
@@ -126,7 +128,7 @@ Note that the build does not (TODO: currently?) check for conflicts, which may c
 * Cycle through channel modes in off or ramp mode, similarly to in lockout mode (`EVENT_CHANNEL_CYCLE_OFF_HOLD`, `EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE`, `EVENT_CHANNEL_CYCLE_ON_HOLD`, `EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE`)
   * Remappable for lockout mode (`EVENT_CHANNEL_CYCLE_LOCK_HOLD`)
 
-Old features still to be ported to multichanne (subject to change):
+Old features still to be ported to multichannel (subject to change):
 * More configurable beacon mode
 * [Starryalley](https://github.com/starryalley/Anduril2) aux modes
 * Blink aux/button red in off/lockout modes when battery is <= 3.2V
@@ -138,7 +140,7 @@ Old features still to be ported to multichanne (subject to change):
   * Low with high blink (the default off/low/high blink mode bothers me for a reason I can't quite work out)
   * Ability to enable using aux LEDs to display the battery voltage while the light is on.
   * Changes to saving manual memory?
-  * Manual EEPROM save instead of automatic
+* Manual EEPROM save instead of automatic
 * Momentary opposite channel mode (e.g. `#define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT_RELEASE EV_click4_hold_release` `#define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT EV_click4_hold`
 * 3H from lock for turbo
 

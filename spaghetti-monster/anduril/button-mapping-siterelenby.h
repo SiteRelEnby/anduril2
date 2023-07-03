@@ -14,12 +14,14 @@
 #define EVENT_SUNSET_TIMER_HOLD EV_click12_hold
 #endif
 
-#if !defined(NEXT_CHANNEL_MODE_EVENT)
-#define NEXT_CHANNEL_MODE_EVENT EV_3clicks
-#endif
+#if (NUM_CHANNEL_MODES > 1)
+  #if !defined(NEXT_CHANNEL_MODE_EVENT)
+    #define NEXT_CHANNEL_MODE_EVENT EV_3clicks
+  #endif
 
-#if !defined(EVENT_PREVIOUS_CHANNEL)
-#define EVENT_PREVIOUS_CHANNEL EV_4clicks
+  #if !defined(EVENT_PREVIOUS_CHANNEL)
+    #define EVENT_PREVIOUS_CHANNEL EV_4clicks
+  #endif
 #endif
 
 #if !defined(EVENT_TACTICAL_MODE) //default setting that might be unset for specific lights e.g. t85
@@ -43,51 +45,54 @@
 //  #undef EVENT_UNLOCK_TO_FLOOR
 //#endif
 #define EVENT_UNLOCK_TO_FLOOR EV_click4_hold
-//#define EVENT_UNLOCK_TO_CEILING EV_click5_hold
-
-#define EVENT_SUNSET_TIMER_HOLD EV_click12_hold
+#define EVENT_UNLOCK_TO_CEILING EV_5clicks
 
 #define EVENT_AUX_WHILE_ON_TOGGLE EV_8clicks
 
 #define USE_MOMENTARY_TURBO_FROM_LOCK
 
-#if NUM_CHANNEL_MODES > 1
-  #define TURBO_SHORTCUT_1_CHANNEL CM_CH1
-  #define EVENT_TURBO_SHORTCUT_1 EV_5clicks
-  #define EVENT_TURBO_SHORTCUT_1_MOMENTARY EV_click5_hold
-  #define EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE EV_click5_hold_release
-
-  #define TURBO_SHORTCUT_2_CHANNEL CM_CH2
-  #define EVENT_TURBO_SHORTCUT_2 EV_6clicks
-  #define EVENT_TURBO_SHORTCUT_2_MOMENTARY EV_click6_hold
-  #define EVENT_TURBO_SHORTCUT_2_MOMENTARY_RELEASE EV_click6_hold_release
-
-  #define EVENT_TURBO_MAX EV_7clicks
-  #define TURBO_MAX_CHANNEL CM_BOTH //this will usually be CM_BOTH? Probably different on 3+ channel lights where it makes sense to have this feature specifically
-  #define EVENT_TURBO_MAX_MOMENTARY EV_click7_hold
-  #define EVENT_TURBO_MAX_MOMENTARY_RELEASE EV_click7_hold_release
-
-  #define EVENT_AUX_CONFIG EV_8clicks
-  #define EVENT_AUX_CONFIG_HOLD EV_click8_hold
-  #define EVENT_AUX_CONFIG_HOLD_RELEASE EV_click8_hold_release
-
-  #define EVENT_RAMP_CONFIG_HOLD EV_click8_hold
-
-  #define EVENT_CHANNEL_MODE_CONFIG_HOLD EV_click13_hold
+#if (NUM_CHANNEL_MODES > 1)
   #define EVENT_CHANNEL_CYCLE_OFF_HOLD EV_click4_hold
   #define EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE EV_click4_hold_release
   #define EVENT_CHANNEL_CYCLE_ON_HOLD EV_click8_hold
   #define EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE EV_click8_hold_release
-  #define EVENT_CHANNEL_CYCLE_LOCK_HOLD EV_click3_hold
-#else
-  #define EVENT_AUX_CONFIG EV_7clicks
-  #define EVENT_AUX_CONFIG_HOLD EV_click7_hold
-  #define EVENT_AUX_CONFIG_HOLD_RELEASE EV_click7_hold_release
-  #if !defined(EVENT_RAMP_CONFIG_HOLD)
-    #define EVENT_RAMP_CONFIG_HOLD EV_click7_hold
+
+  #if (NUM_MAIN_CHANNELS > 1)
+    #define EVENT_CHANNEL_CYCLE_LOCK_HOLD EV_click3_hold
+    #undef USE_3H_TURBO_FROM_LOCK
+    #define EVENT_CHANNEL_MODE_CONFIG_HOLD EV_click13_hold
+    #define TURBO_SHORTCUT_1_CHANNEL CM_CH1
+    #define EVENT_TURBO_SHORTCUT_1 EV_5clicks
+    #define EVENT_TURBO_SHORTCUT_1_MOMENTARY EV_click5_hold
+    #define EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE EV_click5_hold_release
+
+    #define TURBO_SHORTCUT_2_CHANNEL CM_CH2
+    #define EVENT_TURBO_SHORTCUT_2 EV_6clicks
+    #define EVENT_TURBO_SHORTCUT_2_MOMENTARY EV_click6_hold
+    #define EVENT_TURBO_SHORTCUT_2_MOMENTARY_RELEASE EV_click6_hold_release
+
+    #define EVENT_TURBO_MAX EV_7clicks
+    #define TURBO_MAX_CHANNEL CM_BOTH //this will usually be CM_BOTH? Probably different on 3+ channel lights where it makes sense to have this feature specifically
+    #define EVENT_TURBO_MAX_MOMENTARY EV_click7_hold
+    #define EVENT_TURBO_MAX_MOMENTARY_RELEASE EV_click7_hold_release
+
+    #define EVENT_AUX_CONFIG EV_8clicks
+    #define EVENT_AUX_CONFIG_HOLD EV_click8_hold
+    #define EVENT_AUX_CONFIG_HOLD_RELEASE EV_click8_hold_release
+
+    #define EVENT_RAMP_CONFIG_HOLD EV_click8_hold
+  #else
+    #define USE_3H_TURBO_FROM_LOCK
+    #undef EVENT_CHANNEL_CYCLE_LOCK_HOLD
+    #define EVENT_CHANNEL_MODE_CONFIG_HOLD EV_click9_hold
+    #define EVENT_AUX_CONFIG EV_7clicks
+    #define EVENT_AUX_CONFIG_HOLD EV_click7_hold
+    #define EVENT_AUX_CONFIG_HOLD_RELEASE EV_click7_hold_release
+    #if !defined(EVENT_RAMP_CONFIG_HOLD)
+      #define EVENT_RAMP_CONFIG_HOLD EV_click7_hold
+    #endif
   #endif
 #endif
-
 
 #define USE_POST_OFF_VOLTAGE_BRIGHTNESS_CONFIG
 #define DEFAULT_POST_OFF_VOLTAGE_BRIGHTNESS_THRESHOLD 0 //always use high
@@ -98,10 +103,6 @@
 #define USE_AUX_WHILE_ON_CONFIG
 #define USE_AUX_WHILE_ON_CONFIG_DEFAULT_THRESHOLD_LOW 15
 #define USE_AUX_WHILE_ON_CONFIG_DEFAULT_THRESHOLD_HIGH 45
-
-//#ifndef BLINK_ONCE_USE_CONFIGURED_BLINK_CHANNEL
-//  #define BLINK_ONCE_USE_CONFIGURED_BLINK_CHANNEL
-//#endif
 
 #define USE_AUX_RGB_LEDS_WHILE_ON
 #define USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW 20

@@ -21,8 +21,10 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
 //        static uint8_t momentary_from_lock = 0; //temporary variable to store if we are in a momentary mode from lockout_state for channel-specific turbo modes
 //      #endif
     #endif
-    #if ((NUM_CHANNEL_MODES > 1) && (defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) || (defined(EVENT_CHANNEL_CYCLE_ON_HOLD))))
-      static uint8_t reset_level = 0;
+    #if (NUM_CHANNEL_MODES > 1)
+      #if((defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) || (defined(EVENT_CHANNEL_CYCLE_ON_HOLD))))
+        static uint8_t reset_level = 0;
+      #endif
     #endif
     // don't activate auto-tint modes unless the user hits the edge
     // and keeps pressing for a while

@@ -127,5 +127,6 @@
 
 #define DEFAULT_AUTOLOCK_TIME 60
 
+#define NUM_MAIN_CHANNELS 2
 #include "button-mapping-siterelenby.h"
 #define USER_CONFIG_L0ADED //prevent defaults from loading
