@@ -244,11 +244,13 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
       prev_channel = CH_MODE;
       prev_level = actual_level;
       set_channel_mode(new_channel);
-      set_state(steady_state, MAX_LEVEL);
+      set_state(steady_state, MAX_LEVEL); //bug(?): going from turbo when ceil < 150 sets the channel mode fine, but does not go fully to MAX_LEVEL. using RAMP_SIZE instead doesn't work.
+      set_level_and_therm_target(MAX_LEVEL);
     }
     else {
       //channels are the same, user may want to go up to turbo or back down to last used?
-      if ((actual_level == MAX_LEVEL) || (target_level == MAX_LEVEL)){
+      //if ((actual_level == MAX_LEVEL) || (target_level == MAX_LEVEL)){
+      if ((actual_level >= MAX_LEVEL) || (target_level == MAX_LEVEL)){ //bug(?): going from turbo when ceil < 150 sets the channel mode fine, but goes not go fully to MAX_LEVEL. using RAMP_SIZE instead doesn't work.
         //coming from turbo
         //set_level(0);
         if (prev_channel != 255) { set_level(0); set_channel_mode(prev_channel); }
@@ -260,7 +262,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
       else {
         //goto turbo
         prev_level = actual_level;
-        set_level(MAX_LEVEL);
+        set_level_and_therm_target(MAX_LEVEL); //bug(?): going from turbo when ceil < 150 sets the channel mode fine, but goes not go fully to MAX_LEVEL. using RAMP_SIZE instead doesn't work.
         prev_channel=255; //TODO: necessary?
       }
     }
@@ -321,7 +323,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
           //push_state(steady_state, MAX_LEVEL);
           set_state(steady_state, arg);
         }
-        set_level_and_therm_target(MAX_LEVEL);
+        set_level_and_therm_target(MAX_LEVEL); //bug(?): going from turbo when ceil < 150 sets the channel mode fine, but goes not go fully to MAX_LEVEL. using RAMP_SIZE instead doesn't work.
       }
     return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
