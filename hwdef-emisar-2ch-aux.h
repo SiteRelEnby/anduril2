@@ -41,7 +41,6 @@
 // allow using aux LEDs as extra channel modes
 #include "chan-rgbaux.h"
 
-#define USE_CHANNEL_MODES
 // channel modes:
 // * 0. channel 1 only
 // * 1. channel 2 only
@@ -55,55 +54,17 @@ enum CHANNEL_MODES {
     CM_BOTH,
     CM_BLEND,
     CM_AUTO,
-    CM_AUXRED,
-    CM_AUXYEL,
-    CM_AUXGRN,
-    CM_AUXCYN,
-    CM_AUXBLU,
-    CM_AUXPRP,
-    CM_AUXWHT,
-    CM_AUXMIX
+    RGB_AUX_ENUMS
 };
 
 #define DEFAULT_CHANNEL_MODE CM_CH1
 
 //#define USE_CHANNEL_MODE_ARGS
 // _, _, _, 128=middle CCT, 0=warm-to-cool
-#define CHANNEL_MODE_ARGS     0,0,0,128,0
+#define CHANNEL_MODE_ARGS     0,0,0,128,0,RGB_AUX_CM_ARGS
 
 #define CHANNEL_MODES_ENABLED 0b0001111111111111
-#define CHANNEL_HAS_ARGS      0b0001000000011000
 #define CHANNEL_AUX_OVERRIDE  0b0001111111100000 //channel uses aux - stops USE_AUX_RGB_LEDS_WHILE_ON messing up the mix/brightness
-
-
-#define SET_LEVEL_MODES      set_level_ch1, \
-                             set_level_ch2, \
-                             set_level_both, \
-                             set_level_blend, \
-                             set_level_auto, \
-                             set_level_auxred, \
-                             set_level_auxyel, \
-                             set_level_auxgrn, \
-                             set_level_auxcyn, \
-                             set_level_auxblu, \
-                             set_level_auxprp, \
-                             set_level_auxwht, \
-                             set_level_auxmix
-
-// gradual ticking for thermal regulation
-#define GRADUAL_TICK_MODES   gradual_tick_ch1, \
-                             gradual_tick_ch2, \
-                             gradual_tick_both, \
-                             gradual_tick_blend, \
-                             gradual_tick_auto, \
-                             gradual_tick_null, \
-                             gradual_tick_null, \
-                             gradual_tick_null, \
-                             gradual_tick_null, \
-                             gradual_tick_null, \
-                             gradual_tick_null, \
-                             gradual_tick_null, \
-                             gradual_tick_null
 
 // can use some of the common handlers
 #define USE_CALC_2CH_BLEND
@@ -189,20 +150,6 @@ enum CHANNEL_MODES {
 #define BUTTON_LED_PORT PORTA  // for all "PA" pins
 #define BUTTON_LED_DDR  DDRA   // for all "PA" pins
 #define BUTTON_LED_PUE  PUEA   // for all "PA" pins
-
-
-void set_level_ch1(uint8_t level);
-void set_level_ch2(uint8_t level);
-void set_level_both(uint8_t level);
-void set_level_blend(uint8_t level);
-void set_level_auto(uint8_t level);
-
-bool gradual_tick_ch1(uint8_t gt);
-bool gradual_tick_ch2(uint8_t gt);
-bool gradual_tick_both(uint8_t gt);
-bool gradual_tick_blend(uint8_t gt);
-bool gradual_tick_auto(uint8_t gt);
-
 
 inline void hwdef_setup() {
     // enable output ports
