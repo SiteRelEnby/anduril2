@@ -42,11 +42,11 @@ uint8_t off_state(Event event, uint16_t arg) {
             // redundant, sleep tick does the same thing
             //indicator_led_update(cfg.indicator_led_mode & 0x03, arg);
             #endif
-            #ifdef USE_AUX_LED_OVERRIDE
+            #if (defined(USE_AUX_LED_OVERRIDE)) && defined(USE_AUX_RGB_LEDS)
               if (! aux_led_override){
                 rgb_led_update(cfg.rgb_led_off_mode, arg);
               }
-            #else
+            #elif defined(USE_AUX_RGB_LEDS)
               rgb_led_update(cfg.rgb_led_off_mode, arg);
             #endif
         }

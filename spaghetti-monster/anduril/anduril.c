@@ -285,9 +285,14 @@ void loop() {
     if (blink_channel_count > 0){
         uint8_t foo = blink_channel_count;
         blink_channel_count = 0; //reset first because it doesn't matter if it gets interrupted
+        #ifdef USE_AUX_RGB_LEDS
         rgb_led_set(0); //no need to reset, EV_sleep_tick handles it in lockout or we're entering off/ramp mode anyway if the user does anything else that removes the lock state
+        #endif
         #ifdef USE_BUTTON_LED
         button_led_set(0); //same
+        #endif
+        #ifdef USE_INDICATOR_LED
+        indicator_led(0); //same
         #endif
         //disable aux functions that interfere (voltage aux while on, standard off/lock idle pattern, etc). If nice_delay_ms (inside the blink_digit methods) gets interrupted then we will be entering on/off state anyway so aux gets set then, resetting aux_led_override
         aux_led_override = 1;
