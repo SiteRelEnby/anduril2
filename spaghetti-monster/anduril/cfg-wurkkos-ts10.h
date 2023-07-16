@@ -98,3 +98,5 @@
 // enable factory reset on 13H without loosening tailcap
 #define USE_SOFT_FACTORY_RESET
 
+#undef DEFAULT_THERM_CEIL
+#define DEFAULT_THERM_CEIL 55
