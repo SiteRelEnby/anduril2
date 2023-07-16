@@ -4,7 +4,7 @@
 #pragma once
 
 #define MODEL_NUMBER "0135"
-#include "hwdef-emisar-2ch-aux.h"
+#include "hwdef-emisar-2ch.h"
 #include "hank-cfg.h"
 // ATTINY: 1634
 
@@ -22,7 +22,7 @@
 
 // channel modes...
 // CM_CH1, CM_CH2, CM_BOTH, CM_BLEND, CM_AUTO
-//#define DEFAULT_CHANNEL_MODE           CM_BLEND
+#define DEFAULT_CHANNEL_MODE           CM_CH1
 
 //#define FACTORY_RESET_WARN_CHANNEL     CM_CH2
 //#define FACTORY_RESET_SUCCESS_CHANNEL  CM_BOTH
