@@ -44,6 +44,12 @@ typedef struct Config {
             uint8_t manual_memory_timer;
         #endif
     #endif
+    #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
+        uint8_t lockout_high_aux_timer;
+    #endif
+    #ifdef USE_OFF_HIGH_AUX_TIMER
+        uint8_t off_high_aux_timer;
+    #endif
 
     ///// channel modes / color modes
     #if NUM_CHANNEL_MODES > 1

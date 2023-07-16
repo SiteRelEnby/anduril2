@@ -10,3 +10,6 @@ uint8_t ticks_since_on = 0;
 // when the light is "off" or in standby
 uint8_t off_state(Event event, uint16_t arg);
 
+#ifdef USE_LOCKOUT_HIGH_AUX_TIMER
+  uint8_t lockout_high_aux = 0;
+#endif

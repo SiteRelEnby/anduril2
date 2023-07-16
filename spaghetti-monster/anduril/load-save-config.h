@@ -66,6 +66,19 @@ Config cfg = {
         #endif
     #endif
 
+    #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
+      #ifndef USE_LOCKOUT_HIGH_AUX_TIMER_DEFAULT
+        #define USE_LOCKOUT_HIGH_AUX_TIMER_DEFAULT 30
+      #endif
+      .lockout_high_aux_timer = USE_LOCKOUT_HIGH_AUX_TIMER_DEFAULT,
+    #endif
+        #ifdef USE_OFF_HIGH_AUX_TIMER
+      #ifndef USE_OFF_HIGH_AUX_TIMER_DEFAULT
+        #define USE_OFF_HIGH_AUX_TIMER_DEFAULT 30
+      #endif
+      .off_high_aux_timer = USE_OFF_HIGH_AUX_TIMER_DEFAULT,
+    #endif
+
     ///// channel modes / color modes
 
     #if NUM_CHANNEL_MODES > 1

@@ -17,15 +17,14 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     #if (defined(EVENT_TURBO_SHORTCUT_1) || defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY))
       static uint8_t prev_channel = 255;
       static uint8_t prev_level = 255;
-//      #if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY))
-//        static uint8_t momentary_from_lock = 0; //temporary variable to store if we are in a momentary mode from lockout_state for channel-specific turbo modes
+    #endif
+
+    //TODO: is reset_level still needed?
+//    #if (NUM_CHANNEL_MODES > 1)
+//      #if((defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) || (defined(EVENT_CHANNEL_CYCLE_ON_HOLD))))
+//        static uint8_t reset_level = 0;
 //      #endif
-    #endif
-    #if (NUM_CHANNEL_MODES > 1)
-      #if((defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) || (defined(EVENT_CHANNEL_CYCLE_ON_HOLD))))
-        static uint8_t reset_level = 0;
-      #endif
-    #endif
+//    #endif
     // don't activate auto-tint modes unless the user hits the edge
     // and keeps pressing for a while
     static uint8_t past_edge_counter = 0;
@@ -376,17 +375,15 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
       ((event == EVENT_CHANNEL_CYCLE_ON_HOLD) && (state == steady_state))
   #endif
   ){
-//#ifdef USE_AUX_RGB_LEDS
-//  setting_rgb_mode_now = 1;
-//#endif
-      if (actual_level == 0){
+//      if (actual_level == 0){
         //reset_level = memorized_level;
-        reset_level = 1;
+//TODO: is reset_level still needed?
+//        reset_level = 1;
         set_level(memorized_level); //TODO: use another level?
-      }
-      else {
-        reset_level = 0;
-      }
+//      }
+//      else {
+//        reset_level = 0;
+//      }
       //from lockout-mode.c
       if (0 == (arg % TICKS_PER_SECOND)) {
       // pretend the user clicked 3 times to change channels
@@ -399,15 +396,12 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
 //  #if defined(EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && defined(EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE)
 //      (((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (state == off_state)) || ((event == EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE) && (state == steady_state))  ) // || ((event == EVENT_CHANNEL_CYCLE_LOCK_HOLD) && (state == lockout_state)))
       (((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (state == off_state))      )// || ((event == EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE) && (state == steady_state))  ) // || ((event == EVENT_CHANNEL_CYCLE_LOCK_HOLD) && (state == lockout_state)))
-  //      ((event == EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE) && (state == off_state))
-//  #else
-//      ((event == EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE) && (state == steady_state))
-//  #endif
   ){
-//    setting_rgb_mode_now = 0; //reset
-    if (reset_level){ //needed for when using from off mode
+//TODO: is reset_level still needed?
+//    if (reset_level){ //needed for when using from off mode
+    if (state == off_state){
       set_level(0);
-      reset_level = 0;
+//      reset_level = 0;
     }
     return EVENT_HANDLED;
   }

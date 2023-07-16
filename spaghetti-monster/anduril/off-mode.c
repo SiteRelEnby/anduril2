@@ -10,6 +10,41 @@
 #include "sunset-timer.h"
 #endif
 
+void off_led_update(uint16_t arg){
+  #ifdef USE_INDICATOR_LED
+    #ifdef USE_OFF_HIGH_AUX_TIMER
+      if (arg < (cfg.off_high_aux_timer * SLEEP_TICKS_PER_MINUTE)){
+         indicator_led_update(2, arg); //force high
+      }
+      else {
+    #endif
+    indicator_led_update(cfg.indicator_led_mode & 0x03, arg);
+    #ifdef USE_OFF_HIGH_AUX_TIMER
+      }
+    #endif
+
+  #elif defined(USE_AUX_RGB_LEDS)
+    #ifdef USE_OFF_HIGH_AUX_TIMER
+      if (arg < (cfg.off_high_aux_timer * SLEEP_TICKS_PER_MINUTE)){
+        //force high mode with selected pattern
+        uint8_t rgb_led_mode = cfg.rgb_led_off_mode;
+        rgb_led_mode &= 0x0F; //clear upper 4 bits
+        rgb_led_mode |= 0x20; //set the upper 4 the way we want (i.e. 0x0010), this time with a bitwise OR to preserve the actual colour setting
+        rgb_led_update(rgb_led_mode, arg);
+      }
+      else {
+    #endif
+    #ifndef USE_AUX_LED_OVERRIDE
+      rgb_led_update(cfg.rgb_led_off_mode, arg);
+    #else
+      if (! aux_led_override){ rgb_led_update(cfg.rgb_led_off_mode, arg); }
+    #endif
+  #endif
+  #ifdef USE_OFF_HIGH_AUX_TIMER
+    }
+  #endif
+}
+
 uint8_t off_state(Event event, uint16_t arg) {
 
     // turn emitter off when entering state
@@ -41,13 +76,13 @@ uint8_t off_state(Event event, uint16_t arg) {
             #ifdef USE_INDICATOR_LED
             // redundant, sleep tick does the same thing
             //indicator_led_update(cfg.indicator_led_mode & 0x03, arg);
-            #endif
-            #if (defined(USE_AUX_LED_OVERRIDE)) && defined(USE_AUX_RGB_LEDS)
-              if (! aux_led_override){
-                rgb_led_update(cfg.rgb_led_off_mode, arg);
-              }
-            #elif defined(USE_AUX_RGB_LEDS)
-              rgb_led_update(cfg.rgb_led_off_mode, arg);
+            //#endif
+            //#if (defined(USE_AUX_LED_OVERRIDE)) && defined(USE_AUX_RGB_LEDS)
+            //  if (! aux_led_override){
+            //    rgb_led_update(cfg.rgb_led_off_mode, arg);
+            //  }
+            //#elif defined(USE_AUX_RGB_LEDS)
+            //  rgb_led_update(cfg.rgb_led_off_mode, arg);
             #endif
         }
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
@@ -64,15 +99,8 @@ uint8_t off_state(Event event, uint16_t arg) {
             manual_memory_restore();
         }
         #endif
-        #ifdef USE_INDICATOR_LED
-        indicator_led_update(cfg.indicator_led_mode & 0x03, arg);
-        #elif defined(USE_AUX_RGB_LEDS)
-          #ifndef USE_AUX_LED_OVERRIDE
-            rgb_led_update(cfg.rgb_led_off_mode, arg);
-          #else
-            if (! aux_led_override){ rgb_led_update(cfg.rgb_led_off_mode, arg); }
-          #endif
-        #endif
+
+        off_led_update(arg);
 
         #ifdef USE_AUTOLOCK
             // lock the light after being off for N minutes

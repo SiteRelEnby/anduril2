@@ -11,11 +11,12 @@ uint8_t channel_mode_state(Event event, uint16_t arg);
 uint8_t channel_mode_config_state(Event event, uint16_t arg);
 #endif
 
-    #if (NUM_CHANNEL_MODES > 1)
-      #if((defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) || (defined(EVENT_CHANNEL_CYCLE_ON_HOLD))))
-        static uint8_t reset_level = 0;
-      #endif
-    #endif
+//TODO: is reset_level still needed?
+//    #if (NUM_CHANNEL_MODES > 1)
+//      #if((defined(EVENT_CHANNEL_CYCLE_OFF_HOLD) || (defined(EVENT_CHANNEL_CYCLE_ON_HOLD))))
+//        static uint8_t reset_level = 0;
+//      #endif
+//    #endif
 
 #if defined(USE_CHANNEL_MODE_ARGS) && defined(USE_STEPPED_TINT_RAMPING)
 // calculate the nearest tint value which would be valid at the moment

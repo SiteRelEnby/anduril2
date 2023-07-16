@@ -20,6 +20,41 @@ extern volatile uint16_t blink_channel_offtime;
 extern volatile uint8_t blink_channel_channel;
 #endif
 
+void lockout_led_update(uint16_t arg){
+  #ifdef USE_INDICATOR_LED
+    #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
+      if (arg < (cfg.lockout_high_aux_timer * SLEEP_TICKS_PER_MINUTE)){
+        indicator_led_update(2, arg); //force high
+        }
+      else {
+    #endif
+        indicator_led_update(cfg.indicator_led_mode & 0x03, arg);
+    #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
+      }
+    #endif
+    #elif defined(USE_AUX_RGB_LEDS)
+      #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
+      if (arg < (cfg.lockout_high_aux_timer * SLEEP_TICKS_PER_MINUTE)){
+        //force high mode with selected pattern
+        uint8_t rgb_led_mode = cfg.rgb_led_lockout_mode;
+        rgb_led_mode &= 0x0F; //clear upper 4 bits
+        rgb_led_mode |= 0x20; //set the upper 4 the way we want (i.e. 0x0010), this time with a bitwise OR to preserve the actual colour setting
+        rgb_led_update(rgb_led_mode, arg);
+      }
+      else {
+      #endif
+
+      #ifndef USE_AUX_LED_OVERRIDE
+        rgb_led_update(cfg.rgb_led_lockout_mode, arg);
+      #else
+        if (! aux_led_override){ rgb_led_update(cfg.rgb_led_lockout_mode, arg); }
+      #endif
+    #endif
+    #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
+      }
+    #endif
+}
+
 uint8_t lockout_state(Event event, uint16_t arg) {
     #ifdef USE_MOON_DURING_LOCKOUT_MODE
     // momentary(ish) moon mode during lockout
@@ -139,14 +174,14 @@ if (!momentary_from_lock) { //also used in channel-modes.c
             #ifdef USE_INDICATOR_LED
             // redundant, sleep tick does the same thing
             //indicator_led_update(cfg.indicator_led_mode >> 2, arg);
-            #elif defined(USE_AUX_RGB_LEDS)
-              #ifdef USE_AUX_LED_OVERRIDE
-                if (! aux_led_override) {
-                  rgb_led_update(cfg.rgb_led_lockout_mode, arg);
-                }
-              #else
-                rgb_led_update(cfg.rgb_led_lockout_mode, arg);
-              #endif
+            //#elif defined(USE_AUX_RGB_LEDS)
+              //#ifdef USE_AUX_LED_OVERRIDE
+                //if (! aux_led_override) {
+                  //rgb_led_update(cfg.rgb_led_lockout_mode, arg);
+                //}
+              //#else
+                //rgb_led_update(cfg.rgb_led_lockout_mode, arg);
+              //#endif
             #endif
         }
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
@@ -162,17 +197,9 @@ if (!momentary_from_lock) { //also used in channel-modes.c
             manual_memory_restore();
         }
         #endif
-        #if defined(USE_INDICATOR_LED)
-          indicator_led_update(cfg.indicator_led_mode >> 2, arg);
-        #elif defined(USE_AUX_RGB_LEDS)
-          #ifdef USE_AUX_LED_OVERRIDE
-            if (! aux_led_override){
-              rgb_led_update(cfg.rgb_led_lockout_mode, arg);
-            }
-          #else
-            rgb_led_update(cfg.rgb_led_lockout_mode, arg);
-          #endif
-        #endif
+
+        lockout_led_update(arg);
+
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
     }
     #endif
@@ -330,11 +357,36 @@ if (!momentary_from_lock) { //also used in channel-modes.c
 #ifdef USE_AUTOLOCK
 // set the auto-lock timer to N minutes, where N is the number of clicks
 void autolock_config_save(uint8_t step, uint8_t value) {
+  if (1 == step) {
     cfg.autolock_time = value;
+  }
+#if (defined(USE_LOCKOUT_HIGH_AUX_TIMER) || (defined(USE_OFF_HIGH_AUX_TIMER)
+    if (2 == step) {
+    #if (defined(USE_LOCKOUT_HIGH_AUX_TIMER) && !defined(USE_OFF_HIGH_AUX_TIMER))
+      cfg.lockout_high_aux_timer = value;
+    #elif (!defined(USE_LOCKOUT_HIGH_AUX_TIMER) && defined(USE_OFF_HIGH_AUX_TIMER))
+      cfg.off_high_aux_timer = value;
+    #else //bothisgood.gif
+      cfg.lockout_high_aux_timer = value;
+    }
+    if (3 == step){
+      cfg.off_high_aux_timer = value;
+  #endif
+    }
+#endif
 }
 
 uint8_t autolock_config_state(Event event, uint16_t arg) {
-    return config_state_base(event, arg, 1, autolock_config_save);
+  #if (!defined(USE_LOCKOUT_HIGH_AUX_TIMER) && !defined(USE_OFF_HIGH_AUX_TIMER))
+  const uint8_t num_config_steps = 1;
+  #elif (defined(USE_LOCKOUT_HIGH_AUX_TIMER) && defined(USE_OFF_HIGH_AUX_TIMER))
+  const uint8_t num_config_steps = 3; //3 goes before 2 to solve logic precedence issues
+  #elif (defined(USE_LOCKOUT_HIGH_AUX_TIMER) || defined(USE_OFF_HIGH_AUX_TIMER))
+  const uint8_t num_config_steps = 2;
+  #else
+    #error "cosmic ray detected"
+  #endif
+  return config_state_base(event, arg, num_config_steps, autolock_config_save);
 }
 #endif  // #ifdef USE_AUTOLOCK
 
