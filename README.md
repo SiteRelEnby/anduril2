@@ -13,7 +13,7 @@ This is my own modded version of anduril2. Definitely an ongoing project, the id
 
 # Current upstream version this mod is based on
 
-[multi-channel branch](https://bazaar.launchpad.net/~toykeeper/flashlight-firmware/multi-channel): Revision [710](https://bazaar.launchpad.net/~toykeeper/flashlight-firmware/multi-channel/revision/710)
+[multi-channel branch](https://bazaar.launchpad.net/~toykeeper/flashlight-firmware/multi-channel): Revision [728](https://bazaar.launchpad.net/~toykeeper/flashlight-firmware/multi-channel/revision/728)
 
 There is an older branch based on the old 2-channel only code at `main_2channelonly`, consider that archived and not in active development.
 
@@ -121,12 +121,37 @@ Note that the build does not (TODO: currently?) check for conflicts, which may c
     * Post-off voltage (anothhr new upstream feature). When the light is switched off, displays the voltage for a few seconds using RGB aux before resuming normal off/lockout aux pattern. Configurable from the 7H menu on battcheck mode - second item is the number of seconds to display for (0C to disable)
       * Added a third item to the menu, which sets the level at which high brightness is used rather than low to (clicks - 1). e.g. 0C ignored, 1C = use low aux after the light was on at level 1 only, 11C = use low aux after the light was on at <= level 10, etc.)
     * 3H from lock for turbo (enable with `USE_3H_TURBO_FROM_LOCK`)
+    * Option to have the aux stay on high in off/lockout mode for a configurable timeout, then go to the user-configured mode.
+      * Enable feature with `USE_LOCKOUT_HIGH_AUX_TIMER` / `USE_OFF_HIGH_AUX_TIMER`. Set the default (in minutes) with `USE_LOCKOUT_HIGH_AUX_TIMER_DEFAULT` / `USE_OFF_HIGH_AUX_TIMER_DEFAULT` (e.g. `#define USE_LOCKOUT_HIGH_AUX_TIMER_DEFAULT 30`
+      * Configure at runtime on the 10H from lockout mode, 2nd/3rd items (TODO: configuring this for off mode from lockout mode is janky af but I can't think of a better way right now). 1 click = 1 minute / 0 clicks = disable.
 
 ## Multichannel lights only
 * Configurable shortcuts to specific channel mode turbo modes (`TURBO_SHORTCUT_1_CHANNEL`, `EVENT_TURBO_SHORTCUT_1`, `EVENT_TURBO_SHORTCUT_1_MOMENTARY`, `EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE`) and maximum (i.e. 200%) (`EVENT_TURBO_MAX`, `TURBO_MAX_CHANNEL` `EVENT_TURBO_MAX_MOMENTARY`, `EVENT_TURBO_MAX_MOMENTARY_RELEASE`)
 * Previous channel (`EVENT_PREVIOUS_CHANNEL`)
 * Cycle through channel modes in off or ramp mode, similarly to in lockout mode (`EVENT_CHANNEL_CYCLE_OFF_HOLD`, `EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE`, `EVENT_CHANNEL_CYCLE_ON_HOLD`, `EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE`)
   * Remappable for lockout mode (`EVENT_CHANNEL_CYCLE_LOCK_HOLD`)
+
+## Config menus
+This mod adds items to config menus, so the exact size and order of config menus may vary depending on what you have enabled.
+
+In general, if *everything* was enabled, config menus should be as follows (not bothering to list ones that aren't changed). Mod-added options are in bold:
+
+* Voltage config (7H from battcheck mode):
+  * Voltage calibration
+  * Post-off voltage seconds
+  * **Post-off voltage brightness threshold**
+* Lockout config (10H from lockout mode):
+  * Autolock minutes
+  * Minutes to force high aux when locked
+  * Minutes to force high aux when off (yes, I am aware configuring this for off mode from lockout mode is janky af but I can't think of a better way right now...)
+* Global settings config (9H from off):
+  * Tint ramp config
+  * Jumpstart config
+  * **RGB voltage aux while on - enable/disable**
+  * **RGB voltage aux while on - low threshold**
+  * **RGB voltage aux while on - high threshold**
+
+## Features todo
 
 Old features still to be ported to multichannel (subject to change):
 * More configurable beacon mode
