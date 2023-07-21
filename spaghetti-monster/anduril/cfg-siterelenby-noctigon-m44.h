@@ -4,7 +4,7 @@
 #pragma once
 
 #define MODEL_NUMBER "0143"
-#include "hwdef-noctigon-m44-aux.h"
+#include "hwdef-noctigon-m44.h"
 #include "hank-cfg.h"
 // ATTINY: 1634
 
