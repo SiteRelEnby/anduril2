@@ -89,10 +89,7 @@
 // the default of 26 looks a bit flat, so increase it
 #define CANDLE_AMPLITUDE 33
 
-// the power regulator is a bit slow, so push it harder for a quick response from off
-#define DEFAULT_JUMP_START_LEVEL 21
 #define BLINK_BRIGHTNESS DEFAULT_LEVEL
-#define BLINK_ONCE_TIME 12  // longer blink, since main LEDs are slow
 
 #define THERM_CAL_OFFSET 5
 
