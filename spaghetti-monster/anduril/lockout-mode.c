@@ -360,7 +360,7 @@ void autolock_config_save(uint8_t step, uint8_t value) {
   if (1 == step) {
     cfg.autolock_time = value;
   }
-#if (defined(USE_LOCKOUT_HIGH_AUX_TIMER) || (defined(USE_OFF_HIGH_AUX_TIMER)
+#if (defined(USE_LOCKOUT_HIGH_AUX_TIMER) || (defined(USE_OFF_HIGH_AUX_TIMER)))
     if (2 == step) {
     #if (defined(USE_LOCKOUT_HIGH_AUX_TIMER) && !defined(USE_OFF_HIGH_AUX_TIMER))
       cfg.lockout_high_aux_timer = value;
