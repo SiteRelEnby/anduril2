@@ -1,9 +1,11 @@
-// Noctigon KR4 / D4V2.5 driver layout (attiny1634)
-// Copyright (C) 2020-2023 Selene ToyKeeper
+// Noctigon DM11 driver layout (attiny1634)
+// Copyright (C) 2021-2023 Selene ToyKeeper
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
 
 /*
+ * (based on Noctigon K1)
+ *
  * Pin / Name / Function
  *   1    PA6   FET PWM (direct drive) (PWM1B) (on some models)
  *   2    PA5   R: red aux LED (PWM0B)
@@ -21,10 +23,10 @@
  *  14    PC1   SCK
  *  15    PC0   (none) PWM0A
  *  16    PB3   main LED PWM (linear) (PWM1A)
- *  17    PB2   MISO / e-switch (PCINT10)
+ *  17    PB2   MISO / (none) (PCINT10)
  *  18    PB1   MOSI / battery voltage (ADC6)
  *  19    PB0   Opamp power
- *  20    PA7   (none)
+ *  20    PA7   e-switch  (PCINT7)
  *      ADC12   thermal sensor
  *
  * Main LED power uses one pin to turn the Opamp on/off,
@@ -58,7 +60,6 @@ enum CHANNEL_MODES {
 
 // right-most bit first, modes are in fedcba9876543210 order
 #define CHANNEL_MODES_ENABLED 0b0000000000000001
-#define CHANNEL_AUX_OVERRIDE  0b0000000011111110 //channel uses aux - stops USE_AUX_RGB_LEDS_WHILE_ON messing up the mix/brightness
 // no args
 //#define USE_CHANNEL_MODE_ARGS
 //#define CHANNEL_MODE_ARGS     0,0,0,0,0,0,0,0
@@ -89,17 +90,14 @@ enum CHANNEL_MODES {
 #define CH2_PWM  OCR1B          // OCR1B is the output compare register for PA6
 
 // e-switch
-#define SWITCH_PIN   PB2     // pin 17
-#define SWITCH_PCINT PCINT10 // pin 17 pin change interrupt
-#define SWITCH_PCIE  PCIE1   // PCIE1 is for PCINT[11:8]
-#define SWITCH_PCMSK PCMSK1  // PCMSK1 is for PCINT[11:8]
-#define SWITCH_PORT  PINB    // PINA or PINB or PINC
-#define SWITCH_PUE   PUEB    // pullup group B
-#define PCINT_vect   PCINT1_vect  // ISR for PCINT[11:8]
+#define SWITCH_PIN   PA7    // pin 20
+#define SWITCH_PCINT PCINT7 // pin 20 pin change interrupt
+#define SWITCH_PCIE  PCIE0  // PCIE0 is for PCINT[7:0]
+#define SWITCH_PCMSK PCMSK0 // PCMSK0 is for PCINT[7:0]
+#define SWITCH_PORT  PINA   // PINA or PINB or PINC
+#define SWITCH_PUE   PUEA   // pullup group A
+#define PCINT_vect   PCINT0_vect  // ISR for PCINT[7:0]
 
-// the button tends to short out the voltage divider,
-// so ignore voltage while the button is being held
-//#define NO_LVP_WHILE_BUTTON_PRESSED
 
 #define USE_VOLTAGE_DIVIDER  // use a dedicated pin, not VCC, because VCC input is flattened
 #define VOLTAGE_PIN PB1      // Pin 18 / PB1 / ADC6
@@ -143,16 +141,6 @@ enum CHANNEL_MODES {
 #define BUTTON_LED_PORT PORTA  // for all "PA" pins
 #define BUTTON_LED_DDR  DDRA   // for all "PA" pins
 #define BUTTON_LED_PUE  PUEA   // for all "PA" pins
-
-// this light has three aux LED channels: R, G, B
-#define USE_AUX_RGB_LEDS
-// some variants also have an independent LED in the button
-#define USE_BUTTON_LED
-// the aux LEDs are front-facing, so turn them off while main LEDs are on
-#ifdef USE_INDICATOR_LED_WHILE_RAMPING
-#undef USE_INDICATOR_LED_WHILE_RAMPING
-#endif
-
 
 inline void hwdef_setup() {
     // enable output ports

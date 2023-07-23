@@ -44,55 +44,24 @@
 // allow using aux LEDs as extra channel modes
 #include "chan-rgbaux.h"
 
-#define USE_CHANNEL_MODES
 // channel modes:
 // * 0. main LEDs
-// * 1. aux red
-// * 2. aux yellow
-// * 3. aux green
-// * 4. aux cyan
-// * 5. aux blue
-// * 6. aux purple
-// * 7. aux white
-#define NUM_CHANNEL_MODES  8
+// * 1+. aux RGB
+#define NUM_CHANNEL_MODES   (1 + NUM_RGB_AUX_CHANNEL_MODES)
 enum CHANNEL_MODES {
     CM_MAIN = 0,
-    CM_AUXRED,
-    CM_AUXYEL,
-    CM_AUXGRN,
-    CM_AUXCYN,
-    CM_AUXBLU,
-    CM_AUXPRP,
-    CM_AUXWHT,
+    RGB_AUX_ENUMS
 };
 
 #define DEFAULT_CHANNEL_MODE  CM_MAIN
 
-#define CHANNEL_MODES_ENABLED 0b00000001
-#define CHANNEL_HAS_ARGS      0b00000000
-#define CHANNEL_AUX_OVERRIDE  0b11111110
+#define CHANNEL_AUX_OVERRIDE  0b0000000011111110
 
+// right-most bit first, modes are in fedcba9876543210 order
+#define CHANNEL_MODES_ENABLED 0b0000000000000001
 // no args
 //#define USE_CHANNEL_MODE_ARGS
 //#define CHANNEL_MODE_ARGS     0,0,0,0,0,0,0,0
-
-#define SET_LEVEL_MODES      set_level_main, \
-                             set_level_auxred, \
-                             set_level_auxyel, \
-                             set_level_auxgrn, \
-                             set_level_auxcyn, \
-                             set_level_auxblu, \
-                             set_level_auxprp, \
-                             set_level_auxwht
-// gradual ticking for thermal regulation
-#define GRADUAL_TICK_MODES   gradual_tick_main, \
-                             gradual_tick_null, \
-                             gradual_tick_null, \
-                             gradual_tick_null, \
-                             gradual_tick_null, \
-                             gradual_tick_null, \
-                             gradual_tick_null, \
-                             gradual_tick_null
 
 
 #define PWM_CHANNELS 1  // old, remove this
@@ -101,24 +70,21 @@ enum CHANNEL_MODES {
 #define PWM_GET       PWM_GET8
 #define PWM_DATATYPE  uint16_t  // is used for PWM_TOPS (which goes way over 255)
 #define PWM_DATATYPE2 uint16_t  // only needs 32-bit if ramp values go over 255
-#define PWM1_DATATYPE uint8_t   // 1x7135 ramp
+#define PWM1_DATATYPE uint8_t   // regulated ramp
 
-#define PWM_TOP       ICR1   // holds the TOP value for for variable-resolution PWM
+#define PWM_TOP       ICR1   // holds the TOP value for variable-resolution PWM
 #define PWM_TOP_INIT  255    // highest value used in top half of ramp
 #define PWM_CNT       TCNT1  // for dynamic PWM, reset phase
 
+// regulated channel
 #define CH1_PIN PB3            // pin 16, Opamp reference
 #define CH1_PWM OCR1A          // OCR1A is the output compare register for PB3
 
-#define PWM1_PHASE_RESET_OFF  // force reset while shutting off
-#define PWM1_PHASE_RESET_ON   // force reset while turning on
-#define PWM1_PHASE_SYNC       // manual sync while changing level
+#define CH1_ENABLE_PIN  PB0    // pin 19, Opamp power
+#define CH1_ENABLE_PORT PORTB  // control port for PB0
 
-#define LED_ENABLE_PIN  PB0    // pin 19, Opamp power
-#define LED_ENABLE_PORT PORTB  // control port for PB0
-
-#define LED_ENABLE_PIN2  PC0   // pin 15, boost PMIC enable
-#define LED_ENABLE_PORT2 PORTC // control port for PC0
+#define CH1_ENABLE_PIN2  PC0   // pin 15, boost PMIC enable
+#define CH1_ENABLE_PORT2 PORTC // control port for PC0
 
 // e-switch
 #define SWITCH_PIN   PA7    // pin 20
@@ -181,18 +147,14 @@ enum CHANNEL_MODES {
 #undef USE_INDICATOR_LED_WHILE_RAMPING
 #endif
 
-void set_level_main(uint8_t level);
-
-bool gradual_tick_main(uint8_t gt);
-
 
 inline void hwdef_setup() {
     // enable output ports
     // boost PMIC on/off
-    DDRC = (1 << LED_ENABLE_PIN2);
+    DDRC = (1 << CH1_ENABLE_PIN2);
     // Opamp level and Opamp on/off
     DDRB = (1 << CH1_PIN)
-         | (1 << LED_ENABLE_PIN);
+         | (1 << CH1_ENABLE_PIN);
     // aux R/G/B, button LED
     DDRA = (1 << AUXLED_R_PIN)
          | (1 << AUXLED_G_PIN)
