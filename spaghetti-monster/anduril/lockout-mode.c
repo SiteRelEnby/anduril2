@@ -49,9 +49,9 @@ void lockout_led_update(uint16_t arg){
       #else
         if (! aux_led_override){ rgb_led_update(cfg.rgb_led_lockout_mode, arg); }
       #endif
-    #endif
-    #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
-      }
+      #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
+        }
+      #endif
     #endif
 }
 
