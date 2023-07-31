@@ -28,7 +28,8 @@ void lockout_led_update(uint16_t arg){
         }
       else {
     #endif
-        indicator_led_update(cfg.indicator_led_mode & 0x03, arg);
+      indicator_led_update(cfg.indicator_led_mode >> 2, arg);
+
     #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
       }
     #endif
