@@ -59,6 +59,7 @@ enum CHANNEL_MODES {
 
 // right-most bit first, modes are in fedcba9876543210 order
 #define CHANNEL_MODES_ENABLED 0b0000000000000001
+#define CHANNEL_AUX_OVERRIDE  0b0000000011111110 //channel uses aux - stops USE_AUX_RGB_LEDS_WHILE_ON messing up the mix/brightness //TODO: refactor this to use NUM_RGB_AUX_CHANNEL_MODES? what if an RGB is before a main LED channel?
 // no args
 //#define USE_CHANNEL_MODE_ARGS
 //#define CHANNEL_MODE_ARGS     0,0,0,0,0,0,0,0

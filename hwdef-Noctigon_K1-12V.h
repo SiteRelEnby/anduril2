@@ -4,6 +4,7 @@
 #pragma once
 
 /*
+ *
  * Pin / Name / Function
  *   1    PA6   (none) (PWM1B) (reserved for DD drivers)
  *   2    PA5   R: red aux LED (PWM0B)
