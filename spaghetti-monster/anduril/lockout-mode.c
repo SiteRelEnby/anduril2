@@ -123,7 +123,11 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     #endif
 
 #if ((defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY) || defined(EVENT_TURBO_MAX_MOMENTARY))) || (defined(USE_3H_TURBO_FROM_LOCK))
-if ((!momentary_from_lock) && (!setting_rgb_mode_now)) { //also used in channel-modes.c
+  #ifdef USE_AUX_RGB_LEDS
+    if ((!momentary_from_lock) && (!setting_rgb_mode_now)) { //also used in channel-modes.c
+  #else
+    if (!momentary_from_lock) { //also used in channel-modes.c
+  #endif
 #endif
     if ((event & (B_CLICK | B_PRESS)) == (B_CLICK | B_PRESS)) {
         // hold: lowest floor
