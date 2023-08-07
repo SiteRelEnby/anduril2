@@ -58,6 +58,7 @@ enum CHANNEL_MODES {
 
 #define DEFAULT_CHANNEL_MODE  CM_MAIN
 
+#define CHANNEL_AUX_OVERRIDE  0b0000000011111110
 // right-most bit first, modes are in fedcba9876543210 order
 #define CHANNEL_MODES_ENABLED 0b0000000000000001
 // no args
