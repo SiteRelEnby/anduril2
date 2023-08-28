@@ -172,15 +172,9 @@ void set_level_auto_3ch_blend(uint8_t level) {
 // "white + red" channel mode
 void set_level_red_white_blend(uint8_t level) {
     // set the warm+cool white LEDs first
-<<<<<<< HEAD
-    cfg.channel_mode = CM_WHITE;
-    set_level_white_blend(level);
-    cfg.channel_mode = CM_WHITE_RED;
-=======
     channel_mode = CM_WHITE;
     set_level_white_blend(level);
     channel_mode = CM_WHITE_RED;
->>>>>>> origin/multi-channel
 
     if (level == 0) {
         RED_PWM_LVL = 0;
@@ -194,11 +188,7 @@ void set_level_red_white_blend(uint8_t level) {
     // set the red LED as a ratio of the white output level
     // 0 = no red
     // 255 = red at 100% of white channel PWM
-<<<<<<< HEAD
-    uint8_t ratio = cfg.channel_mode_args[cfg.channel_mode];
-=======
     uint8_t ratio = cfg.channel_mode_args[channel_mode];
->>>>>>> origin/multi-channel
 
     RED_PWM_LVL = (((PWM_DATATYPE2)ratio * (PWM_DATATYPE2)vpwm) + 127) / 255;
     if (! actual_level) PWM_CNT = 0;  // reset phase
@@ -233,11 +223,7 @@ bool gradual_tick_white_blend(uint8_t gt) {
     PWM_DATATYPE warm_PWM, cool_PWM;
     PWM_DATATYPE brightness = PWM_GET(pwm1_levels, gt);
     PWM_DATATYPE top        = PWM_GET(pwm_tops, gt);
-<<<<<<< HEAD
-    uint8_t blend           = cfg.channel_mode_args[cfg.channel_mode];
-=======
     uint8_t blend           = cfg.channel_mode_args[channel_mode];
->>>>>>> origin/multi-channel
 
     calc_2ch_blend(&warm_PWM, &cool_PWM, brightness, top, blend);
 
@@ -246,39 +232,12 @@ bool gradual_tick_white_blend(uint8_t gt) {
 
 
 // same as white blend, but tint is calculated from the ramp level
-void gradual_tick_auto_2ch_blend() {
-    uint8_t gt = gradual_target;
-    if (gt < actual_level) gt = actual_level - 1;
-    else if (gt > actual_level) gt = actual_level + 1;
-    gt --;
-
+bool gradual_tick_auto_2ch_blend(uint8_t gt) {
     // figure out what exact PWM levels we're aiming for
     PWM_DATATYPE warm_PWM, cool_PWM;
     PWM_DATATYPE brightness = PWM_GET(pwm1_levels, gt);
     PWM_DATATYPE top        = PWM_GET(pwm_tops, gt);
     uint8_t blend           = 255 * (uint16_t)gt / RAMP_SIZE;
-
-    calc_2ch_blend(&warm_PWM, &cool_PWM, brightness, top, blend);
-
-    // move up/down if necessary
-    GRADUAL_ADJUST_SIMPLE(warm_PWM, WARM_PWM_LVL);
-    GRADUAL_ADJUST_SIMPLE(cool_PWM, COOL_PWM_LVL);
-
-    // check for completion
-    if (   (WARM_PWM_LVL == warm_PWM)
-        && (COOL_PWM_LVL == cool_PWM)
-       )
-    {
-        GRADUAL_IS_ACTUAL();
-    }
-}
-
-
-void gradual_tick_auto_3ch_blend() {
-    uint8_t gt = gradual_target;
-    if (gt < actual_level) gt = actual_level - 1;
-    else if (gt > actual_level) gt = actual_level + 1;
-    gt --;
 
     calc_2ch_blend(&warm_PWM, &cool_PWM, brightness, top, blend);
 
@@ -300,11 +259,7 @@ bool gradual_tick_red_white_blend(uint8_t gt) {
     PWM_DATATYPE brightness = PWM_GET(pwm1_levels, gt);
     PWM_DATATYPE top        = PWM_GET(pwm_tops, gt);
     uint8_t blend           = cfg.channel_mode_args[CM_WHITE];
-<<<<<<< HEAD
-    uint8_t ratio           = cfg.channel_mode_args[cfg.channel_mode];
-=======
     uint8_t ratio           = cfg.channel_mode_args[channel_mode];
->>>>>>> origin/multi-channel
 
     red = (((PWM_DATATYPE2)ratio * (PWM_DATATYPE2)brightness) + 127) / 255;
     calc_2ch_blend(&warm, &cool, brightness, top, blend);

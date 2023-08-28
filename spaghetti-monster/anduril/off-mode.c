@@ -214,7 +214,7 @@ uint8_t off_state(Event event, uint16_t arg) {
     }
     else if (event == EV_click2_hold_release) {
         set_level(0);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
 
     // 2 clicks: highest mode (ceiling)

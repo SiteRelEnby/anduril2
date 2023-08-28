@@ -427,14 +427,14 @@ uint8_t steady_state(Event event, uint16_t arg) {
             || (event == EV_click4_hold)
             #endif
         ) {
+        #ifdef USE_CHANNEL_MODE_ARGS
             // ramp tint if tint exists in this mode
-            #ifdef USE_CHANNEL_MODE_ARGS
             if (event == EV_click3_hold){
-                if(channel_has_args(cfg.channel_mode)) {
+                if(channel_has_args(channel_mode)) {
                   return EVENT_NOT_HANDLED;
                 }
             #endif
-        #if defined(USE_CHANNEL_MODE_ARGS) && !defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)
+        #if defined(USE_CHANNEL_MODE_ARGS) && !defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH) //TODO: 3H_FORCE_RAMP_ON_NO_ARGS
         //don't turbo on 3h
                 else {
                   if ((arg % 32 == 0)){
@@ -466,7 +466,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
         #ifdef USE_CHANNEL_MODE_ARGS
             // ramp tint if tint exists in this mode
             if ((event == EV_click3_hold_release)
-                && (channel_has_args(cfg.channel_mode)))
+                && (channel_has_args(channel_mode)))
                 return EVENT_NOT_HANDLED;
         #endif
         set_level_and_therm_target(memorized_level);

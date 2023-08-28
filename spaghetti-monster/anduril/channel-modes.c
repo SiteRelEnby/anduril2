@@ -8,8 +8,11 @@
 
 uint8_t channel_mode_state(Event event, uint16_t arg) {
 
+    //for some modded functionality, we need current_state
+    #if ((defined(EVENT_TURBO_SHORTCUT_1)) || (defined(EVENT_TURBO_SHORTCUT_2)) || (defined(EVENT_TURBO_MAX)) || (defined(EVENT_CHANNEL_CYCLE_OFF_HOLD)))
     // "current_state" is volatile, so cache it to reduce code size
     StatePtr state = current_state;
+    #endif
 
     #ifdef USE_CHANNEL_MODE_ARGS
     static int8_t tint_ramp_direction = 1;
@@ -39,12 +42,12 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     // so try to detect if 3C is needed
     #if NUM_CHANNEL_MODES > 1
     // 3 clicks: next channel mode
-    if ((event == NEXT_CHANNEL_MODE_EVENT)
-    #ifdef DEFAULT_BLINK_CHANNEL
-      )
-    #else
-      && (state != battcheck_state))
-    #endif
+    if ((event == NEXT_CHANNEL_MODE_EVENT))
+//    #ifdef DEFAULT_BLINK_CHANNEL
+//    #else
+//      && (state != battcheck_state)  //TODO: is this obsolete?
+//    #endif
+//    )
     {
         uint8_t next = channel_mode;
         // go to next channel mode until we find one which is enabled
