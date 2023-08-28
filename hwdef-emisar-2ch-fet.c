@@ -197,11 +197,7 @@ bool gradual_tick_blend(uint8_t level) {
     //uint16_t brightness = PWM_GET8 (pwm1_levels, level) << 1;
     uint16_t brightness = PWM_GET8 (pwm1_levels, level) + pwm3;
     uint16_t top        = PWM_GET16(pwm3_levels, level);
-<<<<<<< HEAD
-    uint8_t  blend      = cfg.channel_mode_args[cfg.channel_mode];
-=======
     uint8_t  blend      = cfg.channel_mode_args[channel_mode];
->>>>>>> origin/multi-channel
 
     calc_2ch_blend(&pwm1, &pwm2, brightness, top, blend);
 
@@ -213,11 +209,7 @@ bool gradual_tick_auto(uint8_t level) {
     uint8_t  brightness = PWM_GET8 (pwm4_levels, level);
     uint16_t top        = PWM_GET16(pwm5_levels, level);
     uint8_t  blend      = 255 * (uint16_t)level / RAMP_SIZE;
-<<<<<<< HEAD
-    if (cfg.channel_mode_args[cfg.channel_mode] & 0b01000000)
-=======
     if (cfg.channel_mode_args[channel_mode] & 0b01000000)
->>>>>>> origin/multi-channel
         blend = 255 - blend;
 
     calc_2ch_blend(&pwm1, &pwm2, brightness, top, blend);

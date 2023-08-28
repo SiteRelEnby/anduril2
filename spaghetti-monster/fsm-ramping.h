@@ -163,13 +163,9 @@ PROGMEM const PWM_DATATYPE pwm_tops[] = { PWM_TOPS };
 //#define RAMP_SIZE (sizeof(stacked_pwm1_levels)/sizeof(STACKED_PWM_DATATYPE))
 #define MAX_LEVEL RAMP_SIZE
 
-<<<<<<< HEAD
 #ifdef CHANNEL_AUX_OVERRIDE
     #define channel_uses_aux(n) ((CHANNEL_AUX_OVERRIDE >> n ) & 1)
 #endif
-
-=======
->>>>>>> origin/multi-channel
 
 #endif  // ifdef USE_RAMPING
 

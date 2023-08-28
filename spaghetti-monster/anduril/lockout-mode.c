@@ -75,11 +75,11 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         if (!arg){
           #if (NUM_CHANNEL_MODES > 1)
             #ifdef USE_3H_TURBO_FROM_LOCK_FORCE_CHANNEL
-              prev_channel_mode = CH_MODE;
+              prev_channel_mode = channel_mode;
               set_channel_mode(3H_TURBO_FROM_LOCK_FORCE_CHANNEL);
             #elif defined(CHANNEL_AUX_OVERRIDE) //we don't want to use an aux channel for this...
-              if (channel_uses_aux(CH_MODE)){
-                prev_channel_mode = CH_MODE;
+              if (channel_uses_aux(channel_mode)){
+                prev_channel_mode = channel_mode;
                 #if defined(CM_MAIN) //probably a single (main) channel light
                   set_channel_mode(CM_MAIN);
                 #elif defined(CM_CH1) //assume ch1 is the closest thing to a main
@@ -176,24 +176,14 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     else if (event == EV_tick) {
         if (arg > HOLD_TIMEOUT) {
             go_to_standby = 1;
-            #ifdef USE_INDICATOR_LED
+            //#ifdef USE_INDICATOR_LED
             // redundant, sleep tick does the same thing
             //indicator_led_update(cfg.indicator_led_mode >> 2, arg);
             //#elif defined(USE_AUX_RGB_LEDS)
-              //#ifdef USE_AUX_LED_OVERRIDE
-                //if (! aux_led_override) {
-                  //rgb_led_update(cfg.rgb_led_lockout_mode, arg);
-                //}
-              //#else
-                //rgb_led_update(cfg.rgb_led_lockout_mode, arg);
-              //#endif
-            #endif
+            //rgb_led_update(cfg.rgb_led_lockout_mode, arg);
+            //#endif
         }
         return EVENT_HANDLED;
-            #elif defined(USE_AUX_RGB_LEDS)
-            rgb_led_update(cfg.rgb_led_lockout_mode, arg);
-            #endif
-        }
     }
 
     #if defined(TICK_DURING_STANDBY) && (defined(USE_INDICATOR_LED) || defined(USE_AUX_RGB_LEDS))
@@ -244,7 +234,6 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     #ifdef EVENT_UNLOCK_TO_FLOOR
     // 4 clicks, but hold last: exit and start at floor
     else if (event == EVENT_UNLOCK_TO_FLOOR) {
-    }
         //blink_once();
         blip();
         // reset button sequence to avoid activating anything in ramp mode

@@ -327,11 +327,11 @@ void loop() {
 
     if
     #if (defined(USE_AUX_LED_OVERRIDE) && defined(CHANNEL_AUX_OVERRIDE))
-    ((! setting_rgb_mode_now) && (! aux_led_override) && (!channel_uses_aux(CH_MODE))
+    ((! setting_rgb_mode_now) && (! aux_led_override) && (!channel_uses_aux(channel_mode))
     #elif (defined(USE_AUX_LED_OVERRIDE) && !defined(CHANNEL_AUX_OVERRIDE))
     ((! setting_rgb_mode_now) && (! aux_led_override)
     #elif (!defined(USE_AUX_LED_OVERRIDE) && defined(CHANNEL_AUX_OVERRIDE))
-    ((! setting_rgb_mode_now) && (!channel_uses_aux(CH_MODE))
+    ((! setting_rgb_mode_now) && (!channel_uses_aux(channel_mode))
     #else
     (! setting_rgb_mode_now
     #endif

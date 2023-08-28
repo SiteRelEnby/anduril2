@@ -470,11 +470,6 @@ uint8_t steady_state(Event event, uint16_t arg) {
                 return EVENT_NOT_HANDLED;
         #endif
         set_level_and_therm_target(memorized_level);
-        return EVENT_HANDLED;
-                && (channel_has_args(channel_mode)))
-                return EVENT_NOT_HANDLED;
-        #endif
-        set_level_and_therm_target(memorized_level);
     }
 
     #ifdef USE_MOMENTARY_MODE

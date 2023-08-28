@@ -238,11 +238,11 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
 //        // first time? assume the user *wants* turbo rather than exit it, also fixes a bug of 'returning' to 0 when you hit a channel turbo mode while on that channel
 //        //   below max by always making sure prev_level is accurate without needing to worry about which state we are coming from
 //        prev_level = actual_level;
-//        //prev_channel = CH_MODE; //TODO: necessary?
+//        //prev_channel = channel_mode; //TODO: necessary?
 //    }
 
-    if ((CH_MODE != new_channel ) || (state == lockout_state)){ //assume the user did always want to activate turbo regardless of brightness (e.g. switching channels quickly) if it's for a different channelmode than current
-      prev_channel = CH_MODE;
+    if ((channel_mode != new_channel ) || (state == lockout_state)){ //assume the user did always want to activate turbo regardless of brightness (e.g. switching channels quickly) if it's for a different channelmode than current
+      prev_channel = channel_mode;
       prev_level = actual_level;
       set_channel_mode(new_channel);
       set_state(steady_state, MAX_LEVEL); //bug(?): going from turbo when ceil < 150 sets the channel mode fine, but does not go fully to MAX_LEVEL. using RAMP_SIZE instead doesn't work.
@@ -306,7 +306,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     uint8_t new_ch = 0;
     if ((!arg) && (!active)) {
       active = 1;
-      prev_channel = CH_MODE; //save channel we were on the first time round and only *set* that channel then, since eventually arg wraps round to 0
+      prev_channel = channel_mode; //save channel we were on the first time round and only *set* that channel then, since eventually arg wraps round to 0
       prev_level = actual_level;
       if (event == EVENT_TURBO_SHORTCUT_1_MOMENTARY){
         new_ch = TURBO_SHORTCUT_1_CHANNEL;
@@ -317,7 +317,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
       else {
         new_ch = TURBO_MAX_CHANNEL;
       }
-      //if (CH_MODE != new_ch) { set_channel_mode(new_ch); }
+      //if (channel_mode != new_ch) { set_channel_mode(new_ch); }
       set_channel_mode(new_ch);
       if (state == lockout_state){
           momentary_from_lock = 1;
@@ -330,7 +330,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     }
 
 //        if (!arg) {
-//            if (prev_channel == 255) { prev_channel = CH_MODE; prev_level = actual_level; set_channel_mode(TURBO_SHORTCUT_1_CHANNEL); set_channel_mode(TURBO_SHORTCUT_1_CHANNEL); } //save channel we were on the first time round and only *set* that channel then (since eventually arg wraps round to 0 which makes the LEDs blink otherwise when we channel switch (to the same channel), also resets thermal regulation
+//            if (prev_channel == 255) { prev_channel = channel_mode; prev_level = actual_level; set_channel_mode(TURBO_SHORTCUT_1_CHANNEL); set_channel_mode(TURBO_SHORTCUT_1_CHANNEL); } //save channel we were on the first time round and only *set* that channel then (since eventually arg wraps round to 0 which makes the LEDs blink otherwise when we channel switch (to the same channel), also resets thermal regulation
 //            if (state == lockout_state){ momentary_from_lock = 1 ; set_state(steady_state, MAX_LEVEL); } //necessary to get it to stay on from lock? using push_state() doesn't seem to work.
 //            return EVENT_HANDLED;
 //        }
