@@ -13,3 +13,4 @@ uint8_t lockout_state(Event event, uint16_t arg);
 #endif
 uint8_t autolock_config_state(Event event, uint16_t arg);
 #endif
+

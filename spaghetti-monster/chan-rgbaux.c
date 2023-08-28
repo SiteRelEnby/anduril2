@@ -31,19 +31,5 @@ void set_level_auxwht(uint8_t level) {
     rgb_led_set(!(!(level)) * 0b101010);  // red+green+blue, high (or off)
 }
 
-#if (defined(USE_SET_LEVEL_AUXMIX) && defined(USE_CHANNEL_MODE_ARGS))
-void set_level_auxmix(uint8_t level) {
-    const uint8_t rgb_led_colors[] = {
-        0b00000010,  // 0: red
-        0b00001010,  // 1: yellow
-        0b00001000,  // 2: green
-        0b00101000,  // 3: cyan
-        0b00100000,  // 4: blue
-        0b00100010,  // 5: purple
-        0b00101010,  // 6: white
-    };
-    uint8_t color = cfg.channel_mode_args[cfg.channel_mode] / 36;
-    rgb_led_set(!!level * rgb_led_colors[color]);
-}
-#endif
 bool gradual_tick_null(uint8_t gt) { return true; }  // do nothing
+

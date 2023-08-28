@@ -5,6 +5,7 @@
 
 #include "aux-leds.h"
 
+
 #if defined(USE_INDICATOR_LED)
 void indicator_led_update(uint8_t mode, uint8_t tick) {
     //uint8_t volts = voltage;  // save a few bytes by caching volatile value

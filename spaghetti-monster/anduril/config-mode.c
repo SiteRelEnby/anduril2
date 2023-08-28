@@ -13,8 +13,9 @@ volatile uint8_t number_entry_value;
 
 
 #if defined(USE_CONFIG_COLORS) && (NUM_CHANNEL_MODES > 1)
+// TODO: promote this to fsm-channels.c ?
 void set_chan_if(bool cond, uint8_t chan) {
-    if ((cond) && (chan != cfg.channel_mode))
+    if ((cond) && (chan != channel_mode))
         set_channel_mode(chan);
 }
 #endif
@@ -41,7 +42,7 @@ uint8_t config_state_base(
     #endif
     if (event == EV_enter_state) {
         #if defined(USE_CONFIG_COLORS) && (NUM_CHANNEL_MODES > 1)
-        orig_channel = cfg.channel_mode;
+        orig_channel = channel_mode;
         #endif
         config_step = 0;
         set_level(0);
@@ -166,7 +167,7 @@ uint8_t number_entry_state(Event event, uint16_t arg) {
         else {
             pop_state();
         }
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
 
     // count clicks: click = +1, hold = +10
@@ -186,7 +187,7 @@ uint8_t number_entry_state(Event event, uint16_t arg) {
         set_channel_mode(CONFIG_BLINK_CHANNEL);
         #endif
         set_level(RAMP_SIZE/2);  // flash briefly
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
 
     // eat all other events; don't pass any through to parent

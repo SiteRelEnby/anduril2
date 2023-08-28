@@ -19,6 +19,10 @@ uint8_t steady_state(Event event, uint16_t arg) {
     static uint8_t level_before_off = 0;
     #endif
 
+    #if NUM_CHANNEL_MODES > 1
+        channel_mode = cfg.channel_mode;
+    #endif
+
     // make sure ramp globals are correct...
     // ... but they already are; no need to do it here
     //ramp_update_config();
@@ -79,7 +83,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
     // if the timer just expired, shut off
     else if (sunset_active  &&  (! sunset_timer)) {
         set_state(off_state, 0);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     #endif  // ifdef USE_SUNSET_TIMER
 
@@ -99,25 +103,25 @@ uint8_t steady_state(Event event, uint16_t arg) {
         arg = nearest_level(arg);
         set_level_and_therm_target(arg);
         ramp_direction = 1;
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     #if (B_TIMING_OFF == B_RELEASE_T)
     // 1 click (early): off, if configured for early response
     else if (event == EV_click1_release) {
         level_before_off = actual_level;
         set_level_and_therm_target(0);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     // 2 clicks (early): abort turning off, if configured for early response
     else if (event == EV_click2_press) {
         set_level_and_therm_target(level_before_off);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     #endif  // if (B_TIMING_OFF == B_RELEASE_T)
     // 1 click: off
     else if (event == EV_1click) {
         set_state(off_state, 0);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     // 2 clicks: go to/from highest level
     else if (event == EV_2clicks) {
@@ -130,7 +134,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
         #ifdef USE_SUNSET_TIMER
         reset_sunset_timer();
         #endif
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
 
     #if defined(USE_LOCKOUT_MODE) && defined(LOCK_FROM_ON_EVENT)
@@ -147,12 +151,12 @@ uint8_t steady_state(Event event, uint16_t arg) {
     else if ((event == EV_click1_hold) || (event == EV_click2_hold)) {
         // ramp slower in discrete mode
         if (cfg.ramp_style  &&  (arg % HOLD_TIMEOUT != 0)) {
-            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+            return EVENT_HANDLED;
         }
         #ifdef USE_RAMP_SPEED_CONFIG
         // ramp slower if user configured things that way
         if ((! cfg.ramp_style) && (arg % ramp_speed)) {
-            return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+            return EVENT_HANDLED;
         }
         #endif
         // fix ramp direction on first frame if necessary
@@ -236,7 +240,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
         #ifdef USE_SUNSET_TIMER
         reset_sunset_timer();
         #endif
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     // reverse ramp direction on hold release
     else if ((event == EV_click1_hold_release)
@@ -245,7 +249,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
         #ifdef START_AT_MEMORIZED_LEVEL
         save_config_wl();
         #endif
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
 
     else if (event == EV_tick) {
@@ -300,7 +304,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
             }
         }
         #endif  // ifdef USE_SET_LEVEL_GRADUALLY
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
 
     #ifdef USE_THERMAL_REGULATION
@@ -330,7 +334,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
             set_level(stepdown);
             #endif
         }
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     // underheating: increase slowly if we're lower than the target
     //               (proportional to how low we are)
@@ -349,7 +353,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
             set_level(stepup);
             #endif
         }
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     #ifdef USE_SET_LEVEL_GRADUALLY
     // temperature is within target window
@@ -360,7 +364,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
             gradual_target = actual_level + 1;
         else if (gradual_target < actual_level)
             gradual_target = actual_level - 1;
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     #endif  // ifdef USE_SET_LEVEL_GRADUALLY
     #endif  // ifdef USE_THERMAL_REGULATION
@@ -406,7 +410,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
         #ifdef USE_SUNSET_TIMER
         reset_sunset_timer();
         #endif
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
 
     // If we allowed 3C in Simple UI, now block further actions
@@ -449,7 +453,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
             set_level_and_therm_target(turbo_level);
             #endif
         }
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
         #if defined(USE_CHANNEL_MODE_ARGS) && !defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)
         }
         #endif
@@ -466,7 +470,11 @@ uint8_t steady_state(Event event, uint16_t arg) {
                 return EVENT_NOT_HANDLED;
         #endif
         set_level_and_therm_target(memorized_level);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
+                && (channel_has_args(channel_mode)))
+                return EVENT_NOT_HANDLED;
+        #endif
+        set_level_and_therm_target(memorized_level);
     }
 
     #ifdef USE_MOMENTARY_MODE
@@ -474,7 +482,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
     else if (event == EVENT_MOMENTARY) {
         set_level(0);
         set_state(momentary_state, 0);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     #endif
 
@@ -482,7 +490,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
     // 7H: configure this ramp mode
     else if (event == EVENT_RAMP_CONFIG_HOLD) {
         push_state(ramp_config_state, 0);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     #endif
 
@@ -500,7 +508,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
         #else
         blink_once();
         #endif
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     else if (event == EV_click10_hold) {
         #ifdef USE_RAMP_EXTRAS_CONFIG
@@ -522,7 +530,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
             #endif
         }
         #endif
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     #endif  // ifdef USE_MANUAL_MEMORY
 
@@ -532,7 +540,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
           if (cfg.use_aux_while_on) { cfg.use_aux_while_on = 0; } else { cfg.use_aux_while_on = 1; }
           set_level(actual_level); //required to make LED go off if disabling
           blip();
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
         }
       #endif
     #endif
@@ -721,7 +729,7 @@ void set_level_and_therm_target(uint8_t level) {
 void manual_memory_restore() {
     memorized_level = cfg.manual_memory;
     #if NUM_CHANNEL_MODES > 1
-        cfg.channel_mode = cfg.manual_memory_channel_mode;
+        channel_mode = cfg.channel_mode = cfg.manual_memory_channel_mode;
     #endif
     #ifdef USE_CHANNEL_MODE_ARGS
         for (uint8_t i=0; i<NUM_CHANNEL_MODES; i++)
@@ -732,7 +740,7 @@ void manual_memory_restore() {
 void manual_memory_save() {
     cfg.manual_memory = actual_level;
     #if NUM_CHANNEL_MODES > 1
-        cfg.manual_memory_channel_mode = cfg.channel_mode;
+        cfg.manual_memory_channel_mode = channel_mode;
     #endif
     #ifdef USE_CHANNEL_MODE_ARGS
         for (uint8_t i=0; i<NUM_CHANNEL_MODES; i++)

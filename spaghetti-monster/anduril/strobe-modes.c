@@ -11,7 +11,7 @@ uint8_t strobe_state(Event event, uint16_t arg) {
     static int8_t ramp_direction = 1;
 
     // 'st' reduces ROM size slightly
-    strobe_mode_te st = cfg.strobe_type;
+    strobe_mode_te st = current_strobe_type;
 
     #ifdef USE_MOMENTARY_MODE
     momentary_mode = 1;  // 0 = ramping, 1 = strobes
@@ -28,25 +28,36 @@ uint8_t strobe_state(Event event, uint16_t arg) {
     if (0) {}  // placeholder
     // init anything which needs to be initialized
     else if (event == EV_enter_state) {
+        current_strobe_type = cfg.strobe_type;
         ramp_direction = 1;
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     // 1 click: off
     else if (event == EV_1click) {
         set_state(off_state, 0);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     // 2 clicks: rotate through strobe/flasher modes
     else if (event == EV_2clicks) {
-        cfg.strobe_type = (st + 1) % NUM_STROBES;
+        current_strobe_type = cfg.strobe_type = (st + 1) % NUM_STROBES;
         save_config();
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
+    #if NUM_CHANNEL_MODES > 1
+    // 3 clicks: rotate through channel modes for the current strobe
+    else if (event == EV_3clicks) {
+        // TODO: maybe skip aux modes?
+        set_channel_mode((channel_mode + 1) % NUM_CHANNEL_MODES);
+        cfg.strobe_channels[st] = channel_mode;
+        save_config();
+        return EVENT_HANDLED;
+    }
+    #endif
     // 4 clicks: rotate backward through strobe/flasher modes
     else if (event == EV_4clicks) {
-        cfg.strobe_type = (st - 1 + NUM_STROBES) % NUM_STROBES;
+        current_strobe_type = cfg.strobe_type = (st - 1 + NUM_STROBES) % NUM_STROBES;
         save_config();
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     // hold: change speed (go faster)
     //       or change brightness (brighter)
@@ -83,14 +94,14 @@ uint8_t strobe_state(Event event, uint16_t arg) {
         }
         #endif
 
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     // reverse ramp direction on hold release
     // ... and save new strobe settings
     else if (event == EV_click1_hold_release) {
         ramp_direction = -ramp_direction;
         save_config();
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     // click, hold: change speed (go slower)
     //       or change brightness (dimmer)
@@ -124,19 +135,19 @@ uint8_t strobe_state(Event event, uint16_t arg) {
         }
         #endif
 
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     // release hold: save new strobe settings
     else if (event == EV_click2_hold_release) {
         save_config();
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     #ifdef USE_MOMENTARY_MODE
     // 5 clicks: go to momentary mode (momentary strobe)
     else if (event == EVENT_MOMENTARY_STROBE) {
         set_state(momentary_state, 0);
         set_level(0);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     #endif
     #if defined(USE_LIGHTNING_MODE) || defined(USE_CANDLE_MODE)
@@ -146,7 +157,7 @@ uint8_t strobe_state(Event event, uint16_t arg) {
         if (arg == AUTO_REVERSE_TIME) ramp_direction = 1;
 
         pseudo_rand_seed += arg;
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
     #endif
     return EVENT_NOT_HANDLED;
@@ -154,7 +165,12 @@ uint8_t strobe_state(Event event, uint16_t arg) {
 
 // runs repeatedly in FSM loop() whenever UI is in strobe_state or momentary strobe
 inline void strobe_state_iter() {
-    uint8_t st = cfg.strobe_type;  // can't use switch() on an enum
+    uint8_t st = current_strobe_type;  // can't use switch() on an enum
+
+    #if NUM_CHANNEL_MODES > 1
+        // remember channel mode for each strobe
+        channel_mode = cfg.strobe_channels[st];
+    #endif
 
     switch(st) {
         #if defined(USE_PARTY_STROBE_MODE) || defined(USE_TACTICAL_STROBE_MODE)
@@ -222,7 +238,7 @@ inline void police_color_strobe_iter() {
     uint8_t del = 66;
     // TODO: make police strobe brightness configurable
     uint8_t bright = memorized_level;
-    uint8_t channel = cfg.channel_mode;
+    //uint8_t channel = channel_mode;
 
     for (uint8_t i=0; i<10; i++) {
         if (0 == i) set_channel_mode(POLICE_COLOR_STROBE_CH1);
@@ -233,8 +249,9 @@ inline void police_color_strobe_iter() {
         nice_delay_ms(del);
     }
 
-    // restore this when done
-    set_channel_mode(channel);
+    // restore the channel when done
+    //set_channel_mode(channel);
+    channel_mode = cfg.channel_mode;
 }
 #endif
 

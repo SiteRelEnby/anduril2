@@ -28,10 +28,14 @@ uint8_t tactical_state(Event event, uint16_t arg) {
             if ((1 <= lvl) && (lvl <= RAMP_SIZE)) {  // steady output
                 memorized_level = lvl;
                 momentary_mode = 0;
+                #if NUM_CHANNEL_MODES > 1
+                    // use ramp mode's channel
+                    channel_mode = cfg.channel_mode;
+                #endif
             } else {  // momentary strobe mode
                 momentary_mode = 1;
                 if (lvl > RAMP_SIZE) {
-                    cfg.strobe_type = (lvl - RAMP_SIZE - 1) % strobe_mode_END;
+                    current_strobe_type = (lvl - RAMP_SIZE - 1) % strobe_mode_END;
                 }
             }
         }
@@ -40,6 +44,7 @@ uint8_t tactical_state(Event event, uint16_t arg) {
     else if ((event & (B_CLICK | B_PRESS)) == (B_CLICK)) {
         momentary_active = 0;
         set_level(0);
+        interrupt_nice_delays();  // stop animations in progress
     }
 
     // delegate to momentary mode while button is pressed
@@ -91,7 +96,7 @@ uint8_t tactical_state(Event event, uint16_t arg) {
     // 7H: configure tactical mode
     else if (event == EV_click7_hold) {
         push_state(tactical_config_state, 0);
-        return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
+        return EVENT_HANDLED;
     }
 
     return ret;
