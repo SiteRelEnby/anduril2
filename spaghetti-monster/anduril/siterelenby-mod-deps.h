@@ -48,6 +48,13 @@
     #define USE_AUX_RGB_LEDS_WHILE_ON
   #endif
 
+  #if (defined(USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW))
+    #warning "USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW is for setting *static* thresholds and not needed for `USE_AUX_WHILE_ON_CONFIG` (use `USE_AUX_WHILE_ON_CONFIG_DEFAULT_THRESHOLD_LOW` instead)"
+  #endif
+  #if (defined(USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH))
+    #warning "USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH is for setting *static* thresholds and not needed for `USE_AUX_WHILE_ON_CONFIG` (use `USE_AUX_WHILE_ON_CONFIG_DEFAULT_THRESHOLD_HIGH` instead)"
+  #endif
+
   #ifdef USE_AUX_WHILE_ON_CONFIG_DEFAULT_THRESHOLD_LOW
     #ifdef USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
       #warning "`USE_AUX_WHILE_ON_CONFIG_DEFAULT_THRESHOLD_LOW` overrides `USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW`"

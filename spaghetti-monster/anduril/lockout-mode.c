@@ -120,23 +120,25 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         blink_channel_ontime = 60;
         blink_channel_offtime = 60;
         blink_channel_channel = BLINK_LOCK_REMINDER_CHANNEL;
+    #endif //ifdef BLINK_LOCK_REMINDER
 
     #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
-    #if (LOCKOUT_HIGH_AUX_CLICKS == 2)
-      if (event == EV_2clicks){
+      #if (defined(LOCKOUT_HIGH_AUX_CLICKS))
+        #if (LOCKOUT_HIGH_AUX_CLICKS == 2)
+        if (event == EV_2clicks){
+          high_aux_enabled = 1;
+        }
+        #elif (LOCKOUT_HIGH_AUX_CLICKS == 1)
+        if (event == EV_1click){
+           high_aux_enabled = 1;
+        }
+        #endif
+      #else
         high_aux_enabled = 1;
-      }
-    #elif (LOCKOUT_HIGH_AUX_CLICKS == 1)
-      if (event == EV_1click){
-         high_aux_enabled = 1;
-      }
-    #else
-      high_aux_enabled = 1;
-    #endif
-        return EVENT_HANDLED;
+      #endif //if (defined(LOCKOUT_HIGH_AUX_CLICKS))
+    #endif //ifdef USE_LOCKOUT_HIGH_AUX_TIMER
+      return EVENT_HANDLED;
     } else
-    #endif
-    #endif
 
 #if ((defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY) || defined(EVENT_TURBO_MAX_MOMENTARY))) || (defined(USE_3H_TURBO_FROM_LOCK))
   #ifdef USE_AUX_RGB_LEDS
