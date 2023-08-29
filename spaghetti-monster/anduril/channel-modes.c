@@ -6,6 +6,16 @@
 
 #include "channel-modes.h"
 
+#if defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY) || defined(EVENT_TURBO_MAX_MOMENTARY)
+void set_turbo_channel(uint8_t channel){
+  prev_level = actual_level; //save these for later
+  //set_channel_mode(channel);
+  set_state(steady_state, MAX_LEVEL); //bug(?): going from turbo when ceil < 150 sets the channel mode fine, but does not go fully to MAX_LEVEL. using RAMP_SIZE instead doesn't work.
+  set_channel_mode(channel);
+  set_level_and_therm_target(MAX_LEVEL); //workaround
+}
+#endif
+
 uint8_t channel_mode_state(Event event, uint16_t arg) {
 
     //for some modded functionality, we need current_state
@@ -244,30 +254,30 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
 //        //prev_channel = channel_mode; //TODO: necessary?
 //    }
 
-    if ((channel_mode != new_channel ) || (state == lockout_state)){ //assume the user did always want to activate turbo regardless of brightness (e.g. switching channels quickly) if it's for a different channelmode than current
-      prev_channel = channel_mode;
-      prev_level = actual_level;
-      set_state(steady_state, MAX_LEVEL); //bug(?): going from turbo when ceil < 150 sets the channel mode fine, but does not go fully to MAX_LEVEL. using RAMP_SIZE instead doesn't work.
-      set_channel_mode(new_channel);
-      set_level_and_therm_target(MAX_LEVEL);
-    }
-    else {
-      //channels are the same, user may want to go up to turbo or back down to last used?
-      //if ((actual_level == MAX_LEVEL) || (target_level == MAX_LEVEL)){
-      if ((actual_level >= MAX_LEVEL) || (target_level == MAX_LEVEL)){ //bug(?): going from turbo when ceil < 150 sets the channel mode fine, but goes not go fully to MAX_LEVEL. using RAMP_SIZE instead doesn't work.
-        //coming from turbo
-        //set_level(0);
-        if (prev_channel != 255) { set_level(0); set_channel_mode(prev_channel); }
-        //if (prev_level != 255) { set_level(prev_level); } //prev_level might be 0, which is fine (for off/lockout)
-        if (prev_level != 255) { set_state(steady_state, prev_level); } //prev_level might be 0, which is fine (for off/lockout). use set_state because we might be exiting lockout/off state rather than going from ramp
+    if ((channel_mode != new_channel) || (state == lockout_state)){
+        //we know we are going to turbo if channels are different even if we are at max level
+        //set_channel_mode(new_channel); //this has to be set AFTER setting the state now (https://bazaar.launchpad.net/~toykeeper/flashlight-firmware/multi-channel/view/754/ToyKeeper/spaghetti-monster/anduril/ramp-mode.c#L23)
+        prev_level = actual_level;
+        prev_channel = channel_mode;
+        set_state(steady_state, MAX_LEVEL); //bug(?): going from turbo when ceil < 150 sets the channel mode fine, but does not go fully to MAX_LEVEL. using RAMP_SIZE instead doesn't work.
+        set_channel_mode(new_channel);
+        set_level_and_therm_target(MAX_LEVEL); //workaround
+      }
+    else { //shortcut used for channel we are on
+      if ((actual_level >= MAX_LEVEL) || (target_level == MAX_LEVEL)) { //are we already at turbo?
+        //at turbo, going back down, depending on which vars we have
+        //if (prev_channel != 255) { set_level(0); set_channel_mode(prev_channel); } //restore old level and mode. prev_channel should be 255 if we went from e.g. ch2 turbo to ch1 turbo so we skip resetting mode if so
+        //if (prev_level != 255) { set_state(steady_state, prev_level); } //prev_level might be 0, which is fine (for off/lockout). use set_state because this will never be reached from off/lockout state (where actual_level would be 0).
+        //if (prev_level != 255) { set_state(steady_state, prev_level); } //prev_level might be 0, which is fine (for off/lockout). use set_state because this will never be reached from off/lockout state (where actual_level would be 0).
+        //if (prev_channel != 255) { set_level(0); set_channel_mode(prev_channel); } //restore old level and mode. prev_channel should be 255 if we went from e.g. ch2 turbo to ch1 turbo so we skip resetting mode if so
         prev_channel=255;
         prev_level=255;
       }
       else {
-        //goto turbo
         prev_level = actual_level;
-        set_level_and_therm_target(MAX_LEVEL); //bug(?): going from turbo when ceil < 150 sets the channel mode fine, but goes not go fully to MAX_LEVEL. using RAMP_SIZE instead doesn't work.
-        prev_channel=255; //TODO: necessary?
+        prev_channel = channel_mode;
+        set_state(steady_state, MAX_LEVEL); //bug(?): going from turbo when ceil < 150 sets the channel mode fine, but does not go fully to MAX_LEVEL. using RAMP_SIZE instead doesn't work.
+        set_level_and_therm_target(MAX_LEVEL); //workaround
       }
     }
     return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
@@ -275,6 +285,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
 #endif
 
 #if (defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY) || defined(EVENT_TURBO_MAX_MOMENTARY)) && (NUM_CHANNEL_MODES > 1)
+
   #if defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) && !defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE)
     #error "EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE not defined"
   #endif
@@ -321,12 +332,12 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
         new_ch = TURBO_MAX_CHANNEL;
       }
       //if (channel_mode != new_ch) { set_channel_mode(new_ch); }
-      set_channel_mode(new_ch);
       if (state == lockout_state){
           momentary_from_lock = 1;
           //push_state(steady_state, MAX_LEVEL);
           set_state(steady_state, arg);
         }
+        set_channel_mode(new_ch); //this has to be set AFTER setting the state now (https://bazaar.launchpad.net/~toykeeper/flashlight-firmware/multi-channel/view/754/ToyKeeper/spaghetti-monster/anduril/ramp-mode.c#L23)
         set_level_and_therm_target(MAX_LEVEL); //bug(?): going from turbo when ceil < 150 sets the channel mode fine, but goes not go fully to MAX_LEVEL. using RAMP_SIZE instead doesn't work.
       }
     return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
