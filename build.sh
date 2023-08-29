@@ -18,7 +18,7 @@ else
 fi
 
 # For running from root dir:
-docker run --rm -v ${SCRIPTPATH}:/src -e COMMITHASH="$(git rev-parse --short HEAD)" -t anduril-builder:latest ${*}
+docker run --rm -v ${SCRIPTPATH}:/src -e MOD_CFG_H="${MOD_CFG_H}" -e EXACT_BUILD_TARGET="${EXACT_BUILD_TARGET}" -e COMMITHASH="$(git rev-parse --short HEAD)" -t anduril-builder:latest ${*}
 retval=$?
 # For running from a subdir:
 # SCRIPTPATH was set above so it's known-good

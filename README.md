@@ -174,27 +174,9 @@ Old features still to be ported to multichannel (subject to change):
 
 Get your light's default firmware and locate the correct header file, as this contains important hardware-specific config. Make a copy of it, and modify the following variables to your preference. These settings will persist across a factory reset (making it much more convenient to build an image once, then if your settings ever get messed up, you can factory reset to go back to *your* settings. Most of these are fairly self-explanatory. Note that the first half *SHOULD* work in stock unmodified anduril too, but this has not been tested by me personally. See above for build-time settings added by mods.
 
-### Example configurations
-
-Example header files:
-* `basic-new-features-only`: [Nonintrusive new features enabled, all button mappings are the same as stock](spaghetti-monster/anduril/config-example-basic-new-features-only.h): `spaghetti-monster/anduril/config-example-basic-new-features-only.h`
-* `dual-channel-features`: [Dual channel lights with 200%](spaghetti-monster/config-example-dual-channel.h)
-  * Sunset mode moved to 10H
-  * Ramp toggle moved to 9C
-  * Ramp config moved to 8H
-  * Momentary mode moved to 11C
-  * Lock from ramp mode disabled
-  * Aux config moved to 8C/H (to make it harder to accidentally hit)
-  * `BLINK_NUMBERS_WITH_AUX` available, configurable in 9H menu
-  * Tactical mode enabled, moved to 9C
-  * 3C to switch channels
-  * 3H to ramp channels
-  * 2C for single channel turbo
-  * 4C for 200% turbo
-  * 4H for momentary 200%
-
 ## Complete configuration reference
-
+<details>
+  <summary>This is probably out of date. It may well still be useful but really needs going through...</summary>
 ### Stock compatible config
 
 **This is probably out of date as I haven't gone through it for multichannel yet. Most of it probably still works but some may not.**
@@ -284,6 +266,72 @@ Example header files:
 TODO: redo this with multichannel.
 
 For now, check out my main development config: [cfg-siterelenby-emisar-2ch-aux](spaghetti-monster/cfg-siterelenby-emisar-2ch-aux.h), [my button mappings](spaghetti-monster/anduril/mod-config-siterelenby.h), and [stock-compatible mappings](spaghetti-monster/anduril/mod-config-defaults.h)
+</details>
+
+## Example mod configs and prebuilt modded versions
+### Example configurations
+
+TODO: more detail on making your own config?
+
+A few mod configs to serve as examples as well as let people try out some modded features without needing to build their own config from scratch
+
+* [spaghetti-monster/anduril/mod-config-aux-while-on.h](spaghetti-monster/anduril/mod-config-aux-while-on.h)
+  * Uses BLINK_LOCK_REMINDER (with red aux if aux are RGB)
+  * Fully configurable RGB voltage while on (8C to switch on/off, all three aux voltage options enabled (see [config menus](#config-menus)
+  * Fully configurable post-off voltage (configurable brightness)
+  * 3H turbo from lockout mode
+* [spaghetti-monster/anduril/mod-config-aux-while-on-4c-prev.h](spaghetti-monster/anduril/mod-config-aux-while-on-4c-prev.h)
+  * Uses BLINK_LOCK_REMINDER (with red aux if aux are RGB)
+  * Fully configurable RGB voltage while on (8C to switch on/off, all three aux voltage options enabled (see [config menus](#config-menus)
+  * Fully configurable post-off voltage (configurable brightness)
+  * 3H turbo from lockout mode
+  * 4C ramp -> lockout removed and replaced with 4C previous channel
+* [spaghetti-monster/anduril/mod-config-siterelenby.h](spaghetti-monster/anduril/mod-config-siterelenby.h) - my personal mod config, changes relatively often as this fork is developed and upstream changes, but is a good example of how complex things can get
+
+### Building your own modded version
+
+The easiest way is to create a mod-config file (see examples above) and pass that to the builder.
+
+One shortcut that can be taken is if you want all the default button mappings, in your mod-config, you can use
+
+```
+#include "mod-config-defaults.h"
+```
+This will load a set of stock-compatible button mappings (that can still be remapped afterwards).
+
+To load mod-config files, the default build scripts have been modified:
+
+`[spaghetti-monster/anduril/build-all.sh](spaghetti-monster/anduril/build-all.sh)` modified to take extra environment variables:
+* `EXACT_BUILD_TARGET`: Disables globbing, e.g. calling `EXACT_BUILD_TARGET=1 build-all.sh emisar-2ch` will **only** build `emisar-2ch` and not other targets with a matching name (e.g. `emisar-2ch-fet`).
+* `MOD_CFG_H`: An additional config file to load, intended for configuration of mods. This is loaded after the build target config (e.g. `cfg-emisar-2ch.h`) but before any core anduril/FSM code is loaded, so it is safe to enable/disable features here.
+
+`build.sh` (in the root of the repo) is a simple script to make it easier to build using Docker. This script supports passing through the environment vars mentioned above. In addition, it makes an attempt to handle different OS environments, and also passes the current git commit hash to the Docker builder. e.g. `EXACT_BUILD_TARGET=1 MOD_CFG_H="mod-config-aux-while-on.h" ./build.sh emisar-2ch`
+
+Alternatively, you can create a variant build target with a customised `cfg.h`. The easiest way to do that is to `#include` the base config for the light you are building for, then apply your customisations in the file after the include. A simple example, if you just wanted `emisar-2ch` but not starting in simple UI, would be:
+```
+#include "cfg-emisar-2ch.h"
+#undef SIMPLE_UI_ACTIVE
+#define SIMPLE_UI_ACTIVE 0
+```
+
+You can change most things this way, and can also include your mod config here instead of using `MOD_CFG_H` (make sure you do this **AFTER** including the base cfg.h...). This allows you to override elements of your mod config for specific lights. For examples, see `spaghetti-monster/anduril/cfg-siterelenby-*.h`. One example below:
+
+<details>
+  <summary>example custom build target loading a mod-config and applying further customisations</summary>
+```
+// include the base hwdef
+#include "cfg-emisar-2ch.h"
+
+// load default button mappings
+#include mod-config-defaults.h
+
+//make 4C previous channel instead of ramp -> lock
+#undef LOCK_FROM_ON_EVENT
+#define EVENT_PREVIOUS_CHANNEL EV_4clicks
+```
+</details>
+
+At some point I might add support for a git submodule to load different popular user configs.
 
 # Roadmap
 * (Configurable?) optional time limit for momentary turbo mode from lock (just in case something wedges the button held)

@@ -46,9 +46,14 @@
 
 
 //*********************  mod config **********
-//set up any defaults if the user didn't override them
-#ifndef USER_CONFIG_LOADED
-  #include "mod-config-defaults.h"
+//if the user provides a mod config, load that first
+#ifdef MOD_CFG_H
+  #include incfile(MOD_CFG_H)
+#else
+  //set up any defaults if the user didn't override them
+  #ifndef USER_CONFIG_LOADED
+    #include "mod-config-defaults.h"
+  #endif
 #endif
 
 //process a few things that need to be done at a very low level

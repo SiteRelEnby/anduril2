@@ -3,6 +3,10 @@
 # Usage: build-all.sh [pattern]
 # If pattern given, only build targets which match.
 
+# added by SiteRelEnby:
+# MOD_CFG_H: mod config file to load
+# EXACT_BUILD_TARGET: If set, don't glob target names
+
 if [ ! -z "$1" ]; then
   SEARCH="$1"
 fi
@@ -20,7 +24,12 @@ for TARGET in cfg-*.h ; do
 
   # maybe limit builds to a specific pattern
   if [ ! -z "$SEARCH" ]; then
-    echo "$TARGET" | grep -i "$SEARCH" > /dev/null
+    if [[ -z "${EXACT_BUILD_TARGET}" ]]
+    then
+      echo "$TARGET" | grep -i "$SEARCH" > /dev/null
+    else
+       echo "$TARGET" | grep -E -i "cfg-${SEARCH}.h$" > /dev/null
+    fi
     if [ 0 != $? ]; then continue ; fi
   fi
 
@@ -33,8 +42,14 @@ for TARGET in cfg-*.h ; do
   if [ -z "$ATTINY" ]; then ATTINY=85 ; fi
 
   # try to compile
+if [[ ! -z "${MOD_CFG_H}" ]]
+then
+  echo ../../bin/build.sh $ATTINY "$UI" "-DCFG_H=${TARGET}" "-DMOD_CFG_H=${MOD_CFG_H}"
+  ../../bin/build.sh $ATTINY "$UI" "-DCFG_H=${TARGET}" "-DMOD_CFG_H=${MOD_CFG_H}"
+else
   echo ../../bin/build.sh $ATTINY "$UI" "-DCFG_H=${TARGET}"
   ../../bin/build.sh $ATTINY "$UI" "-DCFG_H=${TARGET}"
+fi
 
   # track result, and rename compiled files
   if [ 0 = $? ] ; then
