@@ -21,21 +21,25 @@ extern volatile uint8_t blink_channel_channel;
 #endif
 
 void lockout_led_update(uint16_t arg){
+  #ifdef USE_AUX_LED_OVERRIDE
+  if (! aux_led_override){
+  #endif
   #ifdef USE_INDICATOR_LED
     #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
-      if (arg < (cfg.lockout_high_aux_timer * SLEEP_TICKS_PER_MINUTE)){
-        indicator_led_update(2, arg); //force high
+      if ((high_aux_enabled) && (arg < (cfg.lockout_high_aux_timer * SLEEP_TICKS_PER_MINUTE))){
+          indicator_led_update(2, arg); //force high
         }
       else {
+        high_aux_enabled = 0; //disable high aux until reenabled (probably by user clicking). This way if arg gets reset it doesn't come back on high
     #endif
       indicator_led_update(cfg.indicator_led_mode >> 2, arg);
 
     #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
       }
     #endif
-    #elif defined(USE_AUX_RGB_LEDS)
-      #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
-      if (arg < (cfg.lockout_high_aux_timer * SLEEP_TICKS_PER_MINUTE)){
+  #elif defined(USE_AUX_RGB_LEDS)
+    #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
+      if ((high_aux_enabled) && (arg < (cfg.lockout_high_aux_timer * SLEEP_TICKS_PER_MINUTE))){
         //force high mode with selected pattern
         uint8_t rgb_led_mode = cfg.rgb_led_lockout_mode;
         rgb_led_mode &= 0x0F; //clear upper 4 bits
@@ -43,17 +47,17 @@ void lockout_led_update(uint16_t arg){
         rgb_led_update(rgb_led_mode, arg);
       }
       else {
-      #endif
-
-      #ifndef USE_AUX_LED_OVERRIDE
-        rgb_led_update(cfg.rgb_led_lockout_mode, arg);
-      #else
-        if (! aux_led_override){ rgb_led_update(cfg.rgb_led_lockout_mode, arg); }
-      #endif
-      #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
-        }
-      #endif
+        high_aux_enabled = 0; //disable high aux until reenabled (probably by user clicking). This way if arg gets reset it doesn't come back on high
     #endif
+
+    rgb_led_update(cfg.rgb_led_lockout_mode, arg);
+    #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
+      }
+    #endif
+  #endif
+  #ifdef USE_AUX_LED_OVERRIDE
+  }
+  #endif
 }
 
 uint8_t lockout_state(Event event, uint16_t arg) {
@@ -106,9 +110,8 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         #endif
         set_state(lockout_state,0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
-      }
+      } else
     #endif
-
 
     #ifdef BLINK_LOCK_REMINDER
     if (((event == EV_1click) || (event == EV_2clicks)) && (current_state != tactical_state)){
@@ -118,8 +121,21 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         blink_channel_offtime = 60;
         blink_channel_channel = BLINK_LOCK_REMINDER_CHANNEL;
 
+    #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
+    #if (LOCKOUT_HIGH_AUX_CLICKS == 2)
+      if (event == EV_2clicks){
+        high_aux_enabled = 1;
+      }
+    #elif (LOCKOUT_HIGH_AUX_CLICKS == 1)
+      if (event == EV_1click){
+         high_aux_enabled = 1;
+      }
+    #else
+      high_aux_enabled = 1;
+    #endif
         return EVENT_HANDLED;
     } else
+    #endif
     #endif
 
 #if ((defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY) || defined(EVENT_TURBO_MAX_MOMENTARY))) || (defined(USE_3H_TURBO_FROM_LOCK))
@@ -159,6 +175,10 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     //  even if the user keeps pressing the button)
     if (event == EV_enter_state) {
         ticks_since_on = 0;
+        #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
+        high_aux_enabled = 0;
+        #endif
+
         #if defined(USE_AUX_RGB_LEDS)
 
         #ifdef USE_AUX_LED_OVERRIDE

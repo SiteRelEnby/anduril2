@@ -122,7 +122,8 @@ Note that the build does not (TODO: currently?) check for conflicts, which may c
       * Added a third item to the menu, which sets the level at which high brightness is used rather than low to (clicks - 1). e.g. 0C ignored, 1C = use low aux after the light was on at level 1 only, 11C = use low aux after the light was on at <= level 10, etc.)
     * 3H from lock for turbo (enable with `USE_3H_TURBO_FROM_LOCK`)
     * Option to have the aux stay on high in off/lockout mode for a configurable timeout, then go to the user-configured mode.
-      * Enable feature with `USE_LOCKOUT_HIGH_AUX_TIMER` / `USE_OFF_HIGH_AUX_TIMER`. Set the default (in minutes) with `USE_LOCKOUT_HIGH_AUX_TIMER_DEFAULT` / `USE_OFF_HIGH_AUX_TIMER_DEFAULT` (e.g. `#define USE_LOCKOUT_HIGH_AUX_TIMER_DEFAULT 30`
+      * Enable feature with `USE_LOCKOUT_HIGH_AUX_TIMER` / `USE_OFF_HIGH_AUX_TIMER`. Set the default (in minutes) with `USE_LOCKOUT_HIGH_AUX_TIMER_DEFAULT` / `USE_OFF_HIGH_AUX_TIMER_DEFAULT` (e.g. `#define USE_LOCKOUT_HIGH_AUX_TIMER_DEFAULT 30`)
+        * Optional: `LOCKOUT_HIGH_AUX_CLICKS`. Set to `1` to only set high aux when locked from 1C, or `2` to only set high aux when locked from 2C.
       * Configure at runtime on the 10H from lockout mode, 2nd/3rd items (TODO: configuring this for off mode from lockout mode is janky af but I can't think of a better way right now). 1 click = 1 minute / 0 clicks = disable.
 
 ## Multichannel lights only

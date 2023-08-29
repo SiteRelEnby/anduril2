@@ -13,4 +13,6 @@ uint8_t lockout_state(Event event, uint16_t arg);
 #endif
 uint8_t autolock_config_state(Event event, uint16_t arg);
 #endif
-
+#ifdef USE_LOCKOUT_HIGH_AUX_TIMER
+  uint8_t high_aux_enabled = 0;
+#endif
