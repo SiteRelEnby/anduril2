@@ -435,6 +435,10 @@ uint8_t steady_state(Event event, uint16_t arg) {
                 }
             #endif
         #if defined(USE_CHANNEL_MODE_ARGS) && !defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH) //TODO: 3H_FORCE_RAMP_ON_NO_ARGS
+        #ifdef 3H_FORCE_RAMP_ON_NO_ARGS
+          set_channel_mode(CM_BLEND); //TODO: this needs more thought for 3ch
+          return steady_state(EV_click3_hold, 0);
+        #else
         //don't turbo on 3h
                 else {
                   if ((arg % 32 == 0)){
@@ -443,6 +447,7 @@ uint8_t steady_state(Event event, uint16_t arg) {
                 }
             }
             else {
+        #endif //ifdef 3H_FORCE_RAMP_ON_NO_ARGS
         #endif
 
         if (! arg) {  // first frame only, to allow thermal regulation to work

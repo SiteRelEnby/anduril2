@@ -131,6 +131,7 @@ Note that the build does not (TODO: currently?) check for conflicts, which may c
 * Previous channel (`EVENT_PREVIOUS_CHANNEL`)
 * Cycle through channel modes in off or ramp mode, similarly to in lockout mode (`EVENT_CHANNEL_CYCLE_OFF_HOLD`, `EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE`, `EVENT_CHANNEL_CYCLE_ON_HOLD`, `EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE`)
   * Remappable for lockout mode (`EVENT_CHANNEL_CYCLE_LOCK_HOLD`)
+* Disable 3H falling through to momentary turbo on channel modes without args (aka "turboing yourself in the face made easy"). Can be reenabled with `USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH`. Alternatively, setting `3H_FORCE_RAMP_ON_NO_ARGS` will always force 3H to start ramping by jumping to the ramping mode if available.
 
 ## Config menus
 This mod adds items to config menus, so the exact size and order of config menus may vary depending on what you have enabled.
@@ -143,8 +144,8 @@ In general, if *everything* was enabled, config menus should be as follows (not 
   * **Post-off voltage brightness threshold**
 * Lockout config (10H from lockout mode):
   * Autolock minutes
-  * Minutes to force high aux when locked
-  * Minutes to force high aux when off (yes, I am aware configuring this for off mode from lockout mode is janky af but I can't think of a better way right now...)
+  * **Minutes to force high aux when locked**
+  * **Minutes to force high aux when off** (yes, I am aware configuring this for off mode from lockout mode is janky af but I can't think of a better way right now...)
 * Global settings config (9H from off):
   * Tint ramp config
   * Jumpstart config
@@ -158,17 +159,14 @@ Old features still to be ported to multichannel (subject to change):
 * More configurable beacon mode
 * [Starryalley](https://github.com/starryalley/Anduril2) aux modes
 * Blink aux/button red in off/lockout modes when battery is <= 3.2V
-* More configurable blinks using aux
+* More configurable blinks using aux?
 * Options to only use momentary mode from lock after enough time has passed to make sure it was only 1H (`WAIT_FOR_MOMENTARY_WHEN_LOCKED` / `MOMENTARY_WHEN_LOCKED_DELAY`)
-* Made the default aux blinking mode blink more often and intensely
 * More aux modes
-  * High for a certain time when locked, then low
   * Low with high blink (the default off/low/high blink mode bothers me for a reason I can't quite work out)
-  * Ability to enable using aux LEDs to display the battery voltage while the light is on.
-  * Changes to saving manual memory?
+* Changes to saving manual memory?
 * Manual EEPROM save instead of automatic
 * Momentary opposite channel mode (e.g. `#define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT_RELEASE EV_click4_hold_release` `#define MOMENTARY_OPPOSITE_CHANNEL_HOLD_EVENT EV_click4_hold`
-* 3H from lock for turbo
+* 3H from lock for turbo on multichannel lights
 
 # Build-time configuration
 

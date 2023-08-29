@@ -57,6 +57,9 @@
 
 #define DEFAULT_POST_OFF_VOLTAGE_BRIGHTNESS_THRESHOLD (RAMP_SIZE/10)
 
+//flags to retain default behaviours
+#define USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH
+
 //#ifndef MOMENTARY_TURBO_FROM_LOCK_EVENT
 //  #define MOMENTARY_TURBO_FROM_LOCK_EVENT EV_click4_hold
 //#endif
