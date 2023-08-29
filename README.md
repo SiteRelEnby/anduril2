@@ -13,7 +13,7 @@ This is my own modded version of anduril2. Definitely an ongoing project, the id
 
 # Current upstream version this mod is based on
 
-[multi-channel branch](https://bazaar.launchpad.net/~toykeeper/flashlight-firmware/multi-channel): Revision [728](https://bazaar.launchpad.net/~toykeeper/flashlight-firmware/multi-channel/revision/728)
+[multi-channel branch](https://bazaar.launchpad.net/~toykeeper/flashlight-firmware/multi-channel): Revision [762](https://bazaar.launchpad.net/~toykeeper/flashlight-firmware/multi-channel/revision/762)
 
 There is an older branch based on the old 2-channel only code at `main_2channelonly`, consider that archived and not in active development.
 
@@ -301,7 +301,7 @@ This will load a set of stock-compatible button mappings (that can still be rema
 
 To load mod-config files, the default build scripts have been modified:
 
-`[spaghetti-monster/anduril/build-all.sh](spaghetti-monster/anduril/build-all.sh)` modified to take extra environment variables:
+[`spaghetti-monster/anduril/build-all.sh`](spaghetti-monster/anduril/build-all.sh) modified to take extra environment variables:
 * `EXACT_BUILD_TARGET`: Disables globbing, e.g. calling `EXACT_BUILD_TARGET=1 build-all.sh emisar-2ch` will **only** build `emisar-2ch` and not other targets with a matching name (e.g. `emisar-2ch-fet`).
 * `MOD_CFG_H`: An additional config file to load, intended for configuration of mods. This is loaded after the build target config (e.g. `cfg-emisar-2ch.h`) but before any core anduril/FSM code is loaded, so it is safe to enable/disable features here.
 
@@ -318,6 +318,9 @@ You can change most things this way, and can also include your mod config here i
 
 <details>
   <summary>example custom build target loading a mod-config and applying further customisations</summary>
+
+Example:
+
 ```
 // include the base hwdef
 #include "cfg-emisar-2ch.h"
@@ -329,6 +332,7 @@ You can change most things this way, and can also include your mod config here i
 #undef LOCK_FROM_ON_EVENT
 #define EVENT_PREVIOUS_CHANNEL EV_4clicks
 ```
+
 </details>
 
 At some point I might add support for a git submodule to load different popular user configs.
