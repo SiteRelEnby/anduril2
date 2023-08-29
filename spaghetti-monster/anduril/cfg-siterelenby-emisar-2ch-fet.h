@@ -116,6 +116,9 @@
 */
 
 //////////////////////////////////////////////////////////////////////////////
+#define NUM_MAIN_CHANNELS 2
+#include "mod-config-siterelenby.h"
+#define USER_CONFIG_L0ADED //prevent defaults from loading
 
 #undef DEFAULT_CHANNEL_MODE
 #undef DEFAULT_BLINK_CHANNEL
@@ -126,7 +129,7 @@
 #define DEFAULT_BLINK_CHANNEL CM_AUXCYN
 
 #undef BLINK_ONCE_TIME
-#define BLINK_ONCE_TIME 10
+#define BLINK_ONCE_TIME 8
 
 #undef RAMP_SMOOTH_FLOOR
 #define RAMP_SMOOTH_FLOOR 3
@@ -180,6 +183,3 @@
 
 #define DEFAULT_AUTOLOCK_TIME 60
 
-#define NUM_MAIN_CHANNELS 2
-#include "button-mapping-siterelenby.h"
-#define USER_CONFIG_L0ADED //prevent defaults from loading

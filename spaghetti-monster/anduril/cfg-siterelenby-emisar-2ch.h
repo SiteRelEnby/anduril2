@@ -3,6 +3,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
 
+#include "cfg-emisar-2ch.h"
+
+/*
+// Emisar 2-channel generic config options for Anduril
+// Copyright (C) 2021-2023 Selene ToyKeeper
+// SPDX-License-Identifier: GPL-3.0-or-later
+#pragma once
+
 #define MODEL_NUMBER "0135"
 #include "hwdef-emisar-2ch.h"
 #include "hank-cfg.h"
@@ -22,21 +30,21 @@
 
 // channel modes...
 // CM_CH1, CM_CH2, CM_BOTH, CM_BLEND, CM_AUTO
-#define DEFAULT_CHANNEL_MODE           CM_CH1
-
-//#define FACTORY_RESET_WARN_CHANNEL     CM_CH2
-//#define FACTORY_RESET_SUCCESS_CHANNEL  CM_BOTH
+// enable max brightness out of the box
+#define DEFAULT_CHANNEL_MODE           CM_BLEND
 
 #define USE_CONFIG_COLORS
-//#define CONFIG_WAITING_CHANNEL         CM_CH2
-//#define CONFIG_BLINK_CHANNEL           CM_BOTH
 
-//#define POLICE_COLOR_STROBE_CH1        CM_CH1
-//#define POLICE_COLOR_STROBE_CH2        CM_CH2
+// blink numbers on the main LEDs by default (but allow user to change it)
+#define DEFAULT_BLINK_CHANNEL  CM_BLEND
+
+#define POLICE_COLOR_STROBE_CH1        CM_CH1
+#define POLICE_COLOR_STROBE_CH2        CM_CH2
 
 // how much to increase total brightness at middle tint
 // (0 = 100% brightness, 64 = 200% brightness)
 #define TINT_RAMPING_CORRECTION 0  // none, linear regulator doesn't need it
+
 
 // channel 1
 //   output: unknown, 2000 lm?
@@ -44,6 +52,7 @@
 // channel 2
 //   output: unknown, 2000 lm?
 #define RAMP_SIZE 150
+
 // abstract ramp (power is split between both sets of LEDs)
 // 1-130: 0 to 100% power
 // level_calc.py 5.01 1 130 7135 2 0.2 2000 --pwm dyn:64:16383:511
@@ -54,32 +63,31 @@
 // max "200% power" ramp and tops
 //#define PWM2_LEVELS 2,2,2,3,3,4,4,5,6,7,8,9,10,11,13,14,16,17,19,21,23,25,28,30,33,35,38,41,44,47,50,54,57,60,64,67,71,74,78,81,84,88,91,94,97,99,101,103,105,106,107,107,107,106,105,102,99,95,90,84,77,68,58,47,34,36,38,40,42,44,47,49,52,54,57,60,63,66,69,73,76,80,83,87,91,96,100,104,109,114,119,124,130,135,141,147,153,160,166,173,180,187,195,203,211,219,228,236,245,255,264,274,285,295,306,317,329,340,353,365,378,391,405,419,433,448,463,479,495,511,530,550,570,591,612,634,657,680,705,730,755,782,809,837,865,895,925,957,989,1022
 //#define PWM3_LEVELS 16383,13234,9781,13826,9593,13434,9973,12021,12900,13193,13150,12899,12508,12023,12666,11982,12181,11422,11393,11247,11018,10731,10826,10434,10365,9927,9767,9565,9332,9076,8806,8693,8395,8096,7928,7626,7439,7143,6948,6665,6393,6203,5946,5700,5465,5187,4926,4681,4451,4195,3957,3700,3463,3213,2983,2718,2476,2231,1986,1742,1501,1245,997,756,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511,511
-#define DEFAULT_LEVEL 70
-#define MAX_1x7135 150
-#define HALFSPEED_LEVEL 10
+#define DEFAULT_LEVEL      70
+#define MAX_1x7135         150
+#define HALFSPEED_LEVEL    10
 #define QUARTERSPEED_LEVEL 2
 
-#define RAMP_SMOOTH_FLOOR 4  // level 1 is unreliable (?)
-#define RAMP_SMOOTH_CEIL  150
+#define RAMP_SMOOTH_FLOOR  10  // level 1 is unreliable (?)
+#define RAMP_SMOOTH_CEIL   130
 // 10, 30, 50, [70], 90, 110, [130]
 #define RAMP_DISCRETE_FLOOR 10
 #define RAMP_DISCRETE_CEIL  RAMP_SMOOTH_CEIL
-#define RAMP_DISCRETE_STEPS 11
+#define RAMP_DISCRETE_STEPS 7
 
 // safe limit highest regulated power (no FET or turbo)
-#define SIMPLE_UI_FLOOR RAMP_DISCRETE_FLOOR
-#define SIMPLE_UI_CEIL 120
-#define SIMPLE_UI_STEPS 5
+// 10, 40, [70], 100, 130
+#define SIMPLE_UI_FLOOR  RAMP_DISCRETE_FLOOR
+#define SIMPLE_UI_CEIL   RAMP_DISCRETE_CEIL
+#define SIMPLE_UI_STEPS  5
 
 // stop panicking at ~1500 lm
 #define THERM_FASTER_LEVEL 130
 #define MIN_THERM_STEPDOWN 65  // should be above highest dyn_pwm level
 
 #define USE_POLICE_COLOR_STROBE_MODE
-#define POLICE_COLOR_STROBE_CH1 CM_AUXBLU
-#define POLICE_COLOR_STROBE_CH2 CM_AUXRED
 #undef  TACTICAL_LEVELS
-#define TACTICAL_LEVELS 150,75,(RAMP_SIZE+2)
+#define TACTICAL_LEVELS 130,30,(RAMP_SIZE+3)  // high, low, police strobe
 
 // use the brightest setting for strobe
 #define STROBE_BRIGHTNESS MAX_LEVEL
@@ -89,9 +97,23 @@
 // the default of 26 looks a bit flat, so increase it
 #define CANDLE_AMPLITUDE 33
 
-#define BLINK_BRIGHTNESS DEFAULT_LEVEL
+// the power regulator is a bit slow, so push it harder for a quick response from off
+#define DEFAULT_JUMP_START_LEVEL 21
+#define BLINK_BRIGHTNESS 40
+#define BLINK_ONCE_TIME 12  // longer blink, since main LEDs are slow
 
 #define THERM_CAL_OFFSET 5
+
+// don't blink while ramping
+#ifdef BLINK_AT_RAMP_MIDDLE
+#undef BLINK_AT_RAMP_MIDDLE
+#endif
+
+*/
+/////////////////////////////////////////////////////////////////////////
+#define NUM_MAIN_CHANNELS 2
+#include "mod-config-siterelenby.h"
+#define USER_CONFIG_L0ADED //prevent defaults from loading
 
 #ifndef BLINK_AT_RAMP_MIDDLE
 #define BLINK_AT_RAMP_MIDDLE
@@ -105,14 +127,14 @@
 
 #define DEFAULT_BLINK_CHANNEL CM_AUXCYN
 
-// need to fix voltage aux when channel mode is aux
 #define USE_AUX_RGB_LEDS_WHILE_ON
 #define USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW 20
 #define USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH 70
 #define BLINK_LOCK_REMINDER
-//#define BLINK_LOCK_REMINDER_CHANNEL
 
-#undef LOCK_FROM_ON_EVENT
+#ifdef LOCK_FROM_ON_EVENT
+  #undef LOCK_FROM_ON_EVENT
+#endif
 
 // button timing for turning light on/off:
 // B_PRESS_T:   activate as soon as button is pressed
@@ -121,9 +143,3 @@
 // defaults are release on, timeout off
 #define B_TIMING_ON B_TIMEOUT_T
 #define B_TIMING_OFF B_TIMEOUT_T
-
-#define DEFAULT_AUTOLOCK_TIME 60
-
-#define NUM_MAIN_CHANNELS 2
-#include "button-mapping-siterelenby.h"
-#define USER_CONFIG_L0ADED //prevent defaults from loading

@@ -48,7 +48,7 @@
 //*********************  mod config **********
 //set up any defaults if the user didn't override them
 #ifndef USER_CONFIG_LOADED
-  #include "button-mapping-defaults.h"
+  #include "mod-config-defaults.h"
 #endif
 
 //process a few things that need to be done at a very low level

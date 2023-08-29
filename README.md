@@ -283,7 +283,7 @@ Example header files:
 
 TODO: redo this with multichannel.
 
-For now, check out my main development config: [cfg-siterelenby-emisar-2ch-aux](spaghetti-monster/cfg-siterelenby-emisar-2ch-aux.h), [my button mappings](spaghetti-monster/anduril/button-mapping-siterelenby.h), and [stock-compatible mappings](spaghetti-monster/anduril/button-mapping-defaults.h)
+For now, check out my main development config: [cfg-siterelenby-emisar-2ch-aux](spaghetti-monster/cfg-siterelenby-emisar-2ch-aux.h), [my button mappings](spaghetti-monster/anduril/mod-config-siterelenby.h), and [stock-compatible mappings](spaghetti-monster/anduril/mod-config-defaults.h)
 
 # Roadmap
 * (Configurable?) optional time limit for momentary turbo mode from lock (just in case something wedges the button held)
