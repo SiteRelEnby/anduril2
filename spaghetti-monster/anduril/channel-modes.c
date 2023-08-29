@@ -247,8 +247,8 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     if ((channel_mode != new_channel ) || (state == lockout_state)){ //assume the user did always want to activate turbo regardless of brightness (e.g. switching channels quickly) if it's for a different channelmode than current
       prev_channel = channel_mode;
       prev_level = actual_level;
-      set_channel_mode(new_channel);
       set_state(steady_state, MAX_LEVEL); //bug(?): going from turbo when ceil < 150 sets the channel mode fine, but does not go fully to MAX_LEVEL. using RAMP_SIZE instead doesn't work.
+      set_channel_mode(new_channel);
       set_level_and_therm_target(MAX_LEVEL);
     }
     else {
