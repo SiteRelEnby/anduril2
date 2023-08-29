@@ -54,6 +54,7 @@ fi
   # track result, and rename compiled files
   if [ 0 = $? ] ; then
     mv -f "$UI".hex "$UI".$NAME.hex
+    mv -f "$UI.cpp" "$UI".$NAME.cpp
     PASS=$(($PASS + 1))
     PASSED="$PASSED $NAME"
   else
