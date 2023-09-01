@@ -111,10 +111,12 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         set_state(lockout_state,0);
         return TRANS_RIGHTS_ARE_HUMAN_RIGHTS;
       } else
-    #endif
+    #endif //#ifdef USE_3H_TURBO_FROM_LOCK
 
+    #if (defined(BLINK_LOCK_REMINDER) || (defined(USE_LOCKOUT_HIGH_AUX_TIMER)))
+      if (((event == EV_1click) || (event == EV_2clicks)) && (current_state != tactical_state)){
+    #endif
     #ifdef BLINK_LOCK_REMINDER
-    if (((event == EV_1click) || (event == EV_2clicks)) && (current_state != tactical_state)){
         //remind user light is locked
         blink_channel_count = 3;
         blink_channel_ontime = 60;
@@ -137,8 +139,10 @@ uint8_t lockout_state(Event event, uint16_t arg) {
         high_aux_enabled = 1;
       #endif //if (defined(LOCKOUT_HIGH_AUX_CLICKS))
     #endif //ifdef USE_LOCKOUT_HIGH_AUX_TIMER
-      return EVENT_HANDLED;
+    #if (defined(BLINK_LOCK_REMINDER) || (defined(USE_LOCKOUT_HIGH_AUX_TIMER)))
+    return EVENT_HANDLED;
     } else
+    #endif //if (defined(BLINK_LOCK_REMINDER) || (defined(USE_LOCKOUT_HIGH_AUX_TIMER)))
 
 #if ((defined(EVENT_TURBO_SHORTCUT_1_MOMENTARY) || defined(EVENT_TURBO_SHORTCUT_2_MOMENTARY) || defined(EVENT_TURBO_MAX_MOMENTARY))) || (defined(USE_3H_TURBO_FROM_LOCK))
   #ifdef USE_AUX_RGB_LEDS

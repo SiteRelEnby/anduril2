@@ -422,9 +422,9 @@ uint8_t steady_state(Event event, uint16_t arg) {
 
     // 3H: momentary turbo (on lights with no tint ramping)
     // (or 4H when tint ramping is available)
-    else if ((event == EV_click3_hold)
+    else if ((event == EV_click3_hold) //EV_click3_hold
             #ifdef USE_CHANNEL_MODE_ARGS
-            || (event == EV_click4_hold)
+            || (event == EV_click4_hold) //EV_click4_hold
             #endif
         ) {
         #ifdef USE_CHANNEL_MODE_ARGS
@@ -433,21 +433,26 @@ uint8_t steady_state(Event event, uint16_t arg) {
                 if(channel_has_args(channel_mode)) {
                   return EVENT_NOT_HANDLED;
                 }
-            #endif
-        #if defined(USE_CHANNEL_MODE_ARGS) && !defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH) //TODO: USE_3H_FORCE_RAMP_ON_NO_ARGS
-        #ifdef USE_3H_FORCE_RAMP_ON_NO_ARGS
-          set_channel_mode(CM_BLEND); //TODO: this needs more thought for 3ch
-          return steady_state(EV_click3_hold, 0);
-        #else
-        //don't turbo on 3h
-                else {
+            }
+        #endif
+
+        #if defined(USE_CHANNEL_MODE_ARGS) && !defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)
+          else { //if channel has no args
+          #ifdef USE_3H_FORCE_RAMP_ON_NO_ARGS
+            set_channel_mode(CM_BLEND); //TODO: this needs more thought for 3ch
+            return steady_state(EV_click3_hold, 0);
+          #else
+          //don't turbo on 3h, just blink to tell user wrong channel for that
                   if ((arg % 32 == 0)){
                     blip();
                   }
                 }
-            }
-            else {
-        #endif //ifdef USE_3H_FORCE_RAMP_ON_NO_ARGS
+//            }
+          #endif //ifdef USE_3H_FORCE_RAMP_ON_NO_ARGS
+        #endif //if defined(USE_CHANNEL_MODE_ARGS) && !defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)
+
+        #ifdef USE_CHANNEL_MODE_ARGS
+	else {
         #endif
 
         if (! arg) {  // first frame only, to allow thermal regulation to work
@@ -459,13 +464,13 @@ uint8_t steady_state(Event event, uint16_t arg) {
             #endif
         }
         return EVENT_HANDLED;
-//        #if defined(USE_CHANNEL_MODE_ARGS) && (defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)) //TODO: was there a reason for this?
+        #if defined(USE_CHANNEL_MODE_ARGS) && (defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)) //TODO: was there a reason for this?
         } //TODO: why was this behind an #if defined(USE_CHANNEL_MODE_ARGS) && defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)
-//        #endif
+        #endif
     }
-    else if ((event == EV_click3_hold_release)
+    else if ((event == EV_click3_hold_release) //EV_click3_hold_release
             #ifdef USE_CHANNEL_MODE_ARGS
-            || (event == EV_click4_hold_release)
+            || (event == EV_click4_hold_release) //EV_click4_hold_release
             #endif
         ) {
         #ifdef USE_CHANNEL_MODE_ARGS
