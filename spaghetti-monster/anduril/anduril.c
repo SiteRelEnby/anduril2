@@ -255,7 +255,16 @@ void setup() {
         push_state(channel_mode_state, 0);
         #endif
 
-        push_state(off_state, 1);
+        #ifdef USE_LOCKOUT_MEMORY
+          if (is_locked){
+            push_state(lockout_state,0);
+          }
+          else {
+            push_state(off_state, 1);
+          }
+        #else
+          push_state(off_state, 1);
+        #endif
 
     #else  // if START_AT_MEMORIZED_LEVEL
 

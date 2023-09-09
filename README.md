@@ -108,6 +108,7 @@ Note that the build does not (TODO: currently?) check for conflicts, which may c
         * 3rd item: 1C disable aux voltage while on, 2+C enable
         * 4th item: Set threshold for which voltage aux are enabled on LOW brightness (clicks minus 1 = ramp level, e.g. 1C = always if not enabled for high instead, n clicks: enable low at n-1 (i.e. 2C for level 1, 151+C for always disabled)
         * 5th item: Set threshold for which voltage aux are enabled on HIGH brightness (clicks minus 1 = ramp level, e.g. 1C = always high, 51C = enable high at level 50, 151+C = never use high)
+    * Remember lockout state across battery changes - enabled with `USE_LOCKOUT_MEMORY`
     * Build-time configuration for some additional stuff (in its own section)
     * [Tactical mode](https://budgetlightforum.com/t/why-i-still-use-anduril-1-for-edc-anduril-2-lacking-an-anduril-1-feature-suggestion-and-request-for-programmer/217573). This is actually a new upstream feature that has not made it into any releases yet. Enable with `USE_TACTICAL_MODE`
       * Default 6C from off to enter/exit (remappable in this fork with `TACTICAL_MODE_CLICK_EVENT`). Tactical mode has 3 different momentary level slots that can be configured to be either level 1-150 as normal, or levels above 151 which correspond to strobe modes (151 == party strobe, 152 == tactical strobe, 153 == lightning mode, 154 == candle mode, etc...)

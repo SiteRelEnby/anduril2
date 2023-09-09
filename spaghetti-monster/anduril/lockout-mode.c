@@ -180,6 +180,10 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     //  be persistent about going back to sleep every few seconds
     //  even if the user keeps pressing the button)
     if (event == EV_enter_state) {
+        #ifdef USE_LOCKOUT_MEMORY
+          is_locked = 1;
+          save_config();
+        #endif
         ticks_since_on = 0;
         #ifdef USE_LOCKOUT_HIGH_AUX_TIMER
         high_aux_enabled = 0;
@@ -198,7 +202,12 @@ uint8_t lockout_state(Event event, uint16_t arg) {
             rgb_led_update(cfg.rgb_led_lockout_mode, 0);
         #endif
     }
-
+    #ifdef USE_LOCKOUT_MEMORY
+      else if (event == EV_leave_state){
+        is_locked = 0;
+        save_config();
+      }
+    #endif
     else if (event == EV_tick) {
         if (arg > HOLD_TIMEOUT) {
             go_to_standby = 1;

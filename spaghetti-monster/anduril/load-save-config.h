@@ -198,5 +198,9 @@ Config cfg = {
 
     #endif
 
+    #ifdef USE_LOCKOUT_MEMORY
+      .is_locked = 0;
+    #endif
+
 };
 

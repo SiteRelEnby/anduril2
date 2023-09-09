@@ -134,6 +134,10 @@ typedef struct Config {
       uint8_t use_aux_while_on_threshold_high;
     #endif
 
+    #ifdef USE_LOCKOUT_MEMORY
+      uint8_t is_locked;
+    #endif
+
 } Config;
 
 // auto-detect how many eeprom bytes
