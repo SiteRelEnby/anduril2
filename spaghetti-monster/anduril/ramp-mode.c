@@ -468,9 +468,9 @@ uint8_t steady_state(Event event, uint16_t arg) {
             #endif
         }
         return EVENT_HANDLED;
-        #if defined(USE_CHANNEL_MODE_ARGS) && (defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)) //TODO: was there a reason for this?
-        } //TODO: why was this behind an #if defined(USE_CHANNEL_MODE_ARGS) && defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)
-        #endif
+//        #if defined(USE_CHANNEL_MODE_ARGS) && (defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)) //TODO: was there a reason for this?
+//        } //TODO: why was this behind an #if defined(USE_CHANNEL_MODE_ARGS) && defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)
+//        #endif
     }
     else if ((event == EV_click3_hold_release) //EV_click3_hold_release
             #ifdef USE_CHANNEL_MODE_ARGS

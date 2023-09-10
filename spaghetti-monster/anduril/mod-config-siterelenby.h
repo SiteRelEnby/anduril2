@@ -74,22 +74,33 @@
   #define EVENT_CHANNEL_CYCLE_ON_HOLD EV_click8_hold
   #define EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE EV_click8_hold_release
 
+  #if (NUM_MAIN_CHANNELS == 2)
+    #define TURBO_SHORTCUT_1_CHANNEL CM_CH1
+    #define TURBO_SHORTCUT_2_CHANNEL CM_CH2
+    #define TURBO_MAX_CHANNEL CM_BOTH //this will usually be CM_BOTH? Probably different on 3+ channel lights where it makes sense to have this feature specifically
+  #endif
+
+  #if (NUM_MAIN_CHANNELS == 3)
+    #define TURBO_SHORTCUT_1_CHANNEL CM_MAIN2 //TODO: with 3+ it makes sense to make configurable at runtime? maybe one day
+    #define TURBO_SHORTCUT_2_CHANNEL CM_LED3
+    //#define TURBO_SHORTCUT_2_CHANNEL CM_LED4
+    #define TURBO_MAX_CHANNEL CM_ALL
+  #endif
+
+  //generic config for any number of channels
   #if (NUM_MAIN_CHANNELS > 1)
     #define EVENT_CHANNEL_CYCLE_LOCK_HOLD EV_click3_hold
     #undef USE_3H_TURBO_FROM_LOCK
     #define EVENT_CHANNEL_MODE_CONFIG_HOLD EV_click13_hold
-    #define TURBO_SHORTCUT_1_CHANNEL CM_CH1
     #define EVENT_TURBO_SHORTCUT_1 EV_5clicks
     #define EVENT_TURBO_SHORTCUT_1_MOMENTARY EV_click5_hold
     #define EVENT_TURBO_SHORTCUT_1_MOMENTARY_RELEASE EV_click5_hold_release
 
-    #define TURBO_SHORTCUT_2_CHANNEL CM_CH2
     #define EVENT_TURBO_SHORTCUT_2 EV_6clicks
     #define EVENT_TURBO_SHORTCUT_2_MOMENTARY EV_click6_hold
     #define EVENT_TURBO_SHORTCUT_2_MOMENTARY_RELEASE EV_click6_hold_release
 
     #define EVENT_TURBO_MAX EV_7clicks
-    #define TURBO_MAX_CHANNEL CM_BOTH //this will usually be CM_BOTH? Probably different on 3+ channel lights where it makes sense to have this feature specifically
     #define EVENT_TURBO_MAX_MOMENTARY EV_click7_hold
     #define EVENT_TURBO_MAX_MOMENTARY_RELEASE EV_click7_hold_release
 

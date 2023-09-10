@@ -90,6 +90,17 @@ void set_pwms(uint16_t ch1_pwm, uint16_t ch2_pwm, uint16_t top) {
     if (! was_on) PWM_CNT = 0;
 }
 
+void set_level_zero() {
+    // turn off all LEDs
+    CH1_ENABLE_PORT &= ~(1 << CH1_ENABLE_PIN);
+    CH2_ENABLE_PORT &= ~(1 << CH2_ENABLE_PIN );
+    CH1_PWM = 0;
+    CH2_PWM = 0;
+    PWM_CNT = 0;
+    PWM_TOP = PWM_TOP_INIT;
+}
+
+
 void set_level_ch1(uint8_t level) {
     if (0 == level)
         return set_pwms(0, 0, PWM_TOP_INIT);
