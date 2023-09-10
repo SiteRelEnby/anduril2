@@ -447,13 +447,13 @@ uint8_t steady_state(Event event, uint16_t arg) {
                     blip();
                   }
                 }
-//            }
+//            } //?????
           #endif //ifdef USE_3H_FORCE_RAMP_ON_NO_ARGS
         #endif //if defined(USE_CHANNEL_MODE_ARGS) && !defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)
 
-        #ifdef USE_CHANNEL_MODE_ARGS
-	else {
-        #endif
+//        #ifdef USE_CHANNEL_MODE_ARGS
+//	else {
+//        #endif
 
         if (! arg) {  // first frame only, to allow thermal regulation to work
             #ifdef USE_2C_STYLE_CONFIG

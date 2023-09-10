@@ -60,6 +60,10 @@
 #include "siterelenby-mod-deps.h"
 
 /********* Include headers which need to be before FSM *********/
+#ifdef USE_AUX_WHILE_ON_CONFIG
+uint8_t rgb_led_voltage_readout_brightness();
+#endif
+
 
 // enable FSM features needed by basic ramping functions
 #include "ramp-mode-fsm.h"
@@ -288,6 +292,62 @@ void setup() {
 
 }
 
+// Functions for aux RGB voltage control mod, plus a compatibility hack for a few not-updated-yet upstream lights
+#ifdef USE_AUX_RGB_LEDS_WHILE_ON
+  #ifndef USE_AUX_WHILE_ON_CONFIG
+    // compatibility hack: if USE_AUX_RGB_LEDS_WHILE_ON is defined but has no value, set it to something sensible
+    #if (!(USE_AUX_RGB_LEDS_WHILE_ON + 0)) // if USE_AUX_RGB_LEDS_WHILE_ON is an int, passes. If blank, evaluates to `(+0)` which evaluates to false.
+      #undef USE_AUX_RGB_LEDS_WHILE_ON
+      #define USE_AUX_RGB_LEDS_WHILE_ON 25 //match TK's default
+    #endif
+  #endif
+#endif
+#ifdef USE_AUX_WHILE_ON_CONFIG
+uint8_t rgb_led_voltage_readout_brightness(){
+  if (cfg.use_aux_while_on >= 1){
+
+    #ifdef CHANNEL_AUX_OVERRIDE
+      if (channel_uses_aux(channel_mode)){
+        return 2; // "ignore"
+      }
+    #endif
+
+    #if (defined(USE_AUX_LED_OVERRIDE))
+    if (! aux_led_override){
+    #endif
+
+    #ifdef USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
+      //if (actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW){ //skip over the whole block if below USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
+      if (actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW){ //skip over the whole block if below USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
+    #endif
+    #ifdef USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH
+      //from old function:
+      //rgb_led_voltage_readout(actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH); //high if above USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH
+      //if (actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH){//high if above USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH
+        //return 1; //high
+      //}
+      return (actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH); //0 = low, 1 = high
+    #else
+      //default behaviour (what we replace elsewhere with a call to this function)
+      //rgb_led_voltage_readout(actual_level > USE_AUX_RGB_LEDS_WHILE_ON);
+      return (actual_level > USE_AUX_RGB_LEDS_WHILE_ON);
+    #endif
+    #ifdef USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
+      }
+      else {
+        //actual_level < USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW, so return 3 "force off"
+        return 3;
+      }
+    #endif
+    }
+  }
+  else {
+    return 2 ; // "ignore" (so we don't mess with aux channels)
+  }
+//TODO: shouldn't be able to get here?
+return 1;
+}
+#endif
 
 // runs repeatedly whenever light is "on" (not in standby)
 void loop() {
@@ -325,47 +385,13 @@ void loop() {
 
 
     #ifdef USE_AUX_RGB_LEDS_WHILE_ON
-    #ifndef USE_AUX_WHILE_ON_CONFIG
-      // compatibility hack: if USE_AUX_RGB_LEDS_WHILE_ON is defined but has no value, set it to something sensible
-      #if (!(USE_AUX_RGB_LEDS_WHILE_ON + 0)) // if USE_AUX_RGB_LEDS_WHILE_ON is an int, passes. If blank, evaluates to `(+0)` which evaluates to false.
-        #undef USE_AUX_RGB_LEDS_WHILE_ON
-        #define USE_AUX_RGB_LEDS_WHILE_ON 0 // default: always on
-      #endif
-    #endif
-
     // display battery charge on RGB button during use
-
-    #ifdef USE_AUX_WHILE_ON_CONFIG
-      if (cfg.use_aux_while_on >= 1){
-    #endif
-
-    if
-    #if (defined(USE_AUX_LED_OVERRIDE) && defined(CHANNEL_AUX_OVERRIDE))
-    ((! setting_rgb_mode_now) && (! aux_led_override) && (!channel_uses_aux(channel_mode))
-    #elif (defined(USE_AUX_LED_OVERRIDE) && !defined(CHANNEL_AUX_OVERRIDE))
-    ((! setting_rgb_mode_now) && (! aux_led_override)
-    #elif (!defined(USE_AUX_LED_OVERRIDE) && defined(CHANNEL_AUX_OVERRIDE))
-    ((! setting_rgb_mode_now) && (!channel_uses_aux(channel_mode))
-    #else
-    (! setting_rgb_mode_now
-    #endif
-      ){
-      #ifdef USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
-        if (actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW){ //skip over the whole block if below USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
-      #endif
-      #ifdef USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH
-      rgb_led_voltage_readout(actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH); //high if above USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH
+    if (state == steady_state)
+      #ifdef USE_AUX_WHILE_ON_CONFIG
+        rgb_led_voltage_readout(rgb_led_voltage_readout_brightness());
       #else
-
-      rgb_led_voltage_readout(actual_level > USE_AUX_RGB_LEDS_WHILE_ON);
+         rgb_led_voltage_readout(actual_level > USE_AUX_RGB_LEDS_WHILE_ON); //TODO: If using config, make USE_BLAH be a pointer to a function?
       #endif
-      #ifdef USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
-        }
-      #endif
-    }
-    #ifdef USE_AUX_WHILE_ON_CONFIG
-      }
-    #endif
     #endif
 
     if (0) {}  // placeholder

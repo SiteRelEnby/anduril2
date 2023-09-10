@@ -191,7 +191,18 @@ void rgb_led_update(uint8_t mode, uint16_t arg) {
 void rgb_led_voltage_readout(uint8_t bright) {
     uint8_t color = voltage_to_rgb();
     if (bright) color = color << 1;
+    #ifdef USE_AUX_WHILE_ON_CONFIG
+      //use 3 as "force off".
+      if (bright == 3){
+        rgb_led_set(0);
+      }
+      //use 2 as "ignore". Not nice but easier than reworking many lines every time I merge changes. Might save some space too?
+      else if (bright != 2){
+        rgb_led_set(color);
+      }
+    #else
     rgb_led_set(color);
+    #endif
 }
 #endif
 

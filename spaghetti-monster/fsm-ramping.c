@@ -42,7 +42,11 @@ inline void set_level_aux_leds(uint8_t level) {
 inline void set_level_aux_rgb_leds(uint8_t level) {
     if (! go_to_standby) {
         if (level > 0) {
-            rgb_led_voltage_readout(level > USE_AUX_RGB_LEDS_WHILE_ON);
+          #ifdef USE_AUX_WHILE_ON_CONFIG
+            rgb_led_voltage_readout(rgb_led_voltage_readout_brightness());
+          #else
+             rgb_led_voltage_readout(level > USE_AUX_RGB_LEDS_WHILE_ON);
+          #endif
         } else {
             rgb_led_set(0);
         }
