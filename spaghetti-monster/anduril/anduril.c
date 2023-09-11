@@ -347,7 +347,9 @@ uint8_t rgb_led_voltage_readout_brightness(){
         return 3;
       }
     #endif
+    #ifdef USE_AUX_LED_OVERRIDE
     }
+    #endif
   }
   else {
     return 2 ; // "ignore" (so we don't mess with aux channels)
