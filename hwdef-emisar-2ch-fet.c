@@ -96,7 +96,6 @@ void set_level_zero() {
     // turn off all LEDs
     CH1_ENABLE_PORT &= ~(1 << CH1_ENABLE_PIN);
     CH2_ENABLE_PORT &= ~(1 << CH2_ENABLE_PIN);
-    CH3_ENABLE_PORT &= ~(1 << CH3_ENABLE_PIN);
     CH1_PWM = 0;
     CH2_PWM = 0;
     CH3_PWM = 0;
