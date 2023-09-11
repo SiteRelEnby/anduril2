@@ -1,10 +1,9 @@
-// Emisar D4K 3-channel config options for Anduril
-// Copyright (C) 2023 Selene ToyKeeper
+// Emisar 2-channel generic (plus FET) config options for Anduril (based on Noctigon K9.3)
+// Copyright (C) 2021-2023 Selene ToyKeeper
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
 
-#define MODEL_NUMBER "0151"
-#include "cfg-emisar-d4k-3ch.h"
+#include "cfg-emisar-2ch-fet.h"
 // ATTINY: 1634
 ///////////////////////////////////////////////////////////
 
@@ -23,3 +22,4 @@
 #endif
 
 #define EVENT_AUX_WHILE_ON_TOGGLE EV_8clicks
+
