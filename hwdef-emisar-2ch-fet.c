@@ -6,7 +6,7 @@
 
 #include "chan-rgbaux.c"
 
-
+void set_level_zero();
 void set_level_ch1(uint8_t level);
 void set_level_ch2(uint8_t level);
 void set_level_both(uint8_t level);
@@ -90,6 +90,18 @@ void set_pwms(uint8_t ch1_pwm, uint8_t ch2_pwm, uint8_t ch3_pwm, uint16_t top) {
     // reset phase when turning on or off
     //if ((! was_on) | (! now_on)) PWM_CNT = 0;
     if (! was_on) PWM_CNT = 0;
+}
+
+void set_level_zero() {
+    // turn off all LEDs
+    CH1_ENABLE_PORT &= ~(1 << CH1_ENABLE_PIN);
+    CH2_ENABLE_PORT &= ~(1 << CH2_ENABLE_PIN);
+    CH3_ENABLE_PORT &= ~(1 << CH3_ENABLE_PIN);
+    CH1_PWM = 0;
+    CH2_PWM = 0;
+    CH3_PWM = 0;
+    PWM_CNT = 0;
+    PWM_TOP = PWM_TOP_INIT;
 }
 
 void set_level_ch1(uint8_t level) {
