@@ -424,41 +424,23 @@ uint8_t steady_state(Event event, uint16_t arg) {
     }
     #endif
 
+
+
+    #ifndef NO_ARG_3H_OVERRIDE
+      //original:
     // 3H: momentary turbo (on lights with no tint ramping)
     // (or 4H when tint ramping is available)
-    else if ((event == EV_click3_hold) //EV_click3_hold
+    else if ((event == EV_click3_hold)
             #ifdef USE_CHANNEL_MODE_ARGS
-            || (event == EV_click4_hold) //EV_click4_hold
+            || (event == EV_click4_hold)
             #endif
         ) {
         #ifdef USE_CHANNEL_MODE_ARGS
             // ramp tint if tint exists in this mode
-            if (event == EV_click3_hold){
-                if(channel_has_args(channel_mode)) {
-                  return EVENT_NOT_HANDLED;
-                }
-            }
+            if ((event == EV_click3_hold)
+                && (channel_has_args(channel_mode)))
+                return EVENT_NOT_HANDLED;
         #endif
-
-        #if defined(USE_CHANNEL_MODE_ARGS) && !defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)
-          else { //if channel has no args
-          #ifdef USE_3H_FORCE_RAMP_ON_NO_ARGS
-            set_channel_mode(CM_BLEND); //TODO: this needs more thought for 3ch
-            return steady_state(EV_click3_hold, 0);
-          #else
-          //don't turbo on 3h, just blink to tell user wrong channel for that
-                  if ((arg % 32 == 0)){
-                    blip();
-                  }
-                }
-//            } //?????
-          #endif //ifdef USE_3H_FORCE_RAMP_ON_NO_ARGS
-        #endif //if defined(USE_CHANNEL_MODE_ARGS) && !defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)
-
-//        #ifdef USE_CHANNEL_MODE_ARGS
-//	else {
-//        #endif
-
         if (! arg) {  // first frame only, to allow thermal regulation to work
             #ifdef USE_2C_STYLE_CONFIG
             uint8_t tl = style_2c ? MAX_LEVEL : turbo_level;
@@ -468,13 +450,10 @@ uint8_t steady_state(Event event, uint16_t arg) {
             #endif
         }
         return EVENT_HANDLED;
-//        #if defined(USE_CHANNEL_MODE_ARGS) && (defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)) //TODO: was there a reason for this?
-//        } //TODO: why was this behind an #if defined(USE_CHANNEL_MODE_ARGS) && defined(USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH)
-//        #endif
     }
-    else if ((event == EV_click3_hold_release) //EV_click3_hold_release
+    else if ((event == EV_click3_hold_release)
             #ifdef USE_CHANNEL_MODE_ARGS
-            || (event == EV_click4_hold_release) //EV_click4_hold_release
+            || (event == EV_click4_hold_release)
             #endif
         ) {
         #ifdef USE_CHANNEL_MODE_ARGS
@@ -484,7 +463,57 @@ uint8_t steady_state(Event event, uint16_t arg) {
                 return EVENT_NOT_HANDLED;
         #endif
         set_level_and_therm_target(memorized_level);
+        return EVENT_HANDLED;
     }
+    #else
+      #ifndef USE_CHANNEL_MODE_ARGS
+      //simplify this by putting this code in its own section
+      //makes it easier to hack on the code with mode args allowing better overrides without brainmelting ifdef nesting :P
+        else if ((event == EV_click3_hold)){
+                  if (! arg) {  // first frame only, to allow thermal regulation to work
+            #ifdef USE_2C_STYLE_CONFIG
+            uint8_t tl = style_2c ? MAX_LEVEL : turbo_level;
+            set_level_and_therm_target(tl);
+            #else
+            set_level_and_therm_target(turbo_level);
+            #endif
+          }
+          return EVENT_HANDLED;
+        }
+      #else
+        //channelmode args enabled and we want to do something other than turbo the user in the face on 3H...
+        #if (NO_ARG_3H_OVERRIDE == 1) //blink
+          else if ((event == EV_click3_hold)) {
+            if (!channel_has_args(channel_mode)){
+              if ((arg % 32 == 0)){
+                blip();
+              }
+            }
+            else { return EVENT_NOT_HANDLED; }
+          }
+        #elif (NO_ARG_3H_OVERRIDE == 2) //force ramp mode (TODO: which channels?)
+          else if ((event == EV_click3_hold)) {
+            set_channel_mode(CM_BLEND); //TODO: this needs more thought for 3ch
+            return steady_state(EV_click3_hold, 0);
+          }
+        #endif
+        else if ((event == EV_click4_hold)){
+            if (! arg) {  // first frame only, to allow thermal regulation to work
+              #ifdef USE_2C_STYLE_CONFIG
+              uint8_t tl = style_2c ? MAX_LEVEL : turbo_level;
+              set_level_and_therm_target(tl);
+              #else
+              set_level_and_therm_target(turbo_level);
+              #endif
+            }
+          return EVENT_HANDLED;
+        }
+        else if ((event == EV_click4_hold_release)){
+          set_level_and_therm_target(memorized_level);
+          return EVENT_HANDLED;
+        }
+      #endif
+    #endif
 
     #ifdef USE_MOMENTARY_MODE
     // 5 clicks: shortcut to momentary mode
