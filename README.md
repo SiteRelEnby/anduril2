@@ -132,7 +132,7 @@ Note that the build does not (TODO: currently?) check for conflicts, which may c
 * Previous channel (`EVENT_PREVIOUS_CHANNEL`)
 * Cycle through channel modes in off or ramp mode, similarly to in lockout mode (`EVENT_CHANNEL_CYCLE_OFF_HOLD`, `EVENT_CHANNEL_CYCLE_OFF_HOLD_RELEASE`, `EVENT_CHANNEL_CYCLE_ON_HOLD`, `EVENT_CHANNEL_CYCLE_ON_HOLD_RELEASE`)
   * Remappable for lockout mode (`EVENT_CHANNEL_CYCLE_LOCK_HOLD`)
-* Disable 3H falling through to momentary turbo on channel modes without args (aka "turboing yourself in the face made easy"). Can be reenabled with `USE_3H_CHANNEL_RAMP_TURBO_FALLTHROUGH`. Alternatively, setting `USE_3H_FORCE_RAMP_ON_NO_ARGS` will always force 3H to start ramping by jumping to the ramping mode if available.
+* Options to disable 3H being momentary turbo on channelmodes without args (aka "turboing yourself in the face made easy"). `NO_ARG_3H_OVERRIDE = 1` = blink on 3H instead of doing anything else, `NO_ARG_3H_OVERRIDE = 2` = force ramping mode on 3H. Leave unset to have 3H falling through to momentary turbo. 4H remains momentary turbo with any of these set.
 
 ## Config menus
 This mod adds items to config menus, so the exact size and order of config menus may vary depending on what you have enabled.

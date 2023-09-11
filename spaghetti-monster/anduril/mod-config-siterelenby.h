@@ -66,7 +66,22 @@
   #define EVENT_AUX_WHILE_ON_TOGGLE EV_8clicks
 #endif
 
-#define USE_MOMENTARY_TURBO_FROM_LOCK
+#undef RAMP_SMOOTH_FLOOR
+#undef RAMP_SMOOTH_CEIL
+#undef RAMP_DISCRETE_FLOOR
+#undef RAMP_DISCRETE_CEIL
+#undef RAMP_DISCRETE_STEPS
+#undef SIMPLE_UI_FLOOR
+#undef SIMPLE_UI_CEIL
+#undef SIMPLE_UI_STEPS
+#define RAMP_SMOOTH_FLOOR    2 //even with dynamic PWM, 1 doesn't work with all lights
+#define RAMP_SMOOTH_CEIL     150
+#define RAMP_DISCRETE_FLOOR  10
+#define RAMP_DISCRETE_CEIL   150
+#define RAMP_DISCRETE_STEPS  11
+#define SIMPLE_UI_FLOOR  25
+#define SIMPLE_UI_CEIL   125
+#define SIMPLE_UI_STEPS  5
 
 #if (NUM_CHANNEL_MODES > 1)
   #define EVENT_CHANNEL_CYCLE_OFF_HOLD EV_click4_hold
@@ -89,6 +104,7 @@
 
   //generic config for any number of channels
   #if (NUM_MAIN_CHANNELS > 1)
+    #define NO_ARG_3H_OVERRIDE 1
     #define EVENT_CHANNEL_CYCLE_LOCK_HOLD EV_click3_hold
     #undef USE_3H_TURBO_FROM_LOCK
     #define EVENT_CHANNEL_MODE_CONFIG_HOLD EV_click13_hold
@@ -109,7 +125,7 @@
     #define EVENT_AUX_CONFIG_HOLD_RELEASE EV_click8_hold_release
 
     #define EVENT_RAMP_CONFIG_HOLD EV_click9_hold
-  #else
+  #else //NUM_MAIN_CHANNELS = 1
     #define USE_3H_TURBO_FROM_LOCK
     #undef EVENT_CHANNEL_CYCLE_LOCK_HOLD
     #define EVENT_CHANNEL_MODE_CONFIG_HOLD EV_click9_hold
