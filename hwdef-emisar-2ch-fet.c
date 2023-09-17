@@ -6,7 +6,9 @@
 
 #include "chan-rgbaux.c"
 
+
 void set_level_zero();
+
 void set_level_ch1(uint8_t level);
 void set_level_ch2(uint8_t level);
 void set_level_both(uint8_t level);
@@ -93,21 +95,10 @@ void set_pwms(uint8_t ch1_pwm, uint8_t ch2_pwm, uint8_t ch3_pwm, uint16_t top) {
 }
 
 void set_level_zero() {
-    // turn off all LEDs
-    CH1_ENABLE_PORT &= ~(1 << CH1_ENABLE_PIN);
-    CH2_ENABLE_PORT &= ~(1 << CH2_ENABLE_PIN);
-    CH1_PWM = 0;
-    CH2_PWM = 0;
-    CH3_PWM = 0;
-    PWM_CNT = 0;
-    PWM_TOP = PWM_TOP_INIT;
+    return set_pwms(0, 0, 0, PWM_TOP_INIT);
 }
 
 void set_level_ch1(uint8_t level) {
-    if (0 == level)
-        return set_pwms(0, 0, 0, PWM_TOP_INIT);
-
-    level --;
     uint8_t  pwm1 = PWM_GET8 (pwm1_levels, level);
     uint8_t  pwm3 = PWM_GET8 (pwm2_levels, level);
     uint16_t top  = PWM_GET16(pwm3_levels, level);
@@ -115,20 +106,12 @@ void set_level_ch1(uint8_t level) {
 }
 
 void set_level_ch2(uint8_t level) {
-    if (0 == level)
-        return set_pwms(0, 0, 0, PWM_TOP_INIT);
-
-    level --;
     uint8_t  pwm2 = PWM_GET8 (pwm4_levels, level);
     uint16_t top  = PWM_GET16(pwm5_levels, level);
     set_pwms(0, pwm2, 0, top);
 }
 
 void set_level_both(uint8_t level) {
-    if (0 == level)
-        return set_pwms(0, 0, 0, PWM_TOP_INIT);
-
-    level --;
     uint8_t  pwm1 = PWM_GET8 (pwm1_levels, level);
     uint8_t  pwm3 = PWM_GET8 (pwm2_levels, level);
     uint16_t top  = PWM_GET16(pwm3_levels, level);
@@ -136,10 +119,6 @@ void set_level_both(uint8_t level) {
 }
 
 void set_level_blend(uint8_t level) {
-    if (0 == level)
-        return set_pwms(0, 0, 0, PWM_TOP_INIT);
-
-    level --;
     uint16_t pwm1, pwm2;
     uint8_t  pwm3       = PWM_GET8 (pwm2_levels, level);  // DD FET
     //uint16_t brightness = PWM_GET8 (pwm1_levels, level) << 1;
@@ -153,10 +132,6 @@ void set_level_blend(uint8_t level) {
 }
 
 void set_level_auto(uint8_t level) {
-    if (0 == level)
-        return set_pwms(0, 0, 0, PWM_TOP_INIT);
-
-    level --;
     uint16_t pwm1, pwm2;
     uint8_t  brightness = PWM_GET8 (pwm4_levels, level);
     uint16_t top        = PWM_GET16(pwm5_levels, level);
