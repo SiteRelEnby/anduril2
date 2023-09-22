@@ -4,7 +4,7 @@
 #pragma once
 
 #define MODEL_NUMBER "0623"
-#include "hwdef-sofirn_lt1s-pro.h"
+#include "hwdef-sofirn-lt1s-pro.h"
 // ATTINY: 1616
 
 // off mode: low (1)
@@ -120,3 +120,8 @@
 #define BLINK_AT_RAMP_CEIL
 
 #define USE_SOFT_FACTORY_RESET
+
+
+
+
+#define NUM_MAIN_CHANNELS 3

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
 
-
+void set_level_zero();
 void set_level_red(uint8_t level);
 void set_level_white_blend(uint8_t level);
 void set_level_auto_2ch_blend(uint8_t level);
@@ -75,6 +75,12 @@ void calc_auto_3ch_blend(
 
 }
 
+void set_level_zero(){
+  WARM_PWM_LVL = 0;
+  COOL_PWM_LVL = 0;
+  RED_PWM_LVL = 0;
+  PWM_CNT = 0;
+}
 
 // single set of LEDs with 1 power channel and dynamic PWM
 void set_level_red(uint8_t level) {
