@@ -83,3 +83,7 @@
 // enable factory reset on 13H without loosening tailcap (required)
 #define USE_SOFT_FACTORY_RESET
 
+// this version of the TS10 doesn't have RGB, so unset it since it's now a default
+#ifdef USE_AUX_RGB_LEDS_WHILE_ON
+  #undef USE_AUX_RGB_LEDS_WHILE_ON
+#endif
