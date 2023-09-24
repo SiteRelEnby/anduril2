@@ -120,3 +120,8 @@
 #define BLINK_AT_RAMP_CEIL
 
 #define USE_SOFT_FACTORY_RESET
+
+// this light doesn't have RGB
+#ifdef USE_AUX_RGB_LEDS_WHILE_ON
+#undef USE_AUX_RGB_LEDS_WHILE_ON
+#endif
