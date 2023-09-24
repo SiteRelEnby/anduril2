@@ -20,13 +20,6 @@ Channel channels[] = {
     RGB_AUX_CHANNELS
 };
 
-void set_level_zero(){
-    CH1_ENABLE_PORT &= ~(1 << CH1_ENABLE_PIN);
-    CH1_PWM = 0;
-    PWM_CNT = 0;
-    PWM_TOP = PWM_TOP_INIT;
-}
-
 void set_level_zero() {
     CH1_PWM = 0;
     CH2_PWM = 0;
