@@ -40,9 +40,38 @@
 #define ATTINY 1634
 #include <avr/io.h>
 
+#ifndef HWDEF_C_FILE
+#define HWDEF_C_FILE hwdef-noctigon-k1-boost.c
+#endif
+
+// allow using aux LEDs as extra channel modes
+#include "chan-rgbaux.h"
+
+// channel modes:
+// * 0. main LED
+// * 1+. aux RGB
+#define NUM_CHANNEL_MODES   (1 + NUM_RGB_AUX_CHANNEL_MODES)
+enum CHANNEL_MODES {
+    CM_MAIN = 0,
+    RGB_AUX_ENUMS
+};
+
+#define DEFAULT_CHANNEL_MODE  CM_MAIN
+
+// right-most bit first, modes are in fedcba9876543210 order
+#define CHANNEL_MODES_ENABLED 0b0000000000000001
+
+#define DEFAULT_BLINK_CHANNEL CM_MAIN
+
 #define PWM_CHANNELS 1
 #define PWM_BITS 10  // 0 to 1023 at 4 kHz, not 0 to 255 at 16 kHz
-#define PWM_TOP 1023
+#define PWM_GET PWM_GET16
+#define PWM_DATATYPE  uint16_t  // is used for PWM_TOPS (which goes way over 255)
+#define PWM_DATATYPE2 uint32_t  // only needs 32-bit if ramp values go over 255
+#define PWM1_DATATYPE uint16_t  // linear ramp
+#define PWM_TOP ICR1
+#define PWM_TOP_INIT  1023   // highest value used in top half of ramp
+#define PWM_CNT       TCNT1  // for dynamic PWM, reset phase
 
 #define SWITCH_PIN   PA7    // pin 20
 #define SWITCH_PCINT PCINT7 // pin 20 pin change interrupt
@@ -51,13 +80,14 @@
 #define SWITCH_PORT  PINA   // PINA or PINB or PINC
 
 #define PWM1_PIN PB3        // pin 16, Opamp reference
-#define PWM1_LVL OCR1A      // OCR1A is the output compare register for PB3
+//#define CH1_PIN PB3        // pin 16, Opamp reference
+//#define PWM1_LVL OCR1A      // OCR1A is the output compare register for PB3
+#define CH1_PWM OCR1A      // OCR1A is the output compare register for PB3
 
-#define LED_ENABLE_PIN  PB0    // pin 19, Opamp power
-#define LED_ENABLE_PORT PORTB  // control port for PB0
-
-#define LED2_ENABLE_PIN  PC0    // pin 15, boost PMIC enable
-#define LED2_ENABLE_PORT PORTC  // control port for PC0
+#define CH1_ENABLE_PIN  PB0    // pin 19, Opamp power
+#define CH1_ENABLE_PORT PORTB  // control port for PB0
+#define CH1_ENABLE_PIN2  PC0    // pin 15, boost PMIC enable
+#define CH1_ENABLE_PORT2 PORTC  // control port for PC0
 
 
 #define USE_VOLTAGE_DIVIDER  // use a dedicated pin, not VCC, because VCC input is flattened
@@ -103,10 +133,10 @@
 inline void hwdef_setup() {
   // enable output ports
   // boost PMIC on/off
-  DDRC = (1 << LED2_ENABLE_PIN);
+  DDRC = (1 << CH1_ENABLE_PIN2);
   // Opamp level and Opamp on/off
   DDRB = (1 << PWM1_PIN)
-       | (1 << LED_ENABLE_PIN);
+       | (1 << CH1_ENABLE_PIN);
   // aux R/G/B
   DDRA = (1 << AUXLED_R_PIN)
        | (1 << AUXLED_G_PIN)
