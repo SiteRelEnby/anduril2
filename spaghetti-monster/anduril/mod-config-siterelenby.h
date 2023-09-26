@@ -148,6 +148,17 @@
 #define LOCKOUT_HIGH_AUX_CLICKS 2
 #undef USE_OFF_HIGH_AUX_TIMER
 
+#ifdef USE_AUX_RGB_LEDS
+  #ifdef RGB_LED_OFF_DEFAULT
+    #undef RGB_LED_OFF_DEFAULT
+  #endif
+  #define RGB_LED_OFF_DEFAULT 0x28 //high, rainbow
+  #ifdef RGB_LED_LOCKOUT_DEFAULT
+    #undef RGB_LED_LOCKOUT_DEFAULT
+  #endif
+  #define RGB_LED_LOCKOUT_DEFAULT 0x18 //low, rainbow
+#endif
+
 #ifdef USE_AUX_RGB_LEDS_WHILE_ON
   #define USE_AUX_WHILE_ON_CONFIG
   #ifndef USE_AUX_WHILE_ON_CONFIG_DEFAULT_THRESHOLD_LOW
