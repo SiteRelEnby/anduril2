@@ -324,26 +324,24 @@ uint8_t rgb_led_voltage_readout_brightness(){
     if (! aux_led_override){
     #endif
 
-    #ifdef USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
-      //if (actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW){ //skip over the whole block if below USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
-      if (actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW){ //skip over the whole block if below USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
-    #endif
     #ifdef USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH
-      //from old function:
-      //rgb_led_voltage_readout(actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH); //high if above USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH
-      //if (actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH){//high if above USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH
-        //return 1; //high
-      //}
-      return (actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH); //0 = low, 1 = high
+      if (actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH){
+        return 1; //high
+      }
+    #endif
+    #ifdef USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
+      if (actual_level >= USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW){
+        return 0; //low
+      }
     #else
       //default behaviour (what we replace elsewhere with a call to this function)
       //rgb_led_voltage_readout(actual_level > USE_AUX_RGB_LEDS_WHILE_ON);
       return (actual_level > USE_AUX_RGB_LEDS_WHILE_ON);
     #endif
     #ifdef USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW
-      }
+//      }
       else {
-        //actual_level < USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW, so return 3 "force off"
+        //actual_level < USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW and USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH, so return 3 "force off"
         return 3;
       }
     #endif
@@ -355,7 +353,7 @@ uint8_t rgb_led_voltage_readout_brightness(){
     return 2 ; // "ignore" (so we don't mess with aux channels)
   }
 //TODO: shouldn't be able to get here?
-return 1;
+return 255;
 }
 #endif
 

@@ -703,9 +703,9 @@ void globals_config_save(uint8_t step, uint8_t value) {
     else if (step == jump_start_config_step) { cfg.jump_start_level = value; }
     #endif
     #if defined(USE_AUX_WHILE_ON_CONFIG) && defined(USE_AUX_RGB_LEDS_WHILE_ON)
-    else if ((value) && (step == 1+use_aux_while_on_config_step)) { cfg.use_aux_while_on = (value - 1); } //0C nothing, 1C disable, 2C+ enable
-    else if ((value) && (step == 1+use_aux_while_on_threshold_low_config_step)) { cfg.use_aux_while_on_threshold_low = (value - 1); } //0C ignored, 1C 0 (never off), 2C level 1 (start low at level 1), etc... 151 level 150 (always off)
-    else if ((value) && (step == 1+use_aux_while_on_threshold_high_config_step)) { cfg.use_aux_while_on_threshold_high = (value - 1); } //0C ignored, 1C 0 (always high), 2C level 1 (start high at level 2), etc... 151 level 150 (never high)
+    else if ((value) && (step == use_aux_while_on_config_step)) { cfg.use_aux_while_on = (value - 1); } //0C nothing, 1C disable, 2C+ enable
+    else if ((value) && (step == use_aux_while_on_threshold_low_config_step)) { cfg.use_aux_while_on_threshold_low = (value - 1); } //0C ignored, 1C 0 (never off), 2C level 1 (start low at level 1), etc... 151 level 150 (always off)
+    else if ((value) && (step == use_aux_while_on_threshold_high_config_step)) { cfg.use_aux_while_on_threshold_high = (value - 1); } //0C ignored, 1C 0 (always high), 2C level 1 (start high at level 2), etc... 151 level 150 (never high)
     #endif
 }
 
