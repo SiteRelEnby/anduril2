@@ -1,7 +1,6 @@
 #pragma once
 
-#include "cfg-emisar-d1v2-nofet.h"
-
+#include "cfg-emisar-d1v2-linear-fet.h"
 // the following line always needs to be included in the *base* build target for build.sh to work (TODO: fix?)
 // ATTINY: 1634
 //////////////////////////////////////////////////////////////////////////////
@@ -20,7 +19,6 @@
 
 #define RAMP_SMOOTH_FLOOR 2  // low levels may be unreliable
 #define RAMP_SMOOTH_CEIL  150
-// 11, 30, [50], 70, 90, 110, 130  (plus [150] on turbo)
 #define RAMP_DISCRETE_FLOOR 10
 #define RAMP_DISCRETE_CEIL  RAMP_SMOOTH_CEIL
 #define RAMP_DISCRETE_STEPS 11
@@ -53,3 +51,4 @@
 
 #define RGB_LED_OFF_DEFAULT 0x28 //high, rainbow
 #define RGB_LED_LOCKOUT_DEFAULT 0x18 //low, rainbow
+
