@@ -4,7 +4,7 @@
 #pragma once
 
 #define MODEL_NUMBER "0253"
-#include "hwdef-Noctigon_K1-12V.h"
+#include "hwdef-noctigon-k1-boost.h"
 #include "hank-cfg.h"
 // ATTINY: 1634
 
@@ -18,7 +18,7 @@
 
 // this light has three aux LED channels: R, G, B
 #define USE_AUX_RGB_LEDS
-#define USE_AUX_RGB_LEDS_WHILE_ON
+#define USE_AUX_RGB_LEDS_WHILE_ON 25
 #define USE_INDICATOR_LED_WHILE_RAMPING
 
 
@@ -66,3 +66,4 @@
 
 #define THERM_CAL_OFFSET 5
 
+#define RAMP_SIZE 150
