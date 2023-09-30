@@ -60,6 +60,8 @@
 #ifdef BLINK_AT_RAMP_MIDDLE
 #undef BLINK_AT_RAMP_MIDDLE
 #endif
+#undef BLINK_AT_RAMP_CEIL
+#undef BLINK_AT_RAMP_FLOOR
 
 // Allow 3C in Simple UI for switching between smooth and stepped ramping
 #define USE_SIMPLE_UI_RAMPING_TOGGLE
