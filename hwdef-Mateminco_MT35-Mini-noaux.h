@@ -12,10 +12,11 @@
  *           ----
  */
 #include <avr/io.h>
-#define NUM_CHANNEL_MODES   2
+//#define NUM_CHANNEL_MODES   2
+#define NUM_CHANNEL_MODES   1
 enum CHANNEL_MODES {
-    CM_MAIN = 0,
-    CM_AUX
+    CM_MAIN = 0//,
+//    CM_AUX
 };
 #define PWM_BITS      8       // attiny85 only supports up to 8 bits
 #define PWM_GET       PWM_GET8

@@ -7,6 +7,16 @@
 #include "hwdef-Mateminco_MT35-Mini.h"
 // ATTINY: 85
 
+#define CHANNEL_MODES_ENABLED 0b00000001
+#define DEFAULT_CHANNEL_MODE CM_MAIN
+#define DEFAULT_BLINK_CHANNEL CM_MAIN
+#define RAMP_SIZE 150
+
+//this light doesn't habe RGB, which is now defaulted to configured
+#ifdef USE_AUX_RGB_LEDS_WHILE_ON
+  #undef USE_AUX_RGB_LEDS_WHILE_ON
+#endif
+
 // this light should be fine running a bit hotter than most
 #undef DEFAULT_THERM_CEIL
 #define DEFAULT_THERM_CEIL 55
@@ -55,9 +65,14 @@
 #define USE_SIMPLE_UI_RAMPING_TOGGLE
 
 // too big, turn off extra features
-//#undef USE_SOS_MODE
+#undef USE_SOS_MODE
+//#undef USE_BEACON_MODE
+#undef USE_SIMPLE_UI
 //#undef USE_RAMP_AFTER_MOON_CONFIG
 //#undef USE_RAMP_SPEED_CONFIG
 //#undef USE_VOLTAGE_CORRECTION
 //#undef USE_2C_STYLE_CONFIG
-#undef USE_TACTICAL_MODE
+//#undef USE_TACTICAL_MODE
+#ifndef USE_TACTICAL_MODE
+  #define USE_TACTICAL_MODE
+#endif

@@ -101,10 +101,10 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
         cfg.channel_mode_args[channel_mode] = tint;
         set_level(actual_level);
         return EVENT_HANDLED;
-    }
+    } else
 
     // click, click, hold, release: reverse direction for next ramp
-    else if (event == EV_click3_hold_release) {
+    if (event == EV_click3_hold_release) {
         active = 0;  // ignore next hold if it wasn't meant for us
         // reverse
         tint_ramp_direction = -tint_ramp_direction;
@@ -117,7 +117,7 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
         // from 1/150 to 2/150 without this next line... not sure why
         set_level(actual_level);
         return EVENT_HANDLED;
-    }
+    } else
     #endif  // ifndef DONT_USE_DEFAULT_CHANNEL_ARG_MODE
     #endif  // ifdef USE_CHANNEL_MODE_ARGS
 
@@ -125,12 +125,12 @@ uint8_t channel_mode_state(Event event, uint16_t arg) {
     // remaining mappings aren't "simple", so stop here
     if (cfg.simple_ui_active) {
         return EVENT_NOT_HANDLED;
-    }
+    } else
     #endif
 
     #if NUM_CHANNEL_MODES > 1
     // channel toggle menu on ... 9H?
-    else if (event == EV_click9_hold) {
+    if (event == EV_click9_hold) {
         push_state(channel_mode_config_state, 0);
         return EVENT_HANDLED;
     }
