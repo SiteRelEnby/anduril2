@@ -65,6 +65,7 @@
 #define USE_SIMPLE_UI_RAMPING_TOGGLE
 
 // too big, turn off extra features
+
 #undef USE_SOS_MODE
 //#undef USE_BEACON_MODE
 #undef USE_SIMPLE_UI
@@ -72,7 +73,7 @@
 //#undef USE_RAMP_SPEED_CONFIG
 //#undef USE_VOLTAGE_CORRECTION
 //#undef USE_2C_STYLE_CONFIG
-//#undef USE_TACTICAL_MODE
-#ifndef USE_TACTICAL_MODE
-  #define USE_TACTICAL_MODE
-#endif
+#undef USE_TACTICAL_MODE
+//#ifndef USE_TACTICAL_MODE
+//  #define USE_TACTICAL_MODE
+//#endif
