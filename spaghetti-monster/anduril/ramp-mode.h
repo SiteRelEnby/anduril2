@@ -188,7 +188,8 @@ void reset_sunset_timer();
 
 #ifdef USE_RAMP_EXTRAS_CONFIG
 typedef enum {
-    manual_memory_config_step = 1,
+    ramp_extras_cfg_zero = 0,
+    manual_memory_config_step,
     #ifdef USE_MANUAL_MEMORY_TIMER
     manual_memory_timer_config_step,
     #endif
@@ -207,7 +208,7 @@ typedef enum {
 
 #ifdef USE_GLOBALS_CONFIG
 typedef enum {
-    dummy = 0,
+    globals_cfg_zero = 0,
     #if defined(USE_CHANNEL_MODE_ARGS) && defined(USE_STEPPED_TINT_RAMPING)
     tint_style_config_step,
     #endif
