@@ -167,5 +167,20 @@ Config cfg = {
         .jump_start_level = DEFAULT_JUMP_START_LEVEL,
     #endif
 
+    #ifdef USE_AUX_RGB_LEDS_WHILE_ON
+        // config for RGB voltage. We need to check these here rather than setting defaults in `config-default.h` as we only know *after* defaults are loaded if `USE_AUX_RGB_LEDS_WHILE_ON` is set or unset (in `CFG_H`).
+        #if (USE_AUX_RGB_LEDS_WHILE_ON + 0) // if USE_AUX_RGB_LEDS_WHILE_ON is an int, passes. If blank, evaluates to `(+0)` which evaluates to false.
+        .use_aux_rgb_leds_while_on = USE_AUX_RGB_LEDS_WHILE_ON,
+        #else
+        #warning "USE_AUX_RGB_LEDS_WHILE_ON defined but has no value. This will break RGB voltage aux in ramp mode. Overriding to default of 25"
+        .use_aux_rgb_leds_while_on = 25, // default
+        #endif
+        #ifdef USE_AUX_RGB_LEDS_WHILE_ON_DEFAULT_MINIMUM_LEVEL
+        .use_aux_rgb_leds_while_on_min_level = USE_AUX_RGB_LEDS_WHILE_ON_DEFAULT_MINIMUM_LEVEL,
+        #else
+        .use_aux_rgb_leds_while_on_min_level = 15, // default
+        #endif
+    #endif
+
 };
 

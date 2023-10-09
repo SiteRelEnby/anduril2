@@ -275,8 +275,9 @@ void loop() {
 
     #ifdef USE_AUX_RGB_LEDS_WHILE_ON
     // display battery charge on RGB button during use
-    if (state == steady_state)
-        rgb_led_voltage_readout(actual_level > USE_AUX_RGB_LEDS_WHILE_ON);
+    if ((state == steady_state) && (cfg.use_aux_rgb_leds_while_on < (RAMP_SIZE + 2)) //152+ disables feature entirely; 151 forces "always low"; 0 forces "always high"
+      && (actual_level > cfg.use_aux_rgb_leds_while_on_min_level))
+        rgb_led_voltage_readout(actual_level > cfg.use_aux_rgb_leds_while_on);
     #endif
 
     if (0) {}  // placeholder

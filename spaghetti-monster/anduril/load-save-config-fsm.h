@@ -122,6 +122,10 @@ typedef struct Config {
     #ifdef USE_JUMP_START
         uint8_t jump_start_level;
     #endif
+    #ifdef USE_AUX_RGB_LEDS_WHILE_ON
+        uint8_t use_aux_rgb_leds_while_on;
+        uint8_t use_aux_rgb_leds_while_on_min_level;
+    #endif
 
 } Config;
 
