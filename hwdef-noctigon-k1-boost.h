@@ -69,8 +69,7 @@ enum CHANNEL_MODES {
 #define PWM_DATATYPE  uint16_t  // is used for PWM_TOPS (which goes way over 255)
 #define PWM_DATATYPE2 uint32_t  // only needs 32-bit if ramp values go over 255
 #define PWM1_DATATYPE uint16_t  // linear ramp
-#define PWM_TOP ICR1
-#define PWM_TOP_INIT  1023   // highest value used in top half of ramp
+//#define PWM_TOP_INIT  1023   // highest value used in top half of ramp
 #define PWM_CNT       TCNT1  // for dynamic PWM, reset phase
 
 #define SWITCH_PIN   PA7    // pin 20
