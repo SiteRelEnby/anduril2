@@ -93,7 +93,7 @@ uint8_t voltage_to_rgb() {
 // mode: 0bPPPPCCCC where PPPP is the pattern and CCCC is the color
 // arg: time slice number
 void rgb_led_update(uint8_t mode, uint16_t arg) {
-    static uint8_t rainbow = 0;  // track state of rainbow mode
+    static uint8_t rainbow = 1;  // track state of rainbow mode
     static uint8_t frame = 0;  // track state of animation mode
 
     // turn off aux LEDs when battery is empty
