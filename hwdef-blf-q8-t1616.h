@@ -15,6 +15,23 @@
 
 #define LAYOUT_DEFINED
 
+#define NUM_CHANNEL_MODES 2
+enum CHANNEL_MODES {
+    CM_MAIN = 0,
+    CM_AUX
+};
+#define DEFAULT_CHANNEL_MODE  CM_MAIN
+#define CHANNEL_MODES_ENABLED 0b00000001
+
+#include <avr/io.h>
+#include "chan-aux.h"
+
+//#define PWM_DATATYPE  uint8_t  // is used for PWM_TOPS (which goes way over 255)
+//define PWM_DATATYPE2 uint8_t  // only needs 32-bit if ramp values go over 255
+#define PWM1_DATATYPE uint8_t   // 1x7135 ramp
+#define PWM2_DATATYPE uint8_t   // DD FET ramp
+#define HWDEF_C_FILE hwdef-blf-q8-t1616.c
+
 #ifdef ATTINY
 #undef ATTINY
 #endif
