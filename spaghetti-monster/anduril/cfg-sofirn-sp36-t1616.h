@@ -35,3 +35,11 @@
 #undef THERM_FASTER_LEVEL
 #endif
 #define THERM_FASTER_LEVEL 130
+
+// no aux on this light
+#ifdef USE_AUX_RGB_LEDS_WHILE_ON
+  #undef USE_AUX_RGB_LEDS_WHILE_ON
+#endif
+#ifdef USE_AUX_RGB_LEDS
+  #undef USE_AUX_RGB_LEDS
+#endif
