@@ -5,15 +5,52 @@
 
 /*
  * Driver pinout:
- * eSwitch:    PA5
- * Aux LED:    PB5
- * PWM FET:    PB0 (TCA0 WO0)
- * PWM 1x7135: PB1 (TCA0 WO1)
- * Voltage:    VCC
+ * eSwitch:     PA5
+ * Aux LED:     PB5
+ * PWM warm:    PB0 (TCA0 WO0)
+ * PWM neutral: PB1 (TCA0 WO1)
+ * Voltage:     VCC
  */
 
 
 #define LAYOUT_DEFINED
+
+#include <avr/io.h>
+
+#define HWDEF_C_FILE hwdef-blf-lt1-t1616.c
+
+// allow using aux LEDs as extra channel modes
+#include "chan-rgbaux.h"
+
+// channel modes:
+// * 0. channel 1 only
+// * 1. channel 2 only
+// * 2. both channels, tied together, max "200%" power
+// * 3. both channels, manual blend, max "100%" power
+// * 4. both channels, auto blend, reversible
+#define NUM_CHANNEL_MODES 6
+enum channel_modes_e {
+    CM_CH1 = 0,
+    CM_CH2,
+    CM_BOTH,
+    CM_BLEND,
+    CM_AUTO,
+    CM_AUX
+};
+
+// right-most bit first, modes are in fedcba9876543210 order
+#define CHANNEL_MODES_ENABLED 0b0000000000011111
+#define USE_CHANNEL_MODE_ARGS
+// _, _, _, 128=middle CCT, 0=warm-to-cool
+#define CHANNEL_MODE_ARGS     0,0,0,128,0,0
+
+// can use some of the common handlers
+#define USE_CALC_2CH_BLEND
+
+#define PWM_DATATYPE uint8_t
+#define PWM1_DATATYPE PWM_DATATYPE
+#define PWM2_DATATYPE PWM_DATATYPE
+#define PWM_TOP_INIT 255
 
 #ifdef ATTINY
 #undef ATTINY
@@ -21,7 +58,7 @@
 #define ATTINY 1616
 #include <avr/io.h>
 
-#define PWM_CHANNELS 1
+#define PWM_CHANNELS 2
 
 #ifndef SWITCH_PIN
 #define SWITCH_PIN     PIN5_bp
@@ -41,13 +78,15 @@ uint8_t PWM1_LVL;
 // warm tint channel
 #ifndef PWM1_PIN
 #define PWM1_PIN PB1                //
-#define TINT1_LVL TCA0.SINGLE.CMP1  // CMP1 is the output compare register for PB1
+//#define TINT1_LVL TCA0.SINGLE.CMP1  // CMP1 is the output compare register for PB1
+#define CH1_PWM  TCA0.SINGLE.CMP1  // CMP1 is the output compare register for PB1
 #endif
 
 // cold tint channel
 #ifndef PWM2_PIN
 #define PWM2_PIN PB0                //
-#define TINT2_LVL TCA0.SINGLE.CMP0  // CMP0 is the output compare register for PB0
+//#define TINT2_LVL TCA0.SINGLE.CMP0  // CMP0 is the output compare register for PB0
+#define CH2_PWM TCA0.SINGLE.CMP0  // CMP0 is the output compare register for PB0
 #endif
 
 // average drop across diode on this hardware
