@@ -201,8 +201,3 @@
 // 0 = none, 1 = smooth, 2+ = undefined
 #define DEFAULT_SMOOTH_STEPS_STYLE  1
 
-// compatibility hack: if USE_AUX_RGB_LEDS_WHILE_ON is defined but has no value, set it to something sensible
-#if (!(USE_AUX_RGB_LEDS_WHILE_ON + 0)) // if USE_AUX_RGB_LEDS_WHILE_ON is an int, passes. If blank, evaluates to `(+0)` which evaluates to false.
-  #undef USE_AUX_RGB_LEDS_WHILE_ON
-  #define USE_AUX_RGB_LEDS_WHILE_ON 25
-#endif
