@@ -4,6 +4,6 @@
 avrdude -p attiny1616 -c serialupdi -P ${PORT} -Uflash:w:${1}
 if [[ "${?}" != "0" ]]
 then
-	echo "avrdude failed. Make sure you have the right COM port (tried ${PORT}). # PORT=com8 ./${0}"
+	echo "avrdude failed. Make sure you have the right COM port (tried ${PORT}). # PORT=com8 ./${0} <input file>" >&2
 	exit 1
 fi
