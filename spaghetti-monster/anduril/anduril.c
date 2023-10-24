@@ -300,16 +300,6 @@ void setup() {
 
 }
 
-// Functions for aux RGB voltage control mod, plus a compatibility hack for a few not-updated-yet upstream lights
-#ifdef USE_AUX_RGB_LEDS_WHILE_ON
-  #ifndef USE_AUX_WHILE_ON_CONFIG
-    // compatibility hack: if USE_AUX_RGB_LEDS_WHILE_ON is defined but has no value, set it to something sensible
-    #if (!(USE_AUX_RGB_LEDS_WHILE_ON + 0)) // if USE_AUX_RGB_LEDS_WHILE_ON is an int, passes. If blank, evaluates to `(+0)` which evaluates to false.
-      #undef USE_AUX_RGB_LEDS_WHILE_ON
-      #define USE_AUX_RGB_LEDS_WHILE_ON 25 //match TK's default
-    #endif
-  #endif
-#endif
 #ifdef USE_AUX_WHILE_ON_CONFIG
 uint8_t rgb_led_voltage_readout_brightness(){
   if (cfg.use_aux_while_on >= 1){
