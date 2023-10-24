@@ -2,7 +2,7 @@
 
 set -e -o pipefail
 
-if [[ ! -z `which docker` ]]
+if [[ -z `which docker` ]]
 then
 	echo -e "docker not installed. This script is mostly a convenience script to use the docker builder - to run a build locally, avr-gcc needs to be installed, then run spaghetti-monster/anduril/build-all.sh directly\nsee: https://github.com/SiteRelEnby/anduril2/issues/3\nFor more info on installing the build toolchain locally, see https://budgetlightforum.com/t/anduril-2/62656/328" >&2
 	exit 1
