@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Usage: build-all.sh [pattern]
 # If pattern given, only build targets which match.
