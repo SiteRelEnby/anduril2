@@ -43,57 +43,54 @@ enum channel_modes_e {
 //#define USE_CALC_AUTO_3CH_BLEND
 
 
-// TODO: remove this as soon as it's not needed
-#define PWM_CHANNELS 1
-
-#define SWITCH_PIN     PIN5_bp
-#define SWITCH_PORT    VPORTA.IN
-#define SWITCH_ISC_REG PORTA.PIN2CTRL
-#define SWITCH_VECT    PORTA_PORT_vect
-#define SWITCH_INTFLG  VPORTA.INTFLAGS
-
-
-// dynamic PWM
-// PWM parameters of all channels are tied together because they share a counter
-#define PWM_TOP_INIT 511  // highest value used in the top half of the ramp
-#define PWM_TOP TCA0.SINGLE.PERBUF   // holds the TOP value for for variable-resolution PWM
-#define PWM_CNT TCA0.SINGLE.CNT   // for resetting phase after each TOP adjustment
-
-// warm tint channel
-//#define WARM_PWM_PIN PB0
-#define WARM_PWM_LVL TCA0.SINGLE.CMP0BUF  // CMP1 is the output compare register for PB0
-
-// cold tint channel
-//#define COOL_PWM_PIN PB1
-#define COOL_PWM_LVL TCA0.SINGLE.CMP1BUF  // CMP0 is the output compare register for PB1
-
-// red channel
-//#define RED_PWM_PIN PB2
-#define RED_PWM_LVL TCA0.SINGLE.CMP2BUF   // CMP2 is the output compare register for PB2
+#define PWM_CHANNELS   1  // old, remove this
 
 // only using 16-bit PWM on this light
-#define PWM_BITS 16
+#define PWM_BITS      16
+
 #define PWM_GET       PWM_GET16
 #define PWM_DATATYPE  uint16_t
 #define PWM1_DATATYPE uint16_t
 #define PWM_DATATYPE2 uint32_t
 
+// dynamic PWM
+// PWM parameters of all channels are tied together because they share a counter
+#define PWM_TOP_INIT  511  // highest value used in the top half of the ramp
+#define PWM_TOP TCA0.SINGLE.PERBUF   // holds the TOP value for for variable-resolution PWM
+#define PWM_CNT TCA0.SINGLE.CNT   // for resetting phase after each TOP adjustment
 
-// average drop across diode on this hardware
-#ifndef VOLTAGE_FUDGE_FACTOR
-#define VOLTAGE_FUDGE_FACTOR 7  // add 0.35V
-#endif
+// warm LEDs
+//#define WARM_PWM_PIN PB0
+#define WARM_PWM_LVL TCA0.SINGLE.CMP0BUF  // CMP1 is the output compare register for PB0
 
+// cold LEDs
+//#define COOL_PWM_PIN PB1
+#define COOL_PWM_LVL TCA0.SINGLE.CMP1BUF  // CMP0 is the output compare register for PB1
+
+// red LEDs
+//#define RED_PWM_PIN PB2
+#define RED_PWM_LVL TCA0.SINGLE.CMP2BUF   // CMP2 is the output compare register for PB2
 
 // lighted button
-#define AUXLED_PIN  PIN5_bp
-#define AUXLED_PORT PORTB
+#define AUXLED_PIN   PIN5_bp
+#define AUXLED_PORT  PORTB
 
 // the button lights up
 #define USE_INDICATOR_LED
 // the button is visible while main LEDs are on
 #define USE_INDICATOR_LED_WHILE_RAMPING
 
+// e-switch
+#define SWITCH_PIN     PIN5_bp
+#define SWITCH_PORT    VPORTA.IN
+#define SWITCH_ISC_REG PORTA.PIN2CTRL
+#define SWITCH_VECT    PORTA_PORT_vect
+#define SWITCH_INTFLG  VPORTA.INTFLAGS
+
+// average drop across diode on this hardware
+#ifndef VOLTAGE_FUDGE_FACTOR
+#define VOLTAGE_FUDGE_FACTOR 7  // add 0.35V
+#endif
 
 
 inline void hwdef_setup() {
