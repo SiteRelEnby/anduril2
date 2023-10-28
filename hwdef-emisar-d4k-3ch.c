@@ -6,6 +6,7 @@
 #include "spaghetti-monster/anduril/channel-modes.h"  //for circular_tint_3h()
 #include "chan-rgbaux.c"
 
+void set_level_zero();
 
 void set_level_main2(uint8_t level);
 void set_level_led3(uint8_t level);
@@ -261,6 +262,7 @@ void set_level_auto3(uint8_t level) {
 }
 
 ///// "gradual tick" functions for smooth thermal regulation /////
+// (and other smooth adjustments)
 
 bool gradual_adjust(PWM_DATATYPE main2, PWM_DATATYPE led3, PWM_DATATYPE led4) {
     // adjust multiple times based on current brightness

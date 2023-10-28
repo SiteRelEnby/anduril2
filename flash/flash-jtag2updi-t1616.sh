@@ -3,7 +3,7 @@
 
 if [[ -z "${PORT}" ]]
 then
-	echo "Need a port. e.g.: $ PORT=COM6 ${0}" >&2
+	echo "Need a port. e.g.: $ PORT=COM6 ${0} <input file>" >&2
 	exit 1
 fi
 

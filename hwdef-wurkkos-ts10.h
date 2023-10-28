@@ -1,5 +1,5 @@
 // Wurkkos TS10 driver layout
-// Copyright (C) 2022-2023 (FIXME)
+// Copyright (C) 2021-2023 gchart, Selene ToyKeeper
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
 
@@ -32,6 +32,7 @@ enum CHANNEL_MODES {
 
 #define DEFAULT_CHANNEL_MODE  CM_MAIN
 
+// right-most bit first, modes are in fedcba9876543210 order
 #define CHANNEL_MODES_ENABLED 0b00000001
 
 
@@ -84,10 +85,10 @@ inline void hwdef_setup() {
                       CLKCTRL_PDIV_2X_gc | CLKCTRL_PEN_bm );
 
     //VPORTA.DIR = ...;
-    // Outputs: Aux LED and PWMs
-    VPORTB.DIR = PIN0_bm
-               | PIN1_bm
-               | PIN5_bm;
+    // Outputs
+    VPORTB.DIR = PIN0_bm   // DD FET
+               | PIN1_bm   // 7135
+               | PIN5_bm;  // Aux LED
     //VPORTC.DIR = ...;
 
     // enable pullups on the unused pins to reduce power

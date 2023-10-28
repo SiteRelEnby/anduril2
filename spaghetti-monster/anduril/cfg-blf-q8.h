@@ -49,9 +49,17 @@
 
 // Allow 3C in Simple UI for switching between smooth and stepped ramping
 #define USE_SIMPLE_UI_RAMPING_TOGGLE
+#define USE_EXTENDED_SIMPLE_UI
 
 // stop panicking at ~75% power or ~3000 lm, this light has high thermal mass
 #define THERM_FASTER_LEVEL (RAMP_SIZE*9/10)  // throttle back faster when high
+
+// don't blink mid-ramp
+#ifdef BLINK_AT_RAMP_MIDDLE
+#undef BLINK_AT_RAMP_MIDDLE
+#endif
+
+#define USE_SMOOTH_STEPS
 
 // too big, remove stuff to make room
 #undef USE_SOS_MODE
@@ -60,4 +68,4 @@
 //#undef USE_VOLTAGE_CORRECTION
 //#undef USE_2C_STYLE_CONFIG
 //#undef USE_TACTICAL_STROBE_MODE
-//#undef USE_TACTICAL_MODE
+#undef USE_TACTICAL_MODE
