@@ -41,3 +41,13 @@
 
 //default aux patterns, but low (1) for lock, high (2) for unlocked
 #define INDICATOR_LED_DEFAULT_MODE ((1<<2) + 2)
+
+// B_PRESS_T:   activate as soon as button is pressed
+// B_RELEASE_T: activate when user lets go of button
+// B_TIMEOUT_T: activate when we're sure the user won't double-click
+// defaults are release on, timeout off
+#undef B_TIMING_ON
+#undef B_TIMING_OFF
+#define B_TIMING_ON B_TIMEOUT_T
+#define B_TIMING_OFF B_TIMEOUT_T
+
