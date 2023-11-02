@@ -8,7 +8,7 @@
 //
 // Define some vars that are needed for the mod config to set stuff up properly
 #define NUM_MAIN_CHANNELS 1 //tell it this light has 2 'main' channels (for setting up shortcuts etc)
-//#define USE_AUX_RGB_LEDS_WHILE_ON //this needs to be set to enable configurable RGB voltage //single-colour aux only
+//#define USE_AUX_RGB_LEDS_WHILE_ON //this needs to be set to enable configurable RGB voltage //no point in this light as there's no switch LED
 #include "mod-config-siterelenby.h"
 #define USER_CONFIG_L0ADED //prevent defaults from loading
 
