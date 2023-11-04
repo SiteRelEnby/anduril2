@@ -1,0 +1,78 @@
+name: anduril2
+
+on:
+  push:
+    branches: [ "main", "actions" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+
+    env:
+      ATTINY_PACK_URI: http://packs.download.atmel.com/Atmel.ATtiny_DFP.2.0.368.atpack
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+    - name: Requirements
+      run: |
+        sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy update
+        sudo DEBIAN_FRONTEND=noninteractive apt-get -qqy install gcc-avr binutils-avr avr-libc
+    - name: Environment
+      run: |
+        echo "ARTIFACT_NAME=${GITHUB_WORKFLOW}-${GITHUB_REPOSITORY_OWNER}-${GITHUB_REF_NAME}-$(git rev-parse --short ${GITHUB_SHA})-${GITHUB_RUN_NUMBER}" >> "${GITHUB_ENV}"
+        echo "ATTINY_DFP=${HOME}/attiny-dfp" >> "${GITHUB_ENV}"
+        echo "${ATTINY_DFP}/bin" >> "${GITHUB_PATH}"
+    - name: Install Device Family Pack
+      run: |
+        mkdir ${ATTINY_DFP} && cd ${ATTINY_DFP}
+        curl -LsS -o tiny.atpack ${ATTINY_PACK_URI}
+        unzip -q tiny.atpack
+        # https://leonerds-code.blogspot.com/2019/06/building-for-new-attiny-1-series-chips.html
+        DEVICE_TYPES=$(cat << EOF
+        #elif defined (__AVR_ATtiny212__)
+        #  include <avr/iotn212.h>
+        #elif defined (__AVR_ATtiny412__)
+        #  include <avr/iotn412.h>
+        #elif defined (__AVR_ATtiny214__)
+        #  include <avr/iotn214.h>
+        #elif defined (__AVR_ATtiny414__)
+        #  include <avr/iotn414.h>
+        #elif defined (__AVR_ATtiny814__)
+        #  include <avr/iotn814.h>
+        #elif defined (__AVR_ATtiny1614__)
+        #  include <avr/iotn1614.h>
+        #elif defined (__AVR_ATtiny3214__)
+        #  include <avr/iotn3214.h>
+        #elif defined (__AVR_ATtiny416__)
+        #  include <avr/iotn416.h>
+        #elif defined (__AVR_ATtiny816__)
+        #  include <avr/iotn816.h>
+        #elif defined (__AVR_ATtiny1616__)
+        #  include <avr/iotn1616.h>
+        #elif defined (__AVR_ATtiny3216__)
+        #  include <avr/iotn3216.h>
+        #elif defined (__AVR_ATtiny417__)
+        #  include <avr/iotn417.h>
+        #elif defined (__AVR_ATtiny817__)
+        #  include <avr/iotn817.h>
+        #elif defined (__AVR_ATtiny1617__)
+        #  include <avr/iotn1617.h>
+        #elif defined (__AVR_ATtiny3217__)
+        #  include <avr/iotn3217.h>
+        EOF
+        )
+        sudo bash -c "echo ${DEVICE_TYPES} >> /usr/lib/avr/include/avr/io.h"
+    - name: Compile
+      run: |
+        cd spaghetti-monster/anduril
+        ./build-all.sh
+    - name: Store artifacts
+      uses: actions/upload-artifact@master
+      with:
+        name: ${{ env.ARTIFACT_NAME }}
+        if-no-files-found: error
+        path: |
+          spaghetti-monster/anduril/*.hex
