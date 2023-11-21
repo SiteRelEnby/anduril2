@@ -57,3 +57,13 @@
 
 #define RGB_LED_OFF_DEFAULT 0x37  // blinking, disco
 #define RGB_LED_LOCKOUT_DEFAULT 0x18 //low, rainbow
+
+// B_PRESS_T:   activate as soon as button is pressed
+// B_RELEASE_T: activate when user lets go of button
+// B_TIMEOUT_T: activate when we're sure the user won't double-click
+// defaults are release on, timeout off
+#undef B_TIMING_ON
+#undef B_TIMING_OFF
+#define B_TIMING_ON B_TIMEOUT_T
+#define B_TIMING_OFF B_TIMEOUT_T
+

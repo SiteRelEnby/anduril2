@@ -1,4 +1,4 @@
-// Noctigon DM11 (boost driver) config options for Anduril
+// Noctigon DM11-noFET config options for Anduril
 // Copyright (C) 2021-2023 Selene ToyKeeper
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
@@ -15,54 +15,63 @@
 #include "mod-config-siterelenby.h"
 #define USER_CONFIG_L0ADED //prevent defaults from loading
 
-#undef RAMP_SMOOTH_FLOOR
-#undef RAMP_SMOOTH_CEIL
-#undef RAMP_DISCRETE_FLOOR
-#undef RAMP_DISCRETE_CEIL
-#undef RAMP_DISCRETE_STEPS
+#undef DEFAULT_JUMP_START_LEVEL
+#define DEFAULT_JUMP_START_LEVEL 15
 
-#define RAMP_SMOOTH_FLOOR 2  // low levels may be unreliable
+#undef BLINK_ONCE_TIME
+#define BLINK_ONCE_TIME 10
+
+#undef RAMP_SMOOTH_FLOOR
+#define RAMP_SMOOTH_FLOOR 3
+
 #define RAMP_SMOOTH_CEIL  150
-// 11, 30, [50], 70, 90, 110, 130  (plus [150] on turbo)
+// 10, 30, 50, [70], 90, 110, [130]
 #define RAMP_DISCRETE_FLOOR 10
 #define RAMP_DISCRETE_CEIL  RAMP_SMOOTH_CEIL
 #define RAMP_DISCRETE_STEPS 11
 
-#undef SIMPLE_UI_FLOOR
-#undef SIMPLE_UI_CEIL
+// safe limit highest regulated power (no FET or turbo)
 #define SIMPLE_UI_FLOOR RAMP_DISCRETE_FLOOR
-#define SIMPLE_UI_CEIL 100
-#define SIMPLE_UI_STEPS 3
-#define USE_SIMPLE_UI_RAMPING_TOGGLE
+#define SIMPLE_UI_CEIL 120
+#define SIMPLE_UI_STEPS 5
 
-#define CANDLE_AMPLITUDE 32
+// stop panicking at ~1500 lm
+#define THERM_FASTER_LEVEL 130
+#define MIN_THERM_STEPDOWN 65  // should be above highest dyn_pwm level
 
-#define DEFAULT_MANUAL_MEMORY 50
-#define DEFAULT_MANUAL_MEMORY_TIMER 60
-#define DEFAULT_AUTOLOCK_TIME 60
+#define USE_POLICE_COLOR_STROBE_MODE
+#define POLICE_COLOR_STROBE_CH1 CM_AUXBLU
+#define POLICE_COLOR_STROBE_CH2 CM_AUXRED
+#undef  TACTICAL_LEVELS
+#define TACTICAL_LEVELS 150,75,(RAMP_SIZE+2)
 
-#define B_TIMING_ON B_TIMEOUT_T
-
-#define DEFAULT_2C_STYLE 1  // 0: no turbo. 1: 2C always turbo. 2: 2C goes to top of ramp, or turbo if already at top
-#define DEFAULT_2C_STYLE_SIMPLE 2  // same but for Simple UI.
+#ifndef BLINK_AT_RAMP_MIDDLE
+#define BLINK_AT_RAMP_MIDDLE
+#endif
 
 #undef SIMPLE_UI_ACTIVE
 #define SIMPLE_UI_ACTIVE 0
 
-#define TACTICAL_LEVELS 150,100,(RAMP_SIZE+2)
-
-#define USE_3H_TURBO_FROM_LOCK
-#define DEFAULT_BLINK_CHANNEL  CM_AUXWHT
-
-#define RGB_LED_OFF_DEFAULT 0x27  // high, disco
+#define RGB_LED_OFF_DEFAULT 0x28 //high, rainbow
 #define RGB_LED_LOCKOUT_DEFAULT 0x18 //low, rainbow
 
+#define DEFAULT_BLINK_CHANNEL CM_AUXWHT
+
+// need to fix voltage aux when channel mode is aux
+#define USE_AUX_RGB_LEDS_WHILE_ON
+#define USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_LOW 20
+#define USE_AUX_RGB_LEDS_WHILE_ON_THRESHOLD_HIGH 70
+#define BLINK_LOCK_REMINDER
+//#define BLINK_LOCK_REMINDER_CHANNEL
+
+#undef LOCK_FROM_ON_EVENT
+
+// button timing for turning light on/off:
 // B_PRESS_T:   activate as soon as button is pressed
 // B_RELEASE_T: activate when user lets go of button
 // B_TIMEOUT_T: activate when we're sure the user won't double-click
 // defaults are release on, timeout off
-#undef B_TIMING_ON
-#undef B_TIMING_OFF
 #define B_TIMING_ON B_TIMEOUT_T
 #define B_TIMING_OFF B_TIMEOUT_T
 
+#define DEFAULT_AUTOLOCK_TIME 60

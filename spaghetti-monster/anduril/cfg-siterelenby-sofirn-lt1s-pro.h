@@ -6,6 +6,8 @@
 #define MODEL_NUMBER "0623"
 #include "hwdef-sofirn-lt1s-pro.h"
 // ATTINY: 1616
+#define NUM_MAIN_CHANNELS 3
+#include "mod-config-siterelenby.h"
 
 // off mode: low (1)
 // lockout: blinking (3)
@@ -121,7 +123,13 @@
 
 #define USE_SOFT_FACTORY_RESET
 
+// B_PRESS_T:   activate as soon as button is pressed
+// B_RELEASE_T: activate when user lets go of button
+// B_TIMEOUT_T: activate when we're sure the user won't double-click
+// defaults are release on, timeout off
+#undef B_TIMING_ON
+#undef B_TIMING_OFF
+#define B_TIMING_ON B_TIMEOUT_T
+#define B_TIMING_OFF B_TIMEOUT_T
 
 
-
-#define NUM_MAIN_CHANNELS 3
