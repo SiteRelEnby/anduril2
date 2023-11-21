@@ -77,12 +77,6 @@ void calc_auto_3ch_blend(
 
 }
 
-void set_level_zero(){
-  WARM_PWM_LVL = 0;
-  COOL_PWM_LVL = 0;
-  RED_PWM_LVL = 0;
-  PWM_CNT = 0;
-}
 
 void set_level_zero() {
     WARM_PWM_LVL = 0;
